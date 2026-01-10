@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRYOUT TKA MATEMATIKA - MIS Baiturrahman</title>
+    <title>Uji Kompetensi Keahlian Manajemen Perkantoran - SMK PAWIYATAN SURABAYA</title>
     <style>
         * {
             margin: 0;
@@ -183,35 +183,7 @@
             color: #1f2937;
         }
 
-        .answer-box {
-            margin-bottom: 30px;
-        }
 
-        .answer-label {
-            font-size: 16px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .answer-input {
-            width: 100%;
-            min-height: 150px;
-            padding: 20px;
-            border: 2px solid #e5e7eb;
-            border-radius: 15px;
-            font-size: 16px;
-            font-family: inherit;
-            resize: vertical;
-            transition: all 0.3s ease;
-        }
-
-        .answer-input:focus {
-            outline: none;
-            border-color: #14b8a6;
-            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
-        }
 
         .navigation {
             display: flex;
@@ -456,14 +428,7 @@
                 <img id="questionImage" src="" alt="Gambar Soal">
             </div>
             <div class="question-text" id="questionText"></div>
-            <div class="answer-box">
-                <label class="answer-label">Tulis Jawaban Anda:</label>
-                <textarea 
-                    class="answer-input" 
-                    id="answerInput" 
-                    placeholder="Ketik jawaban lengkap beserta cara pengerjaannya di sini..."
-                ></textarea>
-            </div>
+
             <div class="navigation">
                 <button class="nav-btn prev-btn" onclick="previousQuestion()" id="prevBtn">Sebelumnya</button>
                 <button class="nav-btn next-btn" onclick="nextQuestion()" id="nextBtn">Selanjutnya</button>
@@ -556,7 +521,6 @@
             document.getElementById('questionTitle').textContent = 'Soal ' + (currentQuestion + 1) + ' dari ' + questions.length;
             document.getElementById('questionImage').src = q.image;
             document.getElementById('questionText').textContent = q.question;
-            document.getElementById('answerInput').value = answers[currentQuestion] || '';
             
             var progress = ((currentQuestion + 1) / questions.length) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
@@ -573,24 +537,13 @@
             }, 10);
         }
 
-        function saveAnswer() {
-            var answer = document.getElementById('answerInput').value.trim();
-            if (answer) {
-                answers[currentQuestion] = answer;
-            } else {
-                delete answers[currentQuestion];
-            }
-        }
-
         function goToQuestion(index) {
-            saveAnswer();
             currentQuestion = index;
             loadQuestion();
         }
 
         function previousQuestion() {
             if (currentQuestion > 0) {
-                saveAnswer();
                 currentQuestion--;
                 loadQuestion();
             }
@@ -598,14 +551,12 @@
 
         function nextQuestion() {
             if (currentQuestion < questions.length - 1) {
-                saveAnswer();
                 currentQuestion++;
                 loadQuestion();
             }
         }
 
         function submitExam() {
-            saveAnswer();
             var answeredCount = Object.keys(answers).length;
             var unansweredCount = questions.length - answeredCount;
             
