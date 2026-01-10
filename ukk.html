@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UKK MP - SMK PAWIYATAN SURABAYA</title>
+    <title>TRYOUT TKA MATEMATIKA - MIS Baiturrahman</title>
     <style>
         * {
             margin: 0;
@@ -407,8 +407,8 @@
 <body>
     <header class="header">
         <div class="header-content">
-            <h1>Uji Kompetensi Keahlian Manajemen Perkantoran</h1>
-            <p>SMK PAWIYATAN SURABAYA</p>
+            <h1>TRYOUT TKA MATEMATIKA</h1>
+            <p>MIS Baiturrahman</p>
         </div>
     </header>
 
@@ -513,7 +513,6 @@
                     goToQuestion(idx);
                 };
                 if (i === currentQuestion) btn.classList.add('active');
-                if (answers[i]) btn.classList.add('answered');
                 grid.appendChild(btn);
             }
         }
@@ -559,14 +558,7 @@
         }
 
         function submitExam() {
-            var answeredCount = Object.keys(answers).length;
-            var unansweredCount = questions.length - answeredCount;
-            
-            var message = 'Anda telah menjawab ' + answeredCount + ' dari ' + questions.length + ' soal.';
-            if (unansweredCount > 0) {
-                message += '\n' + unansweredCount + ' soal belum dijawab.';
-            }
-            message += '\n\nApakah Anda yakin ingin mengumpulkan ujian?';
+            var message = 'Apakah Anda yakin ingin mengakhiri ujian?';
             
             if (confirm(message)) {
                 showResult();
@@ -574,29 +566,10 @@
         }
 
         function showResult() {
-            var answeredCount = Object.keys(answers).length;
-            var percentage = (answeredCount / questions.length * 100).toFixed(0);
-            
             var resultHTML = '<div class="result-container">' +
                 '<div class="result-icon">✓</div>' +
                 '<h2 class="result-title">Ujian Selesai!</h2>' +
-                '<div class="result-score">' +
-                '<h2>' + answeredCount + '/' + questions.length + '</h2>' +
-                '<p>Soal Terjawab: ' + percentage + '%</p>' +
-                '</div>' +
-                '<h3 class="result-subtitle">Status Jawaban Setiap Soal:</h3>' +
-                '<div class="result-grid">';
-            
-            for (var i = 0; i < questions.length; i++) {
-                var status = answers[i] ? 'answered-item' : 'unanswered-item';
-                resultHTML += '<div class="result-item ' + status + '">' + questions[i].id + '</div>';
-            }
-            
-            resultHTML += '</div>' +
-                '<p class="legend">' +
-                '<span class="legend-box" style="background: #d1fae5;"></span> Terjawab' +
-                '<span class="legend-box" style="background: #fee2e2; margin-left: 15px;"></span> Belum Dijawab' +
-                '</p>' +
+                '<p style="font-size: 18px; color: #6b7280; margin: 30px 0;">Terima kasih telah mengikuti ujian TKA Matematika</p>' +
                 '<button class="retry-btn" onclick="location.reload()">Ulangi Ujian</button>' +
                 '</div>';
             
