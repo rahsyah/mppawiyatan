@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="id">
+<link rel="icon" href="img/favicon.ico" type="image/x-icon">
+<link rel="icon" href="https://revenant-three.vercel.app/img/passe.gif" type="image/png">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOAL UKK MANAJEMEN PERKANTORAN - SMK Pawiyatan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f2f1 0%, #e3f2fd 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0d9488 0%, #2563eb 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #b2dfdb;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            aspect-ratio: 1;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .question-number:hover {
+            background: #e5e7eb;
+            transform: scale(1.1);
+        }
+
+        .question-number.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .question-number.answered {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: slideIn 0.5s ease;
+        }
+
+        .question-header {
+            margin-bottom: 15px;
+        }
+
+        .question-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #14b8a6 0%, #3b82f6 100%);
+            transition: width 0.3s ease;
+        }
+
+        .question-image {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .question-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .question-text {
+            background: linear-gradient(135deg, #e0f2f1 0%, #e3f2fd 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid #14b8a6;
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.8;
+            color: #1f2937;
+        }
+
+
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .prev-btn {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .prev-btn:hover:not(:disabled) {
+            background: #d1d5db;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #14b8a6 0%, #3b82f6 100%);
+            color: white;
+        }
+
+        .next-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-container {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        .result-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 30px;
+        }
+
+        .result-score {
+            background: linear-gradient(135deg, #14b8a6 0%, #3b82f6 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px auto;
+            max-width: 400px;
+        }
+
+        .result-score h2 {
+            font-size: 64px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .result-score p {
+            font-size: 24px;
+        }
+
+        .result-subtitle {
+            font-size: 20px;
+            font-weight: 600;
+            color: #374151;
+            margin: 30px 0 20px 0;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin: 30px auto;
+            max-width: 600px;
+        }
+
+        .result-item {
+            padding: 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .answered-item {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .unanswered-item {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .legend {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .legend-box {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, #14b8a6 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .retry-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .question-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .main-content {
+                padding: 25px;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+
+            .nav-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .result-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
+            }
+
+            .result-item {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>UJI KOMPETENSI KEJURUAN</h1>
+            <p>Manajemen Perkantoran - SMK Pawiyatan Surabaya</p>
+        </div>
+    </header>
+
+    <div class="container" id="examContainer">
+        <div class="sidebar">
+            <h3>Halaman </h3>
+            <div class="question-grid" id="questionGrid"></div>
+            <button class="submit-btn" onclick="submitExam()">Tutup Soal</button>
+        </div>
+
+        <div class="main-content" id="mainContent">
+            <div class="question-header">
+                <h2 class="question-title" id="questionTitle"></h2>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-image">
+                <img id="questionImage" src="" alt="Gambar Soal">
+            </div>
+            <div class="question-text" id="questionText"></div>
+
+            <div class="navigation">
+                <button class="nav-btn prev-btn" onclick="previousQuestion()" id="prevBtn">Sebelumnya</button>
+                <button class="nav-btn next-btn" onclick="nextQuestion()" id="nextBtn">Selanjutnya</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var questions = [
+            {
+                id: 1,
+                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam.",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/contoh%20soal.PNG"
+            },
+            {
+                id: 2,
+                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
+                image: "https://via.placeholder.com/800x450/3B82F6/FFFFFF?text=Persegi+Panjang"
+            },
+            {
+                id: 3,
+                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
+                image: "https://via.placeholder.com/800x450/10B981/FFFFFF?text=Persamaan+Linear"
+            },
+            {
+                id: 4,
+                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
+                image: "https://via.placeholder.com/800x450/F59E0B/FFFFFF?text=Persentase"
+            },
+            {
+                id: 5,
+                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
+                image: "https://via.placeholder.com/800x450/8B5CF6/FFFFFF?text=Operasi+Pangkat"
+            },
+            {
+                id: 6,
+                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
+                image: "https://via.placeholder.com/800x450/EC4899/FFFFFF?text=Segitiga"
+            },
+            {
+                id: 7,
+                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
+                image: "https://via.placeholder.com/800x450/14B8A6/FFFFFF?text=KPK"
+            },
+            {
+                id: 8,
+                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
+                image: "https://via.placeholder.com/800x450/F97316/FFFFFF?text=Perbandingan"
+            },
+            {
+                id: 9,
+                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
+                image: "https://via.placeholder.com/800x450/6366F1/FFFFFF?text=Lingkaran"
+            },
+            {
+                id: 10,
+                question: "Tentukan rata-rata dari data berikut: 7, 8, 9, 10, 11. Jelaskan cara menghitung rata-rata!",
+                image: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam"
+            }
+        ];
+
+        var currentQuestion = 0;
+        var answers = {};
+
+        function init() {
+            renderQuestionGrid();
+            loadQuestion();
+        }
+
+        function renderQuestionGrid() {
+            var grid = document.getElementById('questionGrid');
+            grid.innerHTML = '';
+            for (var i = 0; i < questions.length; i++) {
+                var btn = document.createElement('button');
+                btn.className = 'question-number';
+                btn.textContent = questions[i].id;
+                btn.setAttribute('data-index', i);
+                btn.onclick = function() {
+                    var idx = parseInt(this.getAttribute('data-index'));
+                    goToQuestion(idx);
+                };
+                if (i === currentQuestion) btn.classList.add('active');
+                grid.appendChild(btn);
+            }
+        }
+
+        function loadQuestion() {
+            var q = questions[currentQuestion];
+            document.getElementById('questionTitle').textContent = 'View Halaman: ' + (currentQuestion + 1) + ' dari ' + questions.length;
+            document.getElementById('questionImage').src = q.image;
+            document.getElementById('questionText').textContent = q.question;
+            
+            var progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').disabled = currentQuestion === questions.length - 1;
+            
+            renderQuestionGrid();
+            
+            var mainContent = document.getElementById('mainContent');
+            mainContent.style.animation = 'none';
+            setTimeout(function() {
+                mainContent.style.animation = 'slideIn 0.5s ease';
+            }, 10);
+        }
+
+        function goToQuestion(index) {
+            currentQuestion = index;
+            loadQuestion();
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            }
+        }
+
+        function submitExam() {
+            var message = 'Apakah Anda yakin ingin mengakhiri ujian?';
+            
+            if (confirm(message)) {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            var resultHTML = '<div class="result-container">' +
+                '<div class="result-icon">✓</div>' +
+                '<h2 class="result-title">Ujian Selesai!</h2>' +
+                '<p style="font-size: 18px; color: #6b7280; margin: 30px 0;">Terima kasih telah mengikuti ujian semoga hasilnya memuaskan</p>' +
+                '<button class="retry-btn" onclick="location.reload()">Ulangi Ujian</button>' +
+                '</div>';
+            
+            document.getElementById('examContainer').innerHTML = 
+                '<div style="grid-column: 1 / -1;">' +
+                '<div class="main-content">' + resultHTML + '</div>' +
+                '</div>';
+        }
+
+        init();
+    </script>
+</body>
+</html>
