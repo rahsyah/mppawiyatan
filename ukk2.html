@@ -2,10 +2,11 @@
 <html lang="id">
 <link rel="icon" href="img/favicon.ico" type="image/x-icon">
 <link rel="icon" href="https://revenant-three.vercel.app/img/passe.gif" type="image/png">
-<head>
+
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOAL UKK MANAJEMEN PERKANTORAN - SMK Pawiyatan</title>
+    <title>TRYOUT TKA MATEMATIKA - MIS Baiturrahman</title>
     <style>
         * {
             margin: 0;
@@ -407,16 +408,16 @@
 <body>
     <header class="header">
         <div class="header-content">
-            <h1>UJI KOMPETENSI KEJURUAN</h1>
-            <p>Manajemen Perkantoran - SMK Pawiyatan Surabaya</p>
+            <h1>TRYOUT TKA MATEMATIKA</h1>
+            <p>MIS Baiturrahman</p>
         </div>
     </header>
 
     <div class="container" id="examContainer">
         <div class="sidebar">
-            <h3>Halaman </h3>
+            <h3>Nomor Soal</h3>
             <div class="question-grid" id="questionGrid"></div>
-            <button class="submit-btn" onclick="submitExam()">Tutup Soal</button>
+            <button class="submit-btn" onclick="submitExam()">Selesai Ujian</button>
         </div>
 
         <div class="main-content" id="mainContent">
@@ -442,53 +443,53 @@
         var questions = [
             {
                 id: 1,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam.",
-                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/contoh%20soal.PNG"
+                question: "Perhatikan gambar diagram lingkaran berikut. Jika total siswa di sekolah tersebut 200 orang, berapa jumlah siswa yang menyukai basket dan sepak bola? (Basket: 30%, Sepak Bola: 40%)",
+                image: "https://placehold.co/800x450/4A5568/FFFFFF/png?text=Diagram+Hobi+Siswa"
             },
             {
                 id: 2,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/3B82F6/FFFFFF?text=Persegi+Panjang"
+                question: "Sebuah persegi panjang memiliki panjang 15 cm dan lebar 8 cm. Hitunglah luas persegi panjang tersebut dan jelaskan cara perhitungannya!",
+                image: "https://placehold.co/800x450/3B82F6/FFFFFF/png?text=Persegi+Panjang"
             },
             {
                 id: 3,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/10B981/FFFFFF?text=Persamaan+Linear"
+                question: "Jika x + 5 = 12, tentukan nilai x dan jelaskan langkah-langkah penyelesaiannya!",
+                image: "https://placehold.co/800x450/10B981/FFFFFF/png?text=Persamaan+Linear"
             },
             {
                 id: 4,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/F59E0B/FFFFFF?text=Persentase"
+                question: "Dalam sebuah kelas terdapat 40 siswa. Jika 25% siswa mengikuti ekstrakurikuler basket, berapa banyak siswa yang mengikuti ekstrakurikuler basket? Jelaskan perhitungannya!",
+                image: "https://placehold.co/800x450/F59E0B/FFFFFF/png?text=Persentase"
             },
             {
                 id: 5,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/8B5CF6/FFFFFF?text=Operasi+Pangkat"
+                question: "Hitunglah hasil dari 3 pangkat 2 + 4 pangkat 2 dan jelaskan konsep operasi pangkat yang digunakan!",
+                image: "https://placehold.co/800x450/8B5CF6/FFFFFF/png?text=Operasi+Pangkat"
             },
             {
                 id: 6,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/EC4899/FFFFFF?text=Segitiga"
+                question: "Sebuah segitiga memiliki alas 10 cm dan tinggi 6 cm. Hitunglah luas segitiga tersebut menggunakan rumus yang tepat!",
+                image: "https://placehold.co/800x450/EC4899/FFFFFF/png?text=Segitiga"
             },
             {
                 id: 7,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/14B8A6/FFFFFF?text=KPK"
+                question: "Tentukan KPK (Kelipatan Persekutuan Terkecil) dari 12 dan 18. Jelaskan cara menemukannya!",
+                image: "https://placehold.co/800x450/14B8A6/FFFFFF/png?text=KPK"
             },
             {
                 id: 8,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/F97316/FFFFFF?text=Perbandingan"
+                question: "Jika harga 5 buku adalah Rp 75.000, berapa harga 8 buku? Gunakan konsep perbandingan untuk menyelesaikannya!",
+                image: "https://placehold.co/800x450/F97316/FFFFFF/png?text=Perbandingan"
             },
             {
                 id: 9,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/6366F1/FFFFFF?text=Lingkaran"
+                question: "Hitunglah keliling lingkaran dengan diameter 14 cm! (gunakan pi = 22/7). Jelaskan rumus yang digunakan!",
+                image: "https://placehold.co/800x450/6366F1/FFFFFF/png?text=Lingkaran"
             },
             {
                 id: 10,
                 question: "Tentukan rata-rata dari data berikut: 7, 8, 9, 10, 11. Jelaskan cara menghitung rata-rata!",
-                image: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam"
+                image: "https://placehold.co/800x450/EF4444/FFFFFF/png?text=Statistika"
             }
         ];
 
@@ -519,8 +520,14 @@
 
         function loadQuestion() {
             var q = questions[currentQuestion];
-            document.getElementById('questionTitle').textContent = 'View Halaman: ' + (currentQuestion + 1) + ' dari ' + questions.length;
-            document.getElementById('questionImage').src = q.image;
+            document.getElementById('questionTitle').textContent = 'Soal ' + (currentQuestion + 1) + ' dari ' + questions.length;
+            
+            var imgElement = document.getElementById('questionImage');
+            imgElement.src = '';
+            setTimeout(function() {
+                imgElement.src = q.image;
+            }, 50);
+            
             document.getElementById('questionText').textContent = q.question;
             
             var progress = ((currentQuestion + 1) / questions.length) * 100;
@@ -569,7 +576,7 @@
             var resultHTML = '<div class="result-container">' +
                 '<div class="result-icon">✓</div>' +
                 '<h2 class="result-title">Ujian Selesai!</h2>' +
-                '<p style="font-size: 18px; color: #6b7280; margin: 30px 0;">Terima kasih telah mengikuti ujian semoga hasilnya memuaskan</p>' +
+                '<p style="font-size: 18px; color: #6b7280; margin: 30px 0;">Terima kasih telah mengikuti ujian TKA Matematika</p>' +
                 '<button class="retry-btn" onclick="location.reload()">Ulangi Ujian</button>' +
                 '</div>';
             
