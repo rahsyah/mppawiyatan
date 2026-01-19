@@ -2,10 +2,11 @@
 <html lang="id">
 <link rel="icon" href="img/favicon.ico" type="image/x-icon">
 <link rel="icon" href="https://revenant-three.vercel.app/img/passe.gif" type="image/png">
-<head>
+
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOAL UKK MANAJEMEN PERKANTORAN - SMK Pawiyatan</title>
+    <title>SMK PAWIYATAN - UKK MANAJEMEN PERKANTORAN</title>
     <style>
         * {
             margin: 0;
@@ -408,7 +409,7 @@
     <header class="header">
         <div class="header-content">
             <h1>UJI KOMPETENSI KEJURUAN</h1>
-            <p>Manajemen Perkantoran - SMK Pawiyatan Surabaya</p>
+            <p>Manajemen Perkantoran - Korespondensi Digital Filling</p>
         </div>
     </header>
 
@@ -416,7 +417,7 @@
         <div class="sidebar">
             <h3>Halaman </h3>
             <div class="question-grid" id="questionGrid"></div>
-            <button class="submit-btn" onclick="submitExam()">Tutup Soal</button>
+            <button class="submit-btn" onclick="submitExam()">Selesai Ujian</button>
         </div>
 
         <div class="main-content" id="mainContent">
@@ -442,54 +443,109 @@
         var questions = [
             {
                 id: 1,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam.",
-                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/contoh%20soal.PNG"
+                question: "Catatan : Sebelum mengerjakan ujian dipersilahkan berdoa terlebih dahulu, Kerjakan ujian dengan jujur, mandiri dan teliti karena soal ujian berbentuk penugasan personal. Alokasi waktu pengerjaan 8 Jam.",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/_Cover%20UKKA4.png"
             },
             {
                 id: 2,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/3B82F6/FFFFFF?text=Persegi+Panjang"
+                question: "Catatan : Kejujuran adalah hadiah yang sangat mahal. Jangan mengharapkannya dari orang yang murahan - Warren Buffett",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0001.jpg"
             },
             {
                 id: 3,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/10B981/FFFFFF?text=Persamaan+Linear"
+                question: "Catatan : Menjadi jujur mungkin tidak membuat Anda memiliki banyak teman, tetapi itu akan selalu membuat Anda menjadi teman yang tepat. - John Lennon",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0002.jpg"
             },
             {
                 id: 4,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/F59E0B/FFFFFF?text=Persentase"
+                question: "Jika tidak benar, jangan lakukan itu. Jika itu tidak benar, jangan katakan itu. - Marcus Aurelius",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0003.jpg"
             },
             {
                 id: 5,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/8B5CF6/FFFFFF?text=Operasi+Pangkat"
+                question: "Catatan : Orang yang suka berkata jujur mendapat tiga perkara, yaitu; kepercayaan, cinta, dan rasa hormat. – Ali bin Abi Thalib",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0004.jpg"
             },
             {
                 id: 6,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/EC4899/FFFFFF?text=Segitiga"
+                question: "Catatan : Kejujuran seringkali sangat sulit. Kebenaran seringkali menyakitkan. Tetapi kebebasan yang dapat dibawanya layak untuk dicoba. - Fred Rogers",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0005.jpg"
             },
             {
                 id: 7,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/14B8A6/FFFFFF?text=KPK"
+                question: "Catatan : Kejujuran adalah bab pertama dalam buku kebijaksanaan. - Thomas Jefferson",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0006.jpg"
             },
             {
                 id: 8,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/F97316/FFFFFF?text=Perbandingan"
+                question: "Catatan : Semua pengetahuan lain menyakitkan bagi dia yang tidak memiliki ilmu kejujuran dan kebaikan. - Michel de Montaign",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0007.jpg"
             },
             {
                 id: 9,
-                question: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam",
-                image: "https://via.placeholder.com/800x450/6366F1/FFFFFF?text=Lingkaran"
+                question: "Catatan : Sesakit apapun sebuah kejujuran, akan lebih menyakitkan ketika kebohongan terungkap! - Umar bin Khattab",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0008.jpg"
             },
             {
                 id: 10,
-                question: "Tentukan rata-rata dari data berikut: 7, 8, 9, 10, 11. Jelaskan cara menghitung rata-rata!",
-                image: "Catatan : Sebelum Mengerjakan Berdoa terlebih dahulu, Kerjakan secara mandiri dengan teliti karena bentuk soal penugasan personal, Alokasi waktu pengerjaan 8 Jam"
-            }
+                question: "Catatan : Kejujuran adalah bab pertama dalam buku kebijaksanaan. - Thomas Jefferson",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0009.jpg"
+            },
+            {
+                id: 11,
+                question: "Catatan : Kejujuran adalah hadiah yang sangat mahal. Jangan mengharapkannya dari orang yang murahan - Warren Buffett",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0010.jpg"
+            },
+            {
+                id: 12,
+                question: "Catatan : Selama kamu memiliki hati yang bersih, kamu akan menyampaikan kebenaran. – Umar bin Khattab",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0011.jpg"
+            },
+            {
+                id: 13,
+                question: "Jika tidak benar, jangan lakukan itu. Jika itu tidak benar, jangan katakan itu. - Marcus Aurelius",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-00012.jpg"
+            },
+            {
+                id: 14,
+                question: "Catatan : Orang yang suka berkata jujur mendapat tiga perkara, yaitu; kepercayaan, cinta, dan rasa hormat. – Ali bin Abi Thalib",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-00013.jpg"
+            },
+            {
+                id: 15,
+                question: "Catatan : Kejujuran seringkali sangat sulit. Kebenaran seringkali menyakitkan. Tetapi kebebasan yang dapat dibawanya layak untuk dicoba. - Fred Rogers",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-00014.jpg"
+            },
+            {
+                id: 16,
+                question: "Catatan : Selama kamu memiliki hati yang bersih, kamu akan menyampaikan kebenaran. – Umar bin Khattab",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-00015.jpg"
+            },
+            {
+                id: 17,
+                question: "Catatan : Kejujuran adalah hadiah yang sangat mahal. Jangan mengharapkannya dari orang yang murahan - Warren Buffett",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0016.jpg"
+            },
+            {
+                id: 18,
+                question: "Catatan : Menjadi jujur mungkin tidak membuat Anda memiliki banyak teman, tetapi itu akan selalu membuat Anda menjadi teman yang tepat. - John Lennon",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0017.jpg"
+            },
+            {
+                id: 19,
+                question: "Jika tidak benar, jangan lakukan itu. Jika itu tidak benar, jangan katakan itu. - Marcus Aurelius",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0018.jpg"
+            },
+            {
+                id: 20,
+                question: "Catatan : Orang yang suka berkata jujur mendapat tiga perkara, yaitu; kepercayaan, cinta, dan rasa hormat. – Ali bin Abi Thalib",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0019.jpg"
+            },
+            {
+                id: 21,
+                question: "Catatan : Kejujuran seringkali sangat sulit. Kebenaran seringkali menyakitkan. Tetapi kebebasan yang dapat dibawanya layak untuk dicoba. - Fred Rogers",
+                image: "https://raw.githubusercontent.com/rahsyah/mppawiyatan/refs/heads/main/img/gambar%20soal/LAB_Korespondensi_Digital%20Filling%20ACC/LAB_Korespondensi_Digital%20Filling%20ACC_page-0020.jpg"
+            },
         ];
 
         var currentQuestion = 0;
@@ -519,8 +575,14 @@
 
         function loadQuestion() {
             var q = questions[currentQuestion];
-            document.getElementById('questionTitle').textContent = 'View Halaman: ' + (currentQuestion + 1) + ' dari ' + questions.length;
-            document.getElementById('questionImage').src = q.image;
+            document.getElementById('questionTitle').textContent = 'Halaman Soal: ' + (currentQuestion + 1) + ' dari ' + questions.length;
+            
+            var imgElement = document.getElementById('questionImage');
+            imgElement.src = '';
+            setTimeout(function() {
+                imgElement.src = q.image;
+            }, 50);
+            
             document.getElementById('questionText').textContent = q.question;
             
             var progress = ((currentQuestion + 1) / questions.length) * 100;
@@ -569,7 +631,7 @@
             var resultHTML = '<div class="result-container">' +
                 '<div class="result-icon">✓</div>' +
                 '<h2 class="result-title">Ujian Selesai!</h2>' +
-                '<p style="font-size: 18px; color: #6b7280; margin: 30px 0;">Terima kasih telah mengikuti ujian semoga hasilnya memuaskan</p>' +
+                '<p style="font-size: 18px; color: #6b7280; margin: 30px 0;">Terima kasih telah mengikuti UKK MP Korespondensi Digital Filling ACC</p>' +
                 '<button class="retry-btn" onclick="location.reload()">Ulangi Ujian</button>' +
                 '</div>';
             
