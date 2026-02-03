@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5R QUEST - Petualangan Budaya Kerja</title>
+    <link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Righteous&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-blue: #00FFFF;
+            --neon-pink: #FF006E;
+            --neon-yellow: #FFBE0B;
+            --neon-green: #8AC926;
+            --neon-purple: #B565FF;
+            --dark: #0D1117;
+            --darker: #010409;
+        }
+
+        @keyframes neonGlow {
+            0%, 100% { filter: drop-shadow(0 0 10px var(--neon-blue)) drop-shadow(0 0 20px var(--neon-blue)); }
+            50% { filter: drop-shadow(0 0 20px var(--neon-pink)) drop-shadow(0 0 40px var(--neon-pink)); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(5deg); }
+            66% { transform: translateY(-10px) rotate(-5deg); }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            75% { transform: translateX(10px) rotate(5deg); }
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes countdown {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            color: white;
+        }
+
+        /* Animated Background Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: particleFloat 10s infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Timer & Progress Bar */
+        .game-header {
+            background: rgba(13, 17, 23, 0.9);
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 3px solid var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        .timer-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .timer {
+            background: linear-gradient(135deg, var(--neon-pink) 0%, var(--neon-purple) 100%);
+            padding: 20px 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px var(--neon-pink);
+            animation: neonGlow 2s infinite;
+        }
+
+        .timer-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .timer-value {
+            font-family: 'Titan One', cursive;
+            font-size: 3rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .progress-bars {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .progress-item {
+            margin-bottom: 15px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-yellow));
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 20px var(--neon-green);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            animation: bounceIn 1s ease-out;
+        }
+
+        h1 {
+            font-family: 'Titan One', cursive;
+            font-size: 5rem;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink), var(--neon-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+            animation: neonGlow 3s infinite;
+        }
+
+        .subtitle {
+            font-family: 'Righteous', cursive;
+            font-size: 1.5rem;
+            color: var(--neon-yellow);
+            text-shadow: 0 0 10px rgba(255, 190, 11, 0.8);
+        }
+
+        /* Level System */
+        .level-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(13, 17, 23, 0.95);
+            padding: 20px;
+            border-radius: 20px;
+            border: 3px solid var(--neon-yellow);
+            box-shadow: 0 0 30px var(--neon-yellow);
+            z-index: 1000;
+            animation: slideInRight 0.8s ease-out;
+        }
+
+        .level-badge {
+            text-align: center;
+            font-family: 'Titan One', cursive;
+            font-size: 2.5rem;
+            color: var(--neon-yellow);
+            margin-bottom: 10px;
+        }
+
+        .xp-bar {
+            width: 150px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--neon-yellow);
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-yellow), var(--neon-pink));
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px var(--neon-yellow);
+        }
+
+        /* Navigation Tabs */
+        .mission-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .mission-btn {
+            background: linear-gradient(135deg, rgba(13, 17, 23, 0.9) 0%, rgba(13, 17, 23, 0.7) 100%);
+            border: 3px solid var(--neon-blue);
+            color: white;
+            padding: 25px 20px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .mission-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.3) 0%, transparent 70%);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .mission-btn:hover::before {
+            opacity: 1;
+            top: -100%;
+            left: -100%;
+        }
+
+        .mission-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 40px rgba(0, 255, 255, 0.6);
+            border-color: var(--neon-pink);
+        }
+
+        .mission-btn.active {
+            background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%);
+            border-color: var(--neon-yellow);
+            box-shadow: 0 10px 40px rgba(0, 255, 255, 0.8);
+            animation: pulse 1.5s infinite;
+        }
+
+        .mission-btn .icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* Content Area */
+        .content-arena {
+            background: rgba(13, 17, 23, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 3px solid var(--neon-purple);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 5R Cards - More Dynamic */
+        .r-arena {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .r-mission-card {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            border-radius: 25px;
+            padding: 35px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid transparent;
+        }
+
+        .r-mission-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--neon-blue), transparent);
+            animation: rotate 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .r-mission-card:hover::before {
+            opacity: 1;
+        }
+
+        .r-mission-card::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            border-radius: 22px;
+            z-index: 1;
+        }
+
+        .r-mission-card:hover {
+            transform: translateY(-15px) scale(1.05) rotateX(5deg);
+            box-shadow: 0 25px 50px rgba(0, 255, 255, 0.5);
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .r-number {
+            font-family: 'Titan One', cursive;
+            font-size: 4rem;
+            opacity: 0.2;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .r-title {
+            font-family: 'Righteous', cursive;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--neon-yellow);
+            text-shadow: 0 0 10px var(--neon-yellow);
+        }
+
+        .r-japanese {
+            font-size: 1.1rem;
+            color: var(--neon-blue);
+            margin-bottom: 15px;
+        }
+
+        .r-description {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Quiz - More Gamified */
+        .quiz-arena {
+            margin-top: 30px;
+        }
+
+        .question-card {
+            background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-pink) 100%);
+            padding: 35px;
+            border-radius: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(181, 101, 255, 0.5);
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-family: 'Titan One', cursive;
+            font-size: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 15px;
+        }
+
+        .question-points {
+            font-weight: 800;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 15px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.15);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .option-card:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .option-card:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+            border-color: var(--neon-yellow);
+        }
+
+        .option-card.correct {
+            background: var(--neon-green);
+            border-color: var(--neon-green);
+            animation: correctAnswer 0.6s ease;
+        }
+
+        @keyframes correctAnswer {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1) rotate(5deg); }
+            75% { transform: scale(1.1) rotate(-5deg); }
+        }
+
+        .option-card.incorrect {
+            background: var(--neon-pink);
+            border-color: var(--neon-pink);
+            animation: shake 0.5s ease;
+        }
+
+        .option-card:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            background: linear-gradient(135deg, var(--neon-yellow) 0%, var(--neon-pink) 100%);
+            border: none;
+            color: var(--dark);
+            padding: 18px 45px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(255, 190, 11, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .action-btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 190, 11, 0.8);
+        }
+
+        /* Drag & Drop Game */
+        .game-zone {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 110, 0.1) 100%);
+            padding: 40px;
+            border-radius: 25px;
+            border: 3px dashed var(--neon-blue);
+        }
+
+        .drag-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .drag-item {
+            background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            cursor: move;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.4);
+            border: 3px solid transparent;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .drag-item:nth-child(2) { animation-delay: 0.5s; }
+        .drag-item:nth-child(3) { animation-delay: 1s; }
+        .drag-item:nth-child(4) { animation-delay: 1.5s; }
+
+        .drag-item:hover {
+            transform: scale(1.1) rotate(2deg);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.7);
+            border-color: var(--neon-yellow);
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .drop-zone {
+            background: rgba(0, 0, 0, 0.3);
+            border: 4px dashed rgba(255, 255, 255, 0.3);
+            padding: 25px;
+            border-radius: 20px;
+            min-height: 100px;
+            transition: all 0.4s ease;
+        }
+
+        .drop-zone.drag-over {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: var(--neon-yellow);
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--neon-yellow);
+        }
+
+        .drop-zone-title {
+            font-family: 'Righteous', cursive;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--neon-yellow);
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--neon-yellow);
+        }
+
+        /* Achievement Popup */
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-pink) 100%);
+            padding: 40px;
+            border-radius: 30px;
+            border: 5px solid var(--neon-yellow);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            text-align: center;
+            transition: transform 0.5s ease;
+        }
+
+        .achievement-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        .achievement-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .achievement-title {
+            font-family: 'Titan One', cursive;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+
+        .achievement-desc {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+        }
+
+        /* Result Box */
+        .result-box {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2) 0%, rgba(181, 101, 255, 0.2) 100%);
+            padding: 40px;
+            border-radius: 25px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid var(--neon-blue);
+            backdrop-filter: blur(10px);
+        }
+
+        .result-title {
+            font-family: 'Titan One', cursive;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--neon-yellow), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .result-score {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--neon-green);
+            text-shadow: 0 0 20px var(--neon-green);
+            margin: 20px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .drag-grid { grid-template-columns: 1fr; }
+            .r-arena { grid-template-columns: 1fr; }
+            .timer-value { font-size: 2rem; }
+            .level-display {
+                position: static;
+                margin: 20px auto;
+                max-width: 200px;
+            }
+        }
+
+        /* Sparkles Effect */
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--neon-yellow);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sparkle 1s ease-out forwards;
+        }
+
+        /* Sound Toggle */
+        .sound-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--dark);
+            border: 3px solid var(--neon-blue);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sound-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px var(--neon-blue);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement-popup" id="achievementPopup">
+        <div class="achievement-icon" id="achievementIcon">🏆</div>
+        <div class="achievement-title" id="achievementTitle">ACHIEVEMENT!</div>
+        <div class="achievement-desc" id="achievementDesc">You've unlocked something!</div>
+        <button class="action-btn" onclick="closeAchievement()">AWESOME!</button>
+    </div>
+
+    <!-- Level Display -->
+    <div class="level-display">
+        <div class="level-badge">LV <span id="levelNumber">1</span></div>
+        <div class="xp-bar">
+            <div class="xp-fill" id="xpFill" style="width: 0%"></div>
+        </div>
+        <div style="text-align: center; margin-top: 10px; font-size: 0.85rem;">
+            <span id="currentXP">0</span>/<span id="nextLevelXP">100</span> XP
+        </div>
+    </div>
+
+    <!-- Sound Toggle -->
+    <div class="sound-toggle" id="soundToggle" onclick="toggleSound()">
+        🔊
+    </div>
+
+    <div class="container">
+        <!-- Timer & Progress -->
+        <div class="game-header">
+            <div class="timer-section">
+                <div class="timer">
+                    <div class="timer-label">⏱️ WAKTU TERSISA</div>
+                    <div class="timer-value" id="timerDisplay">20:00</div>
+                </div>
+                <div class="progress-bars">
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>📚 Progress Materi</span>
+                            <span id="materiProgress">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="materiFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>🎯 Progress Quiz</span>
+                            <span id="quizProgress">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="quizFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>🎮 Progress Game</span>
+                            <span id="gameProgress">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="gameFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header>
+            <h1>5R QUEST</h1>
+            <p class="subtitle">🚀 Petualangan Budaya Kerja SMK 🚀</p>
+        </header>
+
+        <!-- Mission Tabs -->
+        <div class="mission-tabs">
+            <button class="mission-btn active" onclick="switchMission('materi')">
+                <span class="icon">📚</span>
+                MISSION 1<br>PELAJARI 5R
+            </button>
+            <button class="mission-btn" onclick="switchMission('quiz')">
+                <span class="icon">🎯</span>
+                MISSION 2<br>QUIZ BATTLE
+            </button>
+            <button class="mission-btn" onclick="switchMission('game')">
+                <span class="icon">🎮</span>
+                MISSION 3<br>DRAG CHALLENGE
+            </button>
+            <button class="mission-btn" onclick="switchMission('memory')">
+                <span class="icon">🧠</span>
+                MISSION 4<br>MEMORY GAME
+            </button>
+            <button class="mission-btn" onclick="switchMission('result')">
+                <span class="icon">🏆</span>
+                HASIL AKHIR
+            </button>
+        </div>
+
+        <!-- Content Arena -->
+        <div class="content-arena">
+            <!-- Mission 1: Materi -->
+            <div id="materi" class="tab-content active">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-yellow); text-shadow: 0 0 20px var(--neon-yellow);">
+                        🎓 PAHAMI KONSEP 5R
+                    </h2>
+                    <p style="font-size: 1.2rem; margin-top: 10px;">Klik setiap kartu untuk mempelajari lebih dalam!</p>
+                </div>
+
+                <div class="r-arena">
+                    <div class="r-mission-card" onclick="markMateriRead(1)">
+                        <div class="card-content">
+                            <div class="r-number">1</div>
+                            <div class="r-title">RINGKAS</div>
+                            <div class="r-japanese">(Seiri - 整理)</div>
+                            <div class="r-description">
+                                Pisahkan barang yang diperlukan dengan yang tidak! Singkirkan tools yang rusak atau jarang dipakai. Ini langkah pertama menuju workspace yang efisien!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="r-mission-card" onclick="markMateriRead(2)">
+                        <div class="card-content">
+                            <div class="r-number">2</div>
+                            <div class="r-title">RAPI</div>
+                            <div class="r-japanese">(Seiton - 整頓)</div>
+                            <div class="r-description">
+                                Tempatkan setiap barang dengan teratur dan beri label! Tools yang sering digunakan harus mudah dijangkau. "A place for everything and everything in its place!"
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="r-mission-card" onclick="markMateriRead(3)">
+                        <div class="card-content">
+                            <div class="r-number">3</div>
+                            <div class="r-title">RESIK</div>
+                            <div class="r-japanese">(Seiso - 清掃)</div>
+                            <div class="r-description">
+                                Bersihkan area kerja dan peralatan secara rutin! Tidak ada debu, kotoran, atau sampah. Mesin bersih = performa maksimal!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="r-mission-card" onclick="markMateriRead(4)">
+                        <div class="card-content">
+                            <div class="r-number">4</div>
+                            <div class="r-title">RAWAT</div>
+                            <div class="r-japanese">(Seiketsu - 清潔)</div>
+                            <div class="r-description">
+                                Pertahankan kondisi 3R secara konsisten! Buat jadwal perawatan, jaga kebersihan pribadi, dan rawat peralatan dengan baik.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="r-mission-card" onclick="markMateriRead(5)">
+                        <div class="card-content">
+                            <div class="r-number">5</div>
+                            <div class="r-title">RAJIN</div>
+                            <div class="r-japanese">(Shitsuke - 躾)</div>
+                            <div class="r-description">
+                                Jadikan 5R sebagai kebiasaan! Disiplin menjalankan semua R setiap hari. Konsistensi adalah kunci kesuksesan!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <button class="action-btn" onclick="switchMission('quiz')">LANJUT KE QUIZ! 🎯</button>
+                </div>
+            </div>
+
+            <!-- Mission 2: Quiz -->
+            <div id="quiz" class="tab-content">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-pink); text-shadow: 0 0 20px var(--neon-pink);">
+                        🎯 QUIZ BATTLE
+                    </h2>
+                    <p style="font-size: 1.2rem; margin-top: 10px;">Uji pemahamanmu tentang 5R!</p>
+                </div>
+                <div class="quiz-arena" id="quizContainer"></div>
+            </div>
+
+            <!-- Mission 3: Drag & Drop -->
+            <div id="game" class="tab-content">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue);">
+                        🎮 DRAG CHALLENGE
+                    </h2>
+                    <p style="font-size: 1.2rem; margin-top: 10px;">Cocokkan aktivitas dengan kategori 5R yang tepat!</p>
+                </div>
+                <div class="game-zone">
+                    <div class="drag-grid">
+                        <div>
+                            <h3 style="font-family: 'Righteous', cursive; margin-bottom: 20px; font-size: 1.5rem; color: var(--neon-yellow);">
+                                🎯 SERET AKTIVITAS:
+                            </h3>
+                            <div id="dragItems" style="display: flex; flex-direction: column; gap: 15px;"></div>
+                        </div>
+                        <div>
+                            <h3 style="font-family: 'Righteous', cursive; margin-bottom: 20px; font-size: 1.5rem; color: var(--neon-yellow);">
+                                📍 KE KATEGORI 5R:
+                            </h3>
+                            <div id="dropZones" style="display: flex; flex-direction: column; gap: 15px;"></div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="action-btn" onclick="checkDragAnswers()">CEK JAWABAN! 🎯</button>
+                        <button class="action-btn" onclick="resetDragGame()" style="background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%); margin-left: 15px;">RESET 🔄</button>
+                    </div>
+
+                    <div class="result-box" id="dragResult" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Mission 4: Memory Game -->
+            <div id="memory" class="tab-content">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-purple); text-shadow: 0 0 20px var(--neon-purple);">
+                        🧠 MEMORY GAME
+                    </h2>
+                    <p style="font-size: 1.2rem; margin-top: 10px;">Temukan pasangan kartu 5R!</p>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="display: inline-block; background: rgba(0,0,0,0.3); padding: 15px 30px; border-radius: 15px; margin: 0 10px;">
+                        <div style="font-size: 0.9rem; margin-bottom: 5px;">GERAKAN</div>
+                        <div style="font-family: 'Titan One', cursive; font-size: 2rem; color: var(--neon-yellow);" id="memoryMoves">0</div>
+                    </div>
+                    <div style="display: inline-block; background: rgba(0,0,0,0.3); padding: 15px 30px; border-radius: 15px; margin: 0 10px;">
+                        <div style="font-size: 0.9rem; margin-bottom: 5px;">PASANGAN</div>
+                        <div style="font-family: 'Titan One', cursive; font-size: 2rem; color: var(--neon-green);" id="memoryPairs">0/6</div>
+                    </div>
+                </div>
+
+                <div id="memoryGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; max-width: 600px; margin: 0 auto;"></div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="action-btn" onclick="resetMemoryGame()">MAIN LAGI! 🔄</button>
+                </div>
+
+                <div class="result-box" id="memoryResult" style="display: none;"></div>
+            </div>
+
+            <!-- Final Result -->
+            <div id="result" class="tab-content">
+                <div class="result-box" id="finalResult">
+                    <div class="result-title">🏆 HASIL AKHIR 🏆</div>
+                    <div id="finalResultContent">
+                        <p style="font-size: 1.3rem; margin: 20px 0;">Selesaikan semua misi untuk melihat hasil akhir!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let timeRemaining = 1200; // 20 minutes in seconds
+        let timerInterval;
+        let soundEnabled = true;
+        let currentLevel = 1;
+        let currentXP = 0;
+        let nextLevelXP = 100;
+
+        // Progress tracking
+        let materiRead = new Set();
+        let quizAnswered = 0;
+        let quizCorrect = 0;
+        let dragCompleted = false;
+        let memoryCompleted = false;
+
+        // Quiz data
+        const quizData = [
+            {
+                question: "Apa kepanjangan dari konsep 5R yang berasal dari Jepang?",
+                options: [
+                    "Ringkas, Rapi, Resik, Rawat, Rajin",
+                    "Rapih, Runtut, Resik, Rutin, Rajin",
+                    "Ringkas, Runtut, Rapi, Resik, Rajin",
+                    "Ringkas, Rapi, Rutin, Rawat, Rajin"
+                ],
+                correct: 0,
+                points: 100
+            },
+            {
+                question: "Konsep 5R yang fokus pada pemisahan barang yang diperlukan dengan tidak diperlukan adalah...",
+                options: ["Rapi (Seiton)", "Ringkas (Seiri)", "Resik (Seiso)", "Rajin (Shitsuke)"],
+                correct: 1,
+                points: 100
+            },
+            {
+                question: "Manakah yang BUKAN manfaat penerapan 5R di tempat kerja?",
+                options: [
+                    "Meningkatkan produktivitas",
+                    "Mengurangi keselamatan kerja",
+                    "Menghemat biaya operasional",
+                    "Meningkatkan kualitas produk"
+                ],
+                correct: 1,
+                points: 100
+            },
+            {
+                question: "Memberikan label pada setiap tempat penyimpanan tools adalah penerapan dari konsep...",
+                options: ["Ringkas", "Rapi", "Resik", "Rawat"],
+                correct: 1,
+                points: 100
+            },
+            {
+                question: "Membersihkan mesin dan peralatan setelah digunakan merupakan penerapan dari...",
+                options: ["Ringkas (Seiri)", "Rapi (Seiton)", "Resik (Seiso)", "Rawat (Seiketsu)"],
+                correct: 2,
+                points: 100
+            },
+            {
+                question: "R yang terakhir yaitu Rajin (Shitsuke) bermakna...",
+                options: [
+                    "Membersihkan tempat kerja",
+                    "Membiasakan diri mematuhi aturan dan standar",
+                    "Menata barang dengan rapi",
+                    "Membuang barang yang tidak perlu"
+                ],
+                correct: 1,
+                points: 100
+            },
+            {
+                question: "Konsep yang menekankan pemeliharaan kebersihan secara konsisten adalah...",
+                options: ["Ringkas", "Rapi", "Rawat", "Rajin"],
+                correct: 2,
+                points: 100
+            },
+            {
+                question: "Urutan yang BENAR dalam menerapkan konsep 5R adalah...",
+                options: [
+                    "Rapi → Ringkas → Resik → Rawat → Rajin",
+                    "Ringkas → Rapi → Resik → Rawat → Rajin",
+                    "Ringkas → Resik → Rapi → Rajin → Rawat",
+                    "Rajin → Rawat → Resik → Rapi → Ringkas"
+                ],
+                correct: 1,
+                points: 150
+            },
+            {
+                question: "Apa tujuan utama penerapan 5R di lingkungan kerja industri?",
+                options: [
+                    "Membuat tempat kerja terlihat bagus",
+                    "Menciptakan lingkungan kerja yang produktif, aman, dan efisien",
+                    "Mengurangi jumlah peralatan",
+                    "Menghemat listrik"
+                ],
+                correct: 1,
+                points: 150
+            },
+            {
+                question: "Manakah aktivitas yang paling tepat menggambarkan konsep Rajin (Shitsuke)?",
+                options: [
+                    "Membersihkan lantai workshop setiap hari",
+                    "Membuang tools yang sudah rusak",
+                    "Konsisten mematuhi SOP dan menerapkan 4R sebelumnya",
+                    "Memberi label pada toolbox"
+                ],
+                correct: 2,
+                points: 150
+            }
+        ];
+
+        let currentQuiz = 0;
+        let selectedOption = null;
+
+        // Drag & Drop data
+        const dragData = {
+            items: [
+                { text: "Membuang tools yang sudah rusak", category: "Ringkas" },
+                { text: "Memberi label pada toolbox", category: "Rapi" },
+                { text: "Membersihkan lantai workshop", category: "Resik" },
+                { text: "Membuat jadwal kebersihan rutin", category: "Rawat" },
+                { text: "Mematuhi SOP setiap hari", category: "Rajin" },
+                { text: "Menyimpan peralatan di tempat tetap", category: "Rapi" },
+                { text: "Mengelap mesin setelah digunakan", category: "Resik" },
+                { text: "Memisahkan barang yang masih dipakai", category: "Ringkas" },
+                { text: "Menggunakan APD dengan tertib", category: "Rajin" },
+                { text: "Merawat peralatan secara berkala", category: "Rawat" }
+            ],
+            categories: ["Ringkas", "Rapi", "Resik", "Rawat", "Rajin"]
+        };
+
+        let draggedElement = null;
+
+        // Memory game data
+        const memoryCards = [
+            { id: 1, text: "RINGKAS", pair: "Seiri" },
+            { id: 2, text: "Seiri", pair: "RINGKAS" },
+            { id: 3, text: "RAPI", pair: "Seiton" },
+            { id: 4, text: "Seiton", pair: "RAPI" },
+            { id: 5, text: "RESIK", pair: "Seiso" },
+            { id: 6, text: "Seiso", pair: "RESIK" },
+            { id: 7, text: "RAWAT", pair: "Seiketsu" },
+            { id: 8, text: "Seiketsu", pair: "RAWAT" },
+            { id: 9, text: "RAJIN", pair: "Shitsuke" },
+            { id: 10, text: "Shitsuke", pair: "RAJIN" },
+            { id: 11, text: "5R", pair: "5S" },
+            { id: 12, text: "5S", pair: "5R" }
+        ];
+
+        let memoryFlipped = [];
+        let memoryMatched = [];
+        let memoryMoves = 0;
+
+        // Initialize
+        window.onload = function() {
+            startTimer();
+            createParticles();
+            loadQuiz();
+            initDragGame();
+            initMemoryGame();
+        };
+
+        // Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+
+                if (timeRemaining <= 0) {
+                    endGame();
+                }
+
+                // Warning at 5 minutes
+                if (timeRemaining === 300) {
+                    showAchievement('⏰', 'WAKTU MENDESAK!', '5 menit tersisa! Buruan selesaikan!');
+                    playSound('warning');
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Tab Switching
+        function switchMission(mission) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.mission-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(mission).classList.add('active');
+            event.target.classList.add('active');
+
+            playSound('click');
+            createSparkles(event.clientX, event.clientY);
+
+            if (mission === 'quiz') loadQuiz();
+            if (mission === 'game') initDragGame();
+            if (mission === 'memory') initMemoryGame();
+            if (mission === 'result') showFinalResult();
+        }
+
+        // Materi Progress
+        function markMateriRead(number) {
+            materiRead.add(number);
+            updateProgress();
+            addXP(20);
+            createSparkles(event.clientX, event.clientY);
+            playSound('click');
+
+            if (materiRead.size === 5) {
+                showAchievement('📚', 'MATERI LENGKAP!', 'Kamu sudah membaca semua materi 5R!');
+                addXP(100);
+            }
+        }
+
+        // Quiz Functions
+        function loadQuiz() {
+            const container = document.getElementById('quizContainer');
+            
+            if (currentQuiz >= quizData.length) {
+                const percentage = (quizCorrect / quizData.length) * 100;
+                let message = '';
+                let emoji = '';
+
+                if (percentage >= 90) {
+                    message = 'SEMPURNA! Kamu Master 5R!';
+                    emoji = '🌟';
+                    addXP(500);
+                } else if (percentage >= 70) {
+                    message = 'BAGUS! Pemahaman yang solid!';
+                    emoji = '👏';
+                    addXP(300);
+                } else if (percentage >= 50) {
+                    message = 'LUMAYAN! Terus belajar!';
+                    emoji = '👍';
+                    addXP(150);
+                } else {
+                    message = 'SEMANGAT! Coba lagi!';
+                    emoji = '💪';
+                    addXP(50);
+                }
+
+                container.innerHTML = `
+                    <div class="result-box">
+                        <div class="result-title">${emoji} QUIZ SELESAI!</div>
+                        <div class="result-score">${quizCorrect}/${quizData.length}</div>
+                        <p style="font-size: 1.3rem; margin: 20px 0;">${message}</p>
+                        <p style="font-size: 1.1rem;">Persentase: ${percentage.toFixed(0)}%</p>
+                        <button class="action-btn" onclick="resetQuiz()">ULANGI QUIZ 🔄</button>
+                        <button class="action-btn" onclick="switchMission('game')" style="background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%); margin-left: 15px;">
+                            LANJUT KE GAME! 🎮
+                        </button>
+                    </div>
+                `;
+
+                showAchievement(emoji, 'QUIZ SELESAI!', message);
+                return;
+            }
+
+            const question = quizData[currentQuiz];
+            container.innerHTML = `
+                <div class="question-card">
+                    <div class="question-header">
+                        <div class="question-number">❓ ${currentQuiz + 1}/${quizData.length}</div>
+                        <div class="question-points">+${question.points} XP</div>
+                    </div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options-grid">
+                        ${question.options.map((option, index) => `
+                            <button class="option-card" onclick="selectOption(${index})" id="option${index}">
+                                <span style="position: relative; z-index: 2;">
+                                    ${String.fromCharCode(65 + index)}. ${option}
+                                </span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div style="text-align: center;">
+                        <button class="action-btn" onclick="nextQuestion()" id="nextBtn" style="display: none;">LANJUT! 🚀</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectOption(index) {
+            if (selectedOption !== null) return;
+
+            selectedOption = index;
+            const question = quizData[currentQuiz];
+            const options = document.querySelectorAll('.option-card');
+
+            options.forEach((btn, i) => {
+                btn.disabled = true;
+                if (i === question.correct) {
+                    btn.classList.add('correct');
+                }
+                if (i === index && i !== question.correct) {
+                    btn.classList.add('incorrect');
+                    playSound('wrong');
+                }
+            });
+
+            if (index === question.correct) {
+                quizCorrect++;
+                addXP(question.points);
+                playSound('correct');
+                createSparkles(event.clientX, event.clientY);
+            }
+
+            quizAnswered++;
+            updateProgress();
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            selectedOption = null;
+            currentQuiz++;
+            loadQuiz();
+        }
+
+        function resetQuiz() {
+            currentQuiz = 0;
+            quizAnswered = 0;
+            quizCorrect = 0;
+            selectedOption = null;
+            updateProgress();
+            loadQuiz();
+        }
+
+        // Drag & Drop Game
+        function initDragGame() {
+            const dragItemsContainer = document.getElementById('dragItems');
+            const dropZonesContainer = document.getElementById('dropZones');
+
+            const shuffledItems = [...dragData.items].sort(() => Math.random() - 0.5);
+
+            dragItemsContainer.innerHTML = shuffledItems.map((item, index) => `
+                <div class="drag-item" draggable="true" data-category="${item.category}" id="dragItem${index}">
+                    ${item.text}
+                </div>
+            `).join('');
+
+            dropZonesContainer.innerHTML = dragData.categories.map(category => `
+                <div class="drop-zone" data-category="${category}">
+                    <div class="drop-zone-title">${category}</div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.drag-item').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+
+            document.getElementById('dragResult').style.display = 'none';
+        }
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            playSound('pickup');
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            if (draggedElement) {
+                this.appendChild(draggedElement);
+                playSound('drop');
+            }
+        }
+
+        function checkDragAnswers() {
+            let correct = 0;
+            const total = dragData.items.length;
+
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                const category = zone.dataset.category;
+                const items = zone.querySelectorAll('.drag-item');
+                
+                items.forEach(item => {
+                    if (item.dataset.category === category) {
+                        correct++;
+                        item.style.background = 'linear-gradient(135deg, var(--neon-green) 0%, #6BCF7F 100%)';
+                        item.style.borderColor = 'var(--neon-green)';
+                    } else {
+                        item.style.background = 'linear-gradient(135deg, var(--neon-pink) 0%, #CC2952 100%)';
+                        item.style.borderColor = 'var(--neon-pink)';
+                    }
+                });
+            });
+
+            const percentage = (correct / total) * 100;
+            const xpGain = Math.round(percentage * 5);
+            addXP(xpGain);
+
+            const resultBox = document.getElementById('dragResult');
+            resultBox.style.display = 'block';
+            
+            let emoji = percentage >= 80 ? '🌟' : percentage >= 60 ? '👏' : '💪';
+            
+            resultBox.innerHTML = `
+                <div class="result-title">${emoji} HASIL DRAG CHALLENGE</div>
+                <div class="result-score">${correct}/${total}</div>
+                <p style="font-size: 1.3rem; margin: 20px 0;">
+                    ${percentage >= 80 ? 'SEMPURNA!' : percentage >= 60 ? 'BAGUS!' : 'COBA LAGI!'}
+                </p>
+                <p style="font-size: 1.1rem;">+${xpGain} XP</p>
+            `;
+
+            if (!dragCompleted && percentage >= 70) {
+                dragCompleted = true;
+                updateProgress();
+                showAchievement('🎮', 'DRAG MASTER!', 'Kamu berhasil mencocokkan aktivitas 5R!');
+            }
+
+            playSound(percentage >= 70 ? 'victory' : 'wrong');
+        }
+
+        function resetDragGame() {
+            dragCompleted = false;
+            updateProgress();
+            initDragGame();
+            playSound('click');
+        }
+
+        // Memory Game
+        function initMemoryGame() {
+            const grid = document.getElementById('memoryGrid');
+            const shuffled = [...memoryCards].sort(() => Math.random() - 0.5);
+
+            memoryFlipped = [];
+            memoryMatched = [];
+            memoryMoves = 0;
+            document.getElementById('memoryMoves').textContent = '0';
+            document.getElementById('memoryPairs').textContent = '0/6';
+            document.getElementById('memoryResult').style.display = 'none';
+
+            grid.innerHTML = shuffled.map((card, index) => `
+                <div class="memory-card" data-id="${card.id}" data-text="${card.text}" data-pair="${card.pair}" 
+                     onclick="flipCard(${index})" id="memCard${index}"
+                     style="background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%);
+                            aspect-ratio: 1;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            border-radius: 15px;
+                            cursor: pointer;
+                            font-weight: 800;
+                            font-size: 1.2rem;
+                            border: 3px solid transparent;
+                            transition: all 0.3s ease;
+                            position: relative;
+                            overflow: hidden;">
+                    <div class="card-back" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                        🎴
+                    </div>
+                    <div class="card-front" style="position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); padding: 10px; text-align: center; word-wrap: break-word;">
+                        ${card.text}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function flipCard(index) {
+            const card = document.getElementById(`memCard${index}`);
+            if (!card || memoryFlipped.length >= 2 || memoryFlipped.includes(index) || memoryMatched.includes(index)) return;
+
+            card.querySelector('.card-back').style.display = 'none';
+            card.querySelector('.card-front').style.display = 'flex';
+            card.style.transform = 'rotateY(180deg)';
+            memoryFlipped.push(index);
+            playSound('flip');
+
+            if (memoryFlipped.length === 2) {
+                memoryMoves++;
+                document.getElementById('memoryMoves').textContent = memoryMoves;
+
+                setTimeout(() => {
+                    checkMemoryMatch();
+                }, 800);
+            }
+        }
+
+        function checkMemoryMatch() {
+            const [first, second] = memoryFlipped;
+            const card1 = document.getElementById(`memCard${first}`);
+            const card2 = document.getElementById(`memCard${second}`);
+
+            const text1 = card1.dataset.text;
+            const pair1 = card1.dataset.pair;
+            const text2 = card2.dataset.text;
+
+            if (text1 === pair1 && text2 === text1) {
+                memoryMatched.push(first, second);
+                card1.style.borderColor = 'var(--neon-green)';
+                card2.style.borderColor = 'var(--neon-green)';
+                card1.style.background = 'linear-gradient(135deg, var(--neon-green) 0%, #6BCF7F 100%)';
+                card2.style.background = 'linear-gradient(135deg, var(--neon-green) 0%, #6BCF7F 100%)';
+                
+                document.getElementById('memoryPairs').textContent = `${memoryMatched.length / 2}/6`;
+                playSound('correct');
+                addXP(50);
+                
+                if (memoryMatched.length === 12) {
+                    setTimeout(() => {
+                        const bonus = Math.max(500 - (memoryMoves * 10), 100);
+                        addXP(bonus);
+                        
+                        document.getElementById('memoryResult').innerHTML = `
+                            <div class="result-title">🧠 MEMORY MASTER!</div>
+                            <div class="result-score">${memoryMoves} GERAKAN</div>
+                            <p style="font-size: 1.3rem; margin: 20px 0;">
+                                ${memoryMoves <= 15 ? 'LUAR BIASA!' : memoryMoves <= 25 ? 'BAGUS SEKALI!' : 'SELESAI!'}
+                            </p>
+                            <p style="font-size: 1.1rem;">+${bonus} XP</p>
+                        `;
+                        document.getElementById('memoryResult').style.display = 'block';
+                        
+                        if (!memoryCompleted) {
+                            memoryCompleted = true;
+                            updateProgress();
+                            showAchievement('🧠', 'MEMORY MASTER!', 'Semua pasangan berhasil ditemukan!');
+                        }
+                        
+                        playSound('victory');
+                    }, 500);
+                }
+            } else {
+                playSound('wrong');
+                setTimeout(() => {
+                    card1.querySelector('.card-back').style.display = 'flex';
+                    card1.querySelector('.card-front').style.display = 'none';
+                    card1.style.transform = 'rotateY(0deg)';
+                    card2.querySelector('.card-back').style.display = 'flex';
+                    card2.querySelector('.card-front').style.display = 'none';
+                    card2.style.transform = 'rotateY(0deg)';
+                }, 500);
+            }
+
+            memoryFlipped = [];
+        }
+
+        function resetMemoryGame() {
+            memoryCompleted = false;
+            updateProgress();
+            initMemoryGame();
+            playSound('click');
+        }
+
+        // Progress Update
+        function updateProgress() {
+            // Materi
+            const materiPercent = (materiRead.size / 5) * 100;
+            document.getElementById('materiFill').style.width = materiPercent + '%';
+            document.getElementById('materiProgress').textContent = materiPercent.toFixed(0) + '%';
+
+            // Quiz
+            const quizPercent = (quizAnswered / quizData.length) * 100;
+            document.getElementById('quizFill').style.width = quizPercent + '%';
+            document.getElementById('quizProgress').textContent = quizPercent.toFixed(0) + '%';
+
+            // Game
+            let gamePercent = 0;
+            if (dragCompleted) gamePercent += 50;
+            if (memoryCompleted) gamePercent += 50;
+            document.getElementById('gameFill').style.width = gamePercent + '%';
+            document.getElementById('gameProgress').textContent = gamePercent.toFixed(0) + '%';
+        }
+
+        // XP & Level System
+        function addXP(amount) {
+            currentXP += amount;
+            
+            while (currentXP >= nextLevelXP) {
+                currentXP -= nextLevelXP;
+                currentLevel++;
+                nextLevelXP = Math.floor(nextLevelXP * 1.5);
+                
+                document.getElementById('levelNumber').textContent = currentLevel;
+                showAchievement('⭐', `LEVEL ${currentLevel}!`, 'Kamu naik level!');
+                playSound('levelup');
+            }
+
+            const xpPercent = (currentXP / nextLevelXP) * 100;
+            document.getElementById('xpFill').style.width = xpPercent + '%';
+            document.getElementById('currentXP').textContent = currentXP;
+            document.getElementById('nextLevelXP').textContent = nextLevelXP;
+        }
+
+        // Achievement System
+        function showAchievement(icon, title, desc) {
+            const popup = document.getElementById('achievementPopup');
+            document.getElementById('achievementIcon').textContent = icon;
+            document.getElementById('achievementTitle').textContent = title;
+            document.getElementById('achievementDesc').textContent = desc;
+            popup.classList.add('show');
+        }
+
+        function closeAchievement() {
+            document.getElementById('achievementPopup').classList.remove('show');
+            playSound('click');
+        }
+
+        // Final Result
+        function showFinalResult() {
+            const totalXP = currentLevel * 1000 + currentXP;
+            const allComplete = materiRead.size === 5 && quizAnswered === quizData.length && dragCompleted && memoryCompleted;
+            
+            let rating = '';
+            let emoji = '';
+            
+            if (allComplete && currentLevel >= 5) {
+                rating = 'MASTER 5R!';
+                emoji = '🏆';
+            } else if (allComplete) {
+                rating = 'EXPERT 5R!';
+                emoji = '⭐';
+            } else if (currentLevel >= 3) {
+                rating = 'INTERMEDIATE';
+                emoji = '👏';
+            } else {
+                rating = 'BEGINNER';
+                emoji = '💪';
+            }
+
+            document.getElementById('finalResultContent').innerHTML = `
+                <div style="margin: 30px 0;">
+                    <div class="result-score">${emoji}</div>
+                    <div style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-yellow); margin: 20px 0;">
+                        ${rating}
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0;">
+                        <div style="background: rgba(0, 255, 255, 0.2); padding: 20px; border-radius: 15px; border: 2px solid var(--neon-blue);">
+                            <div style="font-size: 0.9rem; margin-bottom: 5px;">LEVEL</div>
+                            <div style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-blue);">${currentLevel}</div>
+                        </div>
+                        
+                        <div style="background: rgba(255, 190, 11, 0.2); padding: 20px; border-radius: 15px; border: 2px solid var(--neon-yellow);">
+                            <div style="font-size: 0.9rem; margin-bottom: 5px;">TOTAL XP</div>
+                            <div style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-yellow);">${totalXP}</div>
+                        </div>
+                        
+                        <div style="background: rgba(138, 201, 38, 0.2); padding: 20px; border-radius: 15px; border: 2px solid var(--neon-green);">
+                            <div style="font-size: 0.9rem; margin-bottom: 5px;">QUIZ SCORE</div>
+                            <div style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-green);">${quizCorrect}/${quizData.length}</div>
+                        </div>
+                        
+                        <div style="background: rgba(255, 0, 110, 0.2); padding: 20px; border-radius: 15px; border: 2px solid var(--neon-pink);">
+                            <div style="font-size: 0.9rem; margin-bottom: 5px;">WAKTU TERSISA</div>
+                            <div style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-pink);">${Math.floor(timeRemaining / 60)}m</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <p style="font-size: 1.2rem; line-height: 1.8;">
+                            ${allComplete ? 
+                                '🎉 SELAMAT! Kamu telah menyelesaikan semua misi 5R Quest dengan sempurna!' :
+                                '💪 Terus semangat! Selesaikan semua misi untuk mendapatkan rating maksimal!'
+                            }
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // End Game
+        function endGame() {
+            clearInterval(timerInterval);
+            showAchievement('⏰', 'WAKTU HABIS!', 'Game berakhir! Lihat hasil akhirmu.');
+            setTimeout(() => {
+                switchMission('result');
+            }, 3000);
+        }
+
+        // Sparkles Effect
+        function createSparkles(x, y) {
+            for (let i = 0; i < 5; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = x + (Math.random() - 0.5) * 50 + 'px';
+                sparkle.style.top = y + (Math.random() - 0.5) * 50 + 'px';
+                document.body.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 1000);
+            }
+        }
+
+        // Sound System (placeholder - can be enhanced with actual audio)
+        function playSound(type) {
+            if (!soundEnabled) return;
+            // In real implementation, play actual audio files
+            console.log('Playing sound:', type);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+            playSound('click');
+        }
+    </script>
+</body>
+</html>
