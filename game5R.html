@@ -2,8 +2,12 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="https://revenant-three.vercel.app/img/7427.png" type="image/png">
+
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>5R QUEST - Petualangan Budaya Kerja</title>
+    <title>KONSEP 5R - Petualangan Budaya Kerja</title>
     <link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Righteous&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -322,11 +326,32 @@
             border-color: var(--neon-pink);
         }
 
-        .mission-btn.active {
-            background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%);
-            border-color: var(--neon-yellow);
-            box-shadow: 0 10px 40px rgba(0, 255, 255, 0.8);
-            animation: pulse 1.5s infinite;
+        .mission-btn.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        .mission-btn.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+        }
+
+        .mission-btn.completed {
+            border-color: var(--neon-green);
+            position: relative;
+        }
+
+        .mission-btn.completed::before {
+            content: '✅';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2rem;
         }
 
         .mission-btn .icon {
@@ -786,9 +811,175 @@
             transform: scale(1.1);
             box-shadow: 0 0 30px var(--neon-blue);
         }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .welcome-screen.hidden {
+            display: none;
+        }
+
+        .welcome-card {
+            background: rgba(13, 17, 23, 0.95);
+            border: 5px solid var(--neon-yellow);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: bounceIn 1s ease-out;
+        }
+
+        .welcome-title {
+            font-family: 'Titan One', cursive;
+            font-size: 4rem;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink), var(--neon-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            animation: neonGlow 3s infinite;
+        }
+
+        .welcome-subtitle {
+            font-family: 'Righteous', cursive;
+            font-size: 1.5rem;
+            color: var(--neon-yellow);
+            margin-bottom: 40px;
+            text-shadow: 0 0 10px var(--neon-yellow);
+        }
+
+        .name-input-group {
+            margin: 30px 0;
+        }
+
+        .name-label {
+            display: block;
+            font-size: 1.2rem;
+            color: white;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .name-input {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.3rem;
+            border: 3px solid var(--neon-blue);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-align: center;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .name-input:focus {
+            outline: none;
+            border-color: var(--neon-yellow);
+            box-shadow: 0 0 20px var(--neon-yellow);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .name-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .start-game-btn {
+            background: linear-gradient(135deg, var(--neon-yellow) 0%, var(--neon-pink) 100%);
+            border: none;
+            color: var(--dark);
+            padding: 20px 60px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(255, 190, 11, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-family: 'Righteous', cursive;
+        }
+
+        .start-game-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 190, 11, 0.8);
+        }
+
+        .start-game-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .game-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 2px solid var(--neon-blue);
+        }
+
+        .game-info p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .game-info strong {
+            color: var(--neon-yellow);
+        }
     </style>
 </head>
 <body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-card">
+            <div class="welcome-title">QUEST 5R</div>
+            <div class="welcome-subtitle">🚀 Petualangan Budaya Kerja 🚀</div>
+            
+            <div class="name-input-group">
+                <label class="name-label">✨ MASUKKAN NAMA KAMU ✨</label>
+                <input 
+                    type="text" 
+                    class="name-input" 
+                    id="playerNameInput" 
+                    placeholder="Nama Lengkap"
+                    maxlength="30"
+                    autocomplete="off"
+                />
+            </div>
+
+            <button class="start-game-btn" id="startGameBtn" onclick="startGame()">
+                🎮 MULAI PETUALANGAN!
+            </button>
+
+            <div class="game-info">
+                <p><strong>📋 CARA BERMAIN:</strong></p>
+                <p>⏱️ Waktu: 20 menit untuk menyelesaikan semua misi</p>
+                <p>🎯 Selesaikan misi secara berurutan dari 1 sampai 4</p>
+                <p>🏆 Kumpulkan XP dan naik level!</p>
+                <p>⭐ Raih rating MASTER 5R!</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Animated Background Particles -->
     <div class="particles" id="particles"></div>
 
@@ -858,29 +1049,29 @@
 
         <!-- Header -->
         <header>
-            <h1>5R QUEST</h1>
-            <p class="subtitle">🚀 Petualangan Budaya Kerja SMK 🚀</p>
+            <h1>KONSEP 5R</h1>
+            <p class="subtitle">🚀 Petualangan Budaya Kerja 🚀</p>
         </header>
 
         <!-- Mission Tabs -->
         <div class="mission-tabs">
-            <button class="mission-btn active" onclick="switchMission('materi')">
+            <button class="mission-btn active" data-mission="materi" onclick="switchMission('materi')">
                 <span class="icon">📚</span>
                 MISSION 1<br>PELAJARI 5R
             </button>
-            <button class="mission-btn" onclick="switchMission('quiz')">
+            <button class="mission-btn locked" data-mission="quiz" onclick="switchMission('quiz')">
                 <span class="icon">🎯</span>
                 MISSION 2<br>QUIZ BATTLE
             </button>
-            <button class="mission-btn" onclick="switchMission('game')">
+            <button class="mission-btn locked" data-mission="game" onclick="switchMission('game')">
                 <span class="icon">🎮</span>
                 MISSION 3<br>DRAG CHALLENGE
             </button>
-            <button class="mission-btn" onclick="switchMission('memory')">
+            <button class="mission-btn locked" data-mission="memory" onclick="switchMission('memory')">
                 <span class="icon">🧠</span>
                 MISSION 4<br>MEMORY GAME
             </button>
-            <button class="mission-btn" onclick="switchMission('result')">
+            <button class="mission-btn locked" data-mission="result" onclick="switchMission('result')">
                 <span class="icon">🏆</span>
                 HASIL AKHIR
             </button>
@@ -1046,6 +1237,7 @@
 
     <script>
         // Game State
+        let playerName = '';
         let timeRemaining = 1200; // 20 minutes in seconds
         let timerInterval;
         let soundEnabled = true;
@@ -1176,25 +1368,29 @@
 
         let draggedElement = null;
 
-        // Memory game data
+        // Memory game data - Fixed pairing system
         const memoryCards = [
-            { id: 1, text: "RINGKAS", pair: "Seiri" },
-            { id: 2, text: "Seiri", pair: "RINGKAS" },
-            { id: 3, text: "RAPI", pair: "Seiton" },
-            { id: 4, text: "Seiton", pair: "RAPI" },
-            { id: 5, text: "RESIK", pair: "Seiso" },
-            { id: 6, text: "Seiso", pair: "RESIK" },
-            { id: 7, text: "RAWAT", pair: "Seiketsu" },
-            { id: 8, text: "Seiketsu", pair: "RAWAT" },
-            { id: 9, text: "RAJIN", pair: "Shitsuke" },
-            { id: 10, text: "Shitsuke", pair: "RAJIN" },
-            { id: 11, text: "5R", pair: "5S" },
-            { id: 12, text: "5S", pair: "5R" }
+            { id: 1, pairId: 1, text: "RINGKAS" },
+            { id: 2, pairId: 1, text: "Seiri" },
+            { id: 3, pairId: 2, text: "RAPI" },
+            { id: 4, pairId: 2, text: "Seiton" },
+            { id: 5, pairId: 3, text: "RESIK" },
+            { id: 6, pairId: 3, text: "Seiso" },
+            { id: 7, pairId: 4, text: "RAWAT" },
+            { id: 8, pairId: 4, text: "Seiketsu" },
+            { id: 9, pairId: 5, text: "RAJIN" },
+            { id: 10, pairId: 5, text: "Shitsuke" },
+            { id: 11, pairId: 6, text: "5R" },
+            { id: 12, pairId: 6, text: "5S" }
         ];
 
         let memoryFlipped = [];
         let memoryMatched = [];
         let memoryMoves = 0;
+
+        // Mission unlock system
+        let unlockedMissions = ['materi']; // Start with only mission 1 unlocked
+        let completedMissions = [];
 
         // Initialize
         window.onload = function() {
@@ -1243,13 +1439,21 @@
             }
         }
 
-        // Tab Switching
+        // Tab Switching with Lock System
         function switchMission(mission) {
+            // Check if mission is unlocked
+            if (!unlockedMissions.includes(mission)) {
+                showAchievement('🔒', 'MISI TERKUNCI!', 'Selesaikan misi sebelumnya terlebih dahulu!');
+                playSound('wrong');
+                return;
+            }
+
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.mission-btn').forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(mission).classList.add('active');
-            event.target.classList.add('active');
+            const btn = document.querySelector(`[data-mission="${mission}"]`);
+            if (btn) btn.classList.add('active');
 
             playSound('click');
             createSparkles(event.clientX, event.clientY);
@@ -1258,6 +1462,27 @@
             if (mission === 'game') initDragGame();
             if (mission === 'memory') initMemoryGame();
             if (mission === 'result') showFinalResult();
+        }
+
+        // Unlock next mission
+        function unlockMission(nextMission) {
+            if (!unlockedMissions.includes(nextMission)) {
+                unlockedMissions.push(nextMission);
+                const btn = document.querySelector(`[data-mission="${nextMission}"]`);
+                if (btn) {
+                    btn.classList.remove('locked');
+                    showAchievement('🔓', 'MISI TERBUKA!', `Mission ${nextMission.toUpperCase()} telah terbuka!`);
+                }
+            }
+        }
+
+        // Mark mission as completed
+        function completeMission(mission) {
+            if (!completedMissions.includes(mission)) {
+                completedMissions.push(mission);
+                const btn = document.querySelector(`[data-mission="${mission}"]`);
+                if (btn) btn.classList.add('completed');
+            }
         }
 
         // Materi Progress
@@ -1271,6 +1496,8 @@
             if (materiRead.size === 5) {
                 showAchievement('📚', 'MATERI LENGKAP!', 'Kamu sudah membaca semua materi 5R!');
                 addXP(100);
+                completeMission('materi');
+                unlockMission('quiz');
             }
         }
 
@@ -1308,13 +1535,22 @@
                         <p style="font-size: 1.3rem; margin: 20px 0;">${message}</p>
                         <p style="font-size: 1.1rem;">Persentase: ${percentage.toFixed(0)}%</p>
                         <button class="action-btn" onclick="resetQuiz()">ULANGI QUIZ 🔄</button>
-                        <button class="action-btn" onclick="switchMission('game')" style="background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%); margin-left: 15px;">
-                            LANJUT KE GAME! 🎮
-                        </button>
+                        ${percentage >= 50 ? `
+                            <button class="action-btn" onclick="switchMission('game')" style="background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%); margin-left: 15px;">
+                                LANJUT KE GAME! 🎮
+                            </button>
+                        ` : ''}
                     </div>
                 `;
 
                 showAchievement(emoji, 'QUIZ SELESAI!', message);
+                
+                // Unlock next mission if score >= 50%
+                if (percentage >= 50) {
+                    completeMission('quiz');
+                    unlockMission('game');
+                }
+                
                 return;
             }
 
@@ -1484,11 +1720,18 @@
                     ${percentage >= 80 ? 'SEMPURNA!' : percentage >= 60 ? 'BAGUS!' : 'COBA LAGI!'}
                 </p>
                 <p style="font-size: 1.1rem;">+${xpGain} XP</p>
+                ${percentage >= 70 ? `
+                    <button class="action-btn" onclick="switchMission('memory')" style="margin-top: 20px;">
+                        LANJUT KE MEMORY GAME! 🧠
+                    </button>
+                ` : ''}
             `;
 
             if (!dragCompleted && percentage >= 70) {
                 dragCompleted = true;
                 updateProgress();
+                completeMission('game');
+                unlockMission('memory');
                 showAchievement('🎮', 'DRAG MASTER!', 'Kamu berhasil mencocokkan aktivitas 5R!');
             }
 
@@ -1515,8 +1758,12 @@
             document.getElementById('memoryResult').style.display = 'none';
 
             grid.innerHTML = shuffled.map((card, index) => `
-                <div class="memory-card" data-id="${card.id}" data-text="${card.text}" data-pair="${card.pair}" 
-                     onclick="flipCard(${index})" id="memCard${index}"
+                <div class="memory-card" 
+                     data-index="${index}"
+                     data-pair-id="${card.pairId}" 
+                     data-text="${card.text}"
+                     onclick="flipCard(${index})" 
+                     id="memCard${index}"
                      style="background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%);
                             aspect-ratio: 1;
                             display: flex;
@@ -1561,16 +1808,17 @@
         }
 
         function checkMemoryMatch() {
-            const [first, second] = memoryFlipped;
-            const card1 = document.getElementById(`memCard${first}`);
-            const card2 = document.getElementById(`memCard${second}`);
+            const [firstIndex, secondIndex] = memoryFlipped;
+            const card1 = document.getElementById(`memCard${firstIndex}`);
+            const card2 = document.getElementById(`memCard${secondIndex}`);
 
-            const text1 = card1.dataset.text;
-            const pair1 = card1.dataset.pair;
-            const text2 = card2.dataset.text;
+            const pairId1 = parseInt(card1.dataset.pairId);
+            const pairId2 = parseInt(card2.dataset.pairId);
 
-            if (text1 === pair1 && text2 === text1) {
-                memoryMatched.push(first, second);
+            // Check if both cards have the same pairId
+            if (pairId1 === pairId2) {
+                // Match found!
+                memoryMatched.push(firstIndex, secondIndex);
                 card1.style.borderColor = 'var(--neon-green)';
                 card2.style.borderColor = 'var(--neon-green)';
                 card1.style.background = 'linear-gradient(135deg, var(--neon-green) 0%, #6BCF7F 100%)';
@@ -1580,6 +1828,7 @@
                 playSound('correct');
                 addXP(50);
                 
+                // Check if all pairs found
                 if (memoryMatched.length === 12) {
                     setTimeout(() => {
                         const bonus = Math.max(500 - (memoryMoves * 10), 100);
@@ -1592,12 +1841,17 @@
                                 ${memoryMoves <= 15 ? 'LUAR BIASA!' : memoryMoves <= 25 ? 'BAGUS SEKALI!' : 'SELESAI!'}
                             </p>
                             <p style="font-size: 1.1rem;">+${bonus} XP</p>
+                            <button class="action-btn" onclick="switchMission('result')" style="margin-top: 20px;">
+                                LIHAT HASIL AKHIR! 🏆
+                            </button>
                         `;
                         document.getElementById('memoryResult').style.display = 'block';
                         
                         if (!memoryCompleted) {
                             memoryCompleted = true;
                             updateProgress();
+                            completeMission('memory');
+                            unlockMission('result');
                             showAchievement('🧠', 'MEMORY MASTER!', 'Semua pasangan berhasil ditemukan!');
                         }
                         
@@ -1605,6 +1859,7 @@
                     }, 500);
                 }
             } else {
+                // No match
                 playSound('wrong');
                 setTimeout(() => {
                     card1.querySelector('.card-back').style.display = 'flex';
@@ -1687,31 +1942,55 @@
             
             let rating = '';
             let emoji = '';
+            let message = '';
             
             if (allComplete && currentLevel >= 5) {
                 rating = 'MASTER 5R!';
                 emoji = '🏆';
+                message = 'Pencapaian Luar Biasa!';
             } else if (allComplete) {
                 rating = 'EXPERT 5R!';
                 emoji = '⭐';
+                message = 'Prestasi Gemilang!';
             } else if (currentLevel >= 3) {
                 rating = 'INTERMEDIATE';
                 emoji = '👏';
+                message = 'Hasil Yang Baik!';
             } else {
                 rating = 'BEGINNER';
                 emoji = '💪';
+                message = 'Terus Belajar!';
             }
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            });
 
             document.getElementById('finalResultContent').innerHTML = `
                 <div style="margin: 30px 0;">
-                    <div class="result-score">${emoji}</div>
-                    <div style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-yellow); margin: 20px 0;">
-                        ${rating}
+                    <!-- Certificate Header -->
+                    <div style="background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%); padding: 30px; border-radius: 20px; margin-bottom: 30px; border: 3px solid var(--neon-yellow);">
+                        <div class="result-score" style="font-size: 5rem; margin-bottom: 10px;">${emoji}</div>
+                        <div style="font-size: 1.2rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px;">Sertifikat Penyelesaian</div>
+                        <div style="font-family: 'Titan One', cursive; font-size: 3rem; color: var(--neon-yellow); margin: 20px 0; text-shadow: 0 0 20px var(--neon-yellow);">
+                            ${playerName}
+                        </div>
+                        <div style="font-size: 1.3rem; margin-bottom: 10px;">${message}</div>
+                        <div style="font-family: 'Righteous', cursive; font-size: 2.5rem; color: white; margin: 15px 0;">
+                            ${rating}
+                        </div>
+                        <div style="font-size: 1rem; opacity: 0.9; margin-top: 15px;">
+                            📅 ${dateStr}
+                        </div>
                     </div>
                     
+                    <!-- Stats Grid -->
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0;">
                         <div style="background: rgba(0, 255, 255, 0.2); padding: 20px; border-radius: 15px; border: 2px solid var(--neon-blue);">
-                            <div style="font-size: 0.9rem; margin-bottom: 5px;">LEVEL</div>
+                            <div style="font-size: 0.9rem; margin-bottom: 5px;">LEVEL AKHIR</div>
                             <div style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-blue);">${currentLevel}</div>
                         </div>
                         
@@ -1721,7 +2000,7 @@
                         </div>
                         
                         <div style="background: rgba(138, 201, 38, 0.2); padding: 20px; border-radius: 15px; border: 2px solid var(--neon-green);">
-                            <div style="font-size: 0.9rem; margin-bottom: 5px;">QUIZ SCORE</div>
+                            <div style="font-size: 0.9rem; margin-bottom: 5px;">SKOR QUIZ</div>
                             <div style="font-family: 'Titan One', cursive; font-size: 2.5rem; color: var(--neon-green);">${quizCorrect}/${quizData.length}</div>
                         </div>
                         
@@ -1731,13 +2010,47 @@
                         </div>
                     </div>
                     
-                    <div style="margin-top: 30px;">
-                        <p style="font-size: 1.2rem; line-height: 1.8;">
+                    <!-- Mission Completion Status -->
+                    <div style="background: rgba(0, 0, 0, 0.3); padding: 25px; border-radius: 20px; margin: 30px 0; border: 2px solid rgba(255, 255, 255, 0.2);">
+                        <h3 style="font-family: 'Righteous', cursive; font-size: 1.5rem; margin-bottom: 20px; color: var(--neon-yellow);">📊 STATUS MISI</h3>
+                        <div style="display: grid; gap: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+                                <span>📚 Materi 5R</span>
+                                <span style="font-size: 1.5rem;">${materiRead.size === 5 ? '✅' : '❌'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+                                <span>🎯 Quiz Battle (${quizCorrect}/${quizData.length})</span>
+                                <span style="font-size: 1.5rem;">${quizAnswered === quizData.length ? '✅' : '❌'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+                                <span>🎮 Drag Challenge</span>
+                                <span style="font-size: 1.5rem;">${dragCompleted ? '✅' : '❌'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+                                <span>🧠 Memory Game</span>
+                                <span style="font-size: 1.5rem;">${memoryCompleted ? '✅' : '❌'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Final Message -->
+                    <div style="margin-top: 30px; padding: 25px; background: linear-gradient(135deg, rgba(255, 190, 11, 0.2) 0%, rgba(255, 0, 110, 0.2) 100%); border-radius: 20px; border: 2px solid var(--neon-yellow);">
+                        <p style="font-size: 1.3rem; line-height: 1.8; margin-bottom: 15px;">
                             ${allComplete ? 
-                                '🎉 SELAMAT! Kamu telah menyelesaikan semua misi 5R Quest dengan sempurna!' :
-                                '💪 Terus semangat! Selesaikan semua misi untuk mendapatkan rating maksimal!'
+                                `🎉 <strong>SELAMAT ${playerName}!</strong><br>Kamu telah menyelesaikan semua misi 5R Quest dengan sempurna! Kamu adalah Master 5R sejati!` :
+                                `💪 <strong>Semangat ${playerName}!</strong><br>Terus belajar dan selesaikan semua misi untuk mendapatkan rating maksimal!`
                             }
                         </p>
+                        ${allComplete ? `
+                            <p style="font-size: 1.1rem; margin-top: 20px; opacity: 0.9;">
+                                ✨ Terapkan konsep 5R di kehidupan sehari-hari untuk menjadi pribadi yang lebih disiplin dan terorganisir!
+                            </p>
+                        ` : ''}
+                    </div>
+
+                    <!-- Screenshot instruction -->
+                    <div style="margin-top: 20px; font-size: 0.9rem; opacity: 0.7; text-align: center;">
+                        📸 Screenshot hasil ini sebagai bukti penyelesaian
                     </div>
                 </div>
             `;
@@ -1776,6 +2089,85 @@
             document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
             playSound('click');
         }
+
+        // Update mission button states
+        function updateMissionButtons() {
+            document.querySelectorAll('.mission-btn').forEach(btn => {
+                const mission = btn.dataset.mission;
+                if (mission) {
+                    if (unlockedMissions.includes(mission)) {
+                        btn.classList.remove('locked');
+                    } else {
+                        btn.classList.add('locked');
+                    }
+                    if (completedMissions.includes(mission)) {
+                        btn.classList.add('completed');
+                    }
+                }
+            });
+        }
+
+        // Start Game Function
+        function startGame() {
+            const nameInput = document.getElementById('playerNameInput');
+            const name = nameInput.value.trim();
+
+            if (name === '') {
+                nameInput.style.borderColor = 'var(--neon-pink)';
+                nameInput.style.animation = 'shake 0.5s ease';
+                setTimeout(() => {
+                    nameInput.style.animation = '';
+                    nameInput.style.borderColor = 'var(--neon-blue)';
+                }, 500);
+                showAchievement('⚠️', 'NAMA WAJIB DIISI!', 'Masukkan nama kamu untuk memulai!');
+                return;
+            }
+
+            playerName = name;
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            
+            // Show game elements with animation
+            document.querySelector('.container').style.animation = 'fadeIn 0.8s ease-out';
+            document.querySelector('.level-display').style.animation = 'slideInRight 0.8s ease-out';
+            document.querySelector('.sound-toggle').style.animation = 'bounceIn 1s ease-out';
+            
+            startTimer();
+            showAchievement('🎮', `SELAMAT DATANG ${playerName}!`, 'Mulai petualangan 5R mu sekarang!');
+            playSound('start');
+        }
+
+        // Enable/disable start button based on input
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('playerNameInput');
+            nameInput.addEventListener('input', function() {
+                const startBtn = document.getElementById('startGameBtn');
+                if (this.value.trim() !== '') {
+                    startBtn.disabled = false;
+                } else {
+                    startBtn.disabled = true;
+                }
+            });
+
+            // Allow Enter key to start
+            nameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && this.value.trim() !== '') {
+                    startGame();
+                }
+            });
+
+            // Initial button state
+            document.getElementById('startGameBtn').disabled = true;
+        });
+
+        // Initialize on load
+        window.onload = function() {
+            // Don't start timer yet - wait for player to enter name
+            createParticles();
+            loadQuiz();
+            initDragGame();
+            initMemoryGame();
+            updateMissionButtons();
+        };
     </script>
 </body>
 </html>
