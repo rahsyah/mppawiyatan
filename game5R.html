@@ -7,7 +7,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KONSEP 5R - Petualangan Budaya Kerja</title>
+    <title>KONSEP 5R - Quest Budaya Kerja</title>
     <link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Righteous&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -951,11 +951,11 @@
     <!-- Welcome Screen -->
     <div class="welcome-screen" id="welcomeScreen">
         <div class="welcome-card">
-            <div class="welcome-title">QUEST 5R</div>
-            <div class="welcome-subtitle">🚀 Petualangan Budaya Kerja 🚀</div>
+            <div class="welcome-title">KONSEP 5R</div>
+            <div class="welcome-subtitle">🚀 Quest Budaya Kerja 🚀</div>
             
             <div class="name-input-group">
-                <label class="name-label">✨ MASUKKAN NAMA KAMU ✨</label>
+                <label class="name-label">✨ MASUKKAN NAMA KAMU... ✨</label>
                 <input 
                     type="text" 
                     class="name-input" 
@@ -1050,7 +1050,7 @@
         <!-- Header -->
         <header>
             <h1>KONSEP 5R</h1>
-            <p class="subtitle">🚀 Petualangan Budaya Kerja 🚀</p>
+            <p class="subtitle">🚀 Quest Budaya Kerja 🚀</p>
         </header>
 
         <!-- Mission Tabs -->
@@ -1348,6 +1348,41 @@
 
         let currentQuiz = 0;
         let selectedOption = null;
+        let shuffledQuizData = []; // Store shuffled quiz questions
+
+        // Shuffle array function
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Prepare quiz with shuffled questions and answers
+        function prepareQuiz() {
+            // Shuffle questions
+            shuffledQuizData = shuffleArray(quizData.map(q => {
+                // Shuffle options for each question and track correct answer
+                const optionsWithIndex = q.options.map((opt, idx) => ({
+                    text: opt,
+                    isCorrect: idx === q.correct
+                }));
+                
+                const shuffledOptions = shuffleArray(optionsWithIndex);
+                
+                // Find new index of correct answer after shuffle
+                const newCorrectIndex = shuffledOptions.findIndex(opt => opt.isCorrect);
+                
+                return {
+                    question: q.question,
+                    options: shuffledOptions.map(opt => opt.text),
+                    correct: newCorrectIndex,
+                    points: q.points
+                };
+            }));
+        }
 
         // Drag & Drop data
         const dragData = {
@@ -1505,8 +1540,13 @@
         function loadQuiz() {
             const container = document.getElementById('quizContainer');
             
-            if (currentQuiz >= quizData.length) {
-                const percentage = (quizCorrect / quizData.length) * 100;
+            // Initialize shuffled quiz if not done yet or if starting fresh
+            if (currentQuiz === 0) {
+                prepareQuiz();
+            }
+            
+            if (currentQuiz >= shuffledQuizData.length) {
+                const percentage = (quizCorrect / shuffledQuizData.length) * 100;
                 let message = '';
                 let emoji = '';
 
@@ -1531,7 +1571,7 @@
                 container.innerHTML = `
                     <div class="result-box">
                         <div class="result-title">${emoji} QUIZ SELESAI!</div>
-                        <div class="result-score">${quizCorrect}/${quizData.length}</div>
+                        <div class="result-score">${quizCorrect}/${shuffledQuizData.length}</div>
                         <p style="font-size: 1.3rem; margin: 20px 0;">${message}</p>
                         <p style="font-size: 1.1rem;">Persentase: ${percentage.toFixed(0)}%</p>
                         <button class="action-btn" onclick="resetQuiz()">ULANGI QUIZ 🔄</button>
@@ -1554,11 +1594,11 @@
                 return;
             }
 
-            const question = quizData[currentQuiz];
+            const question = shuffledQuizData[currentQuiz];
             container.innerHTML = `
                 <div class="question-card">
                     <div class="question-header">
-                        <div class="question-number">❓ ${currentQuiz + 1}/${quizData.length}</div>
+                        <div class="question-number">❓ ${currentQuiz + 1}/${shuffledQuizData.length}</div>
                         <div class="question-points">+${question.points} XP</div>
                     </div>
                     <div class="question-text">${question.question}</div>
@@ -1582,7 +1622,7 @@
             if (selectedOption !== null) return;
 
             selectedOption = index;
-            const question = quizData[currentQuiz];
+            const question = shuffledQuizData[currentQuiz];
             const options = document.querySelectorAll('.option-card');
 
             options.forEach((btn, i) => {
@@ -1619,8 +1659,10 @@
             quizAnswered = 0;
             quizCorrect = 0;
             selectedOption = null;
+            shuffledQuizData = []; // Clear shuffled data to prepare new shuffle
             updateProgress();
             loadQuiz();
+            showAchievement('🔄', 'QUIZ DIRESET!', 'Soal dan jawaban diacak ulang!');
         }
 
         // Drag & Drop Game
@@ -2163,6 +2205,7 @@
         window.onload = function() {
             // Don't start timer yet - wait for player to enter name
             createParticles();
+            prepareQuiz(); // Prepare shuffled quiz
             loadQuiz();
             initDragGame();
             initMemoryGame();
