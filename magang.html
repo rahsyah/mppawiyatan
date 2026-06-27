@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   :root {
     --navy:   #1B2A4A;
     --navy2:  #243660;
@@ -23,16 +23,16 @@
     --red:    #C0392B;
     --green:  #2E7D5B;
   }
-
+ 
   html { scroll-behavior: smooth; }
-
+ 
   body {
     font-family: 'Plus Jakarta Sans', sans-serif;
     background: var(--cream);
     color: var(--navy);
     line-height: 1.6;
   }
-
+ 
   /* NAV */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
@@ -62,7 +62,7 @@
     transition: background 0.2s;
   }
   .nav-cta:hover { background: var(--gold2); }
-
+ 
   /* HERO */
   .hero {
     min-height: 100vh;
@@ -125,7 +125,7 @@
   }
   .hero-stat-num { font-size: 1.75rem; font-weight: 800; color: var(--gold); }
   .hero-stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.55); margin-top: 0.15rem; }
-
+ 
   /* Hero Illustration */
   .hero-illustration { position: relative; display: flex; justify-content: center; }
   .hero-card-main {
@@ -153,7 +153,7 @@
     display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
   }
   .hero-badge-text { color: var(--white); font-size: 0.78rem; font-weight: 600; }
-
+ 
   /* SECTIONS */
   section { padding: 5rem 2rem; }
   .section-inner { max-width: 1200px; margin: 0 auto; }
@@ -167,7 +167,7 @@
   }
   .section-desc { color: var(--slate); font-size: 1.05rem; max-width: 540px; line-height: 1.75; }
   .section-header { margin-bottom: 3.5rem; }
-
+ 
   /* VISI MISI */
   .visi-section { background: var(--white); }
   .visi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
@@ -203,7 +203,7 @@
     font-size: 0.8rem; font-weight: 600; color: var(--navy); display: flex; align-items: center; gap: 0.5rem;
   }
   .chip-icon { font-size: 1rem; }
-
+ 
   /* ALUR PKL — SIGNATURE ELEMENT */
   .alur-section { background: var(--navy); position: relative; overflow: hidden; }
   .alur-bg { position: absolute; inset: 0; opacity: 0.03; background: repeating-linear-gradient(45deg, var(--white) 0, var(--white) 1px, transparent 0, transparent 50%); background-size: 20px 20px; }
@@ -256,7 +256,7 @@
   .alur-detail.visible { display: block; }
   .alur-detail-title { color: var(--gold); font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; }
   .alur-detail-body { color: rgba(255,255,255,0.7); font-size: 0.875rem; line-height: 1.7; }
-
+ 
   /* DOWNLOAD */
   .download-section { background: var(--cream); }
   .download-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
@@ -284,7 +284,7 @@
     transition: background 0.2s; cursor: pointer; border: none;
   }
   .btn-download:hover { background: var(--gold); color: var(--navy); }
-
+ 
   /* E-SOP */
   .esop-section { background: var(--white); }
   .esop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
@@ -323,7 +323,7 @@
     line-height: 1.5;
   }
   .rule-card strong { color: var(--gold); display: block; margin-bottom: 0.25rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-
+ 
   /* IDUKA */
   .iduka-section { background: var(--cream); }
   .iduka-table-wrap {
@@ -356,7 +356,7 @@
   .badge.full { background: #FEE2E2; color: var(--red); }
   .badge.terbatas { background: #FEF9C3; color: #854D0E; }
   .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-
+ 
   /* FAQ */
   .faq-section { background: var(--white); }
   .faq-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 4rem; align-items: start; }
@@ -377,7 +377,7 @@
     border-top: 0px solid var(--cream2);
   }
   .faq-a.open { max-height: 300px; padding: 1rem 1.25rem; border-top: 1px solid var(--cream2); }
-
+ 
   /* CTA */
   .cta-section {
     background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
@@ -391,7 +391,7 @@
   }
   .cta-section .section-title { color: var(--white); text-align: center; }
   .cta-section .section-desc { color: rgba(255,255,255,0.65); margin: 0 auto 2.5rem; text-align: center; }
-
+ 
   /* FOOTER */
   footer {
     background: #111E35; padding: 3rem 2rem 1.5rem;
@@ -407,7 +407,7 @@
   .footer-links a:hover { color: var(--gold); }
   .footer-bottom { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
   .footer-gold { color: var(--gold); font-weight: 700; }
-
+ 
   /* RESPONSIVE */
   @media (max-width: 900px) {
     .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
@@ -423,7 +423,7 @@
     .alur-steps { grid-template-columns: 1fr; }
     .download-grid { grid-template-columns: 1fr; }
   }
-
+ 
   /* ANIMATIONS */
   @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
   .fade-up { animation: fadeUp 0.6s ease forwards; }
@@ -434,7 +434,7 @@
 </style>
 </head>
 <body>
-
+ 
 <!-- NAVIGATION -->
 <nav>
   <div class="nav-brand">
@@ -450,7 +450,7 @@
   </ul>
   <a href="#dokumen" class="nav-cta">⬇ Unduh Berkas</a>
 </nav>
-
+ 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-bg-pattern"></div>
@@ -518,7 +518,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- E-SOP -->
 <section class="esop-section" id="esop">
   <div class="section-inner">
@@ -534,7 +534,7 @@
           <div class="esop-tab" onclick="switchEsop('kewajiban', this)">📌 Kewajiban</div>
           <div class="esop-tab" onclick="switchEsop('larangan', this)">🚫 Larangan</div>
         </div>
-
+ 
         <div class="esop-content active" id="esop-hak">
           <div class="esop-item">
             <div class="esop-bullet hak">H1</div>
@@ -553,7 +553,7 @@
             <div><div class="esop-item-title">Sertifikat PKL</div><div class="esop-item-desc">Siswa berhak menerima sertifikat atau surat keterangan resmi dari IDUKA sebagai bukti telah menyelesaikan PKL dengan baik.</div></div>
           </div>
         </div>
-
+ 
         <div class="esop-content" id="esop-kewajiban">
           <div class="esop-item">
             <div class="esop-bullet kewajiban">K1</div>
@@ -572,7 +572,7 @@
             <div><div class="esop-item-title">Lapor Kendala Segera</div><div class="esop-item-desc">Siswa wajib melaporkan kepada guru pembimbing jika menemui kendala, ketidaknyamanan, atau permasalahan selama PKL berlangsung.</div></div>
           </div>
         </div>
-
+ 
         <div class="esop-content" id="esop-larangan">
           <div class="esop-item">
             <div class="esop-bullet larangan">L1</div>
@@ -614,7 +614,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- VISI MISI -->
 <section class="visi-section" id="profil">
   <div class="section-inner">
@@ -651,7 +651,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- ALUR PKL -->
 <section class="alur-section" id="alur">
   <div class="alur-bg"></div>
@@ -663,7 +663,7 @@
     </div>
     <div class="alur-steps" id="alurSteps">
       <div class="alur-connector"><div class="alur-connector-fill" id="connectorFill"></div></div>
-
+ 
       <div class="alur-step" onclick="showAlurDetail(0, this)">
         <div class="step-circle"><span>📝</span><div class="step-num">1</div></div>
         <div class="step-title">Pendaftaran</div>
@@ -690,14 +690,14 @@
         <div class="step-sub">Penyusunan & penyerahan laporan akhir</div>
       </div>
     </div>
-
+ 
     <div id="alurDetail" class="alur-detail">
       <div class="alur-detail-title" id="detailTitle"></div>
       <div class="alur-detail-body" id="detailBody"></div>
     </div>
   </div>
 </section>
-
+ 
 <!-- DOKUMEN & DOWNLOAD -->
 <section class="download-section" id="dokumen">
   <div class="section-inner">
@@ -764,7 +764,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- IDUKA -->
 <section class="iduka-section" id="iduka">
   <div class="section-inner">
@@ -807,7 +807,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- FAQ -->
 <section class="faq-section" id="faq">
   <div class="section-inner">
@@ -860,7 +860,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- CTA -->
 <section class="cta-section">
   <div class="cta-glow"></div>
@@ -874,7 +874,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
@@ -908,7 +908,7 @@
     </div>
   </div>
 </footer>
-
+ 
 <script>
   // ALUR PKL
   const alurData = [
@@ -933,7 +933,7 @@
       body: "Setelah PKL selesai, siswa menyusun laporan akhir menggunakan template yang telah disediakan (tersedia di Download Center). Laporan harus mencakup BAB I–V, jurnal harian, dokumentasi foto, dan sertifikat dari IDUKA. Laporan dikumpulkan dalam bentuk hard copy (2 eksemplar) dan soft copy (PDF via email) paling lambat 14 hari setelah tanggal selesai PKL."
     }
   ];
-
+ 
   let activeStep = null;
   function showAlurDetail(idx, el) {
     const steps = document.querySelectorAll('.alur-step');
@@ -946,7 +946,7 @@
     document.getElementById('connectorFill').style.width = ((idx / 4) * 100) + '%';
     activeStep = idx;
   }
-
+ 
   // Auto-trigger first step on scroll
   const alurSection = document.getElementById('alur');
   const observer = new IntersectionObserver((entries) => {
@@ -958,7 +958,7 @@
     }
   }, { threshold: 0.3 });
   observer.observe(alurSection);
-
+ 
   // E-SOP Tabs
   function switchEsop(type, tab) {
     document.querySelectorAll('.esop-tab').forEach(t => t.classList.remove('active'));
@@ -966,7 +966,7 @@
     tab.classList.add('active');
     document.getElementById('esop-' + type).classList.add('active');
   }
-
+ 
   // FAQ Toggle
   function toggleFaq(el) {
     const answer = el.nextElementSibling;
@@ -980,7 +980,7 @@
       answer.classList.add('open');
     }
   }
-
+ 
   // IDUKA Search
   const idukaRows = Array.from(document.querySelectorAll('#idukaBody tr'));
   function filterIduka() {
@@ -994,7 +994,7 @@
     });
     document.getElementById('idukaCount').textContent = count + ' mitra';
   }
-
+ 
   // Fake Download
   function fakeDownload(btn, filename) {
     const orig = btn.innerHTML;
@@ -1007,7 +1007,7 @@
       btn.style.color = '';
     }, 2000);
   }
-
+ 
   // Animate progress bars on load
   window.addEventListener('load', () => {
     setTimeout(() => {
@@ -1021,3 +1021,4 @@
 </script>
 </body>
 </html>
+ 
