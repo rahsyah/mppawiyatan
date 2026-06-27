@@ -262,11 +262,12 @@
  
   /* DOWNLOAD */
   .download-section { background: var(--cream); }
-  .download-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+  .download-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: stretch; }
   .download-card {
     background: var(--white); border-radius: 16px; padding: 1.75rem;
     border: 1px solid var(--cream2); transition: all 0.25s;
     display: flex; flex-direction: column; gap: 1rem;
+    height: 100%;
   }
   .download-card:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(27,42,74,0.1); }
   .download-icon {
@@ -420,6 +421,7 @@
     .visi-grid, .esop-grid, .faq-grid { grid-template-columns: 1fr; }
     .nav-links { display: none; }
     .kompetensi-grid { grid-template-columns: 1fr; }
+    .download-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 600px) {
     section { padding: 3.5rem 1.25rem; }
@@ -714,9 +716,9 @@
         <div class="download-icon pdf">📄</div>
         <div class="download-card-title">Daftar Nama DU/DI</div>
         <div class="download-card-desc">Terlampir data-data perusahaan Praktik Kerja Lapangan yang terdaftar sebagai DU/DI Manajemen Perkantoran SMK Pawiyatan Surabaya</div>
-         <div class="download-meta">
+        <div class="download-meta">
           <span class="download-type">DOCX · 245 KB</span>
-          <button class="btn-download" onclick="fakeDownload(this, 'Form_Kesediaan_IDUKA.docx')">⬇ Unduh</button>
+          <a class="btn-download" href="LINK_GOOGLE_DRIVE_1" target="_blank">⬇ Unduh</a>
         </div>
       </div>
       <div class="download-card">
@@ -724,13 +726,9 @@
         <div class="download-card-title">Form Proposal Praktik Kerja Lapangan</div>
         <div class="download-card-desc">Template proposal Praktik Kerja Lapangan yang ditujukan kepada perusahaan sesuai standar jurusan Manajemen Perkantoran</div>
         <div class="download-meta">
-    <span class="download-type">DOCX · 128 KB</span>
-    <a class="btn-download"
-       href="https://docs.google.com/document/d/1BOlj__FU3jOdGeRHqNghjMAnilQolj8-/export?format=docx"
-       target="_blank">
-        ⬇ Unduh
-    </a>
-</div>
+          <span class="download-type">DOCX · 128 KB</span>
+          <a class="btn-download" href="https://drive.google.com/drive/folders/11t68LboAlYC1Zcjk6go6-pr7JyePiI9F?usp=sharing" target="_blank">⬇ Unduh</a>
+        </div>
       </div>
       <div class="download-card">
         <div class="download-icon excel">📊</div>
@@ -738,28 +736,25 @@
         <div class="download-card-desc">Struktur lengkap laporan akhir PKL mulai dari cover, lembar pengesahan, BAB I–V, hingga lampiran. Sesuai panduan jurusan Manajemen Perkantoran.</div>
         <div class="download-meta">
           <span class="download-type">XLSX · 87 KB</span>
-          <button class="btn-download" onclick="fakeDownload(this, 'Jurnal_Kegiatan_Harian.xlsx')">⬇ Unduh</button>
+          <a class="btn-download" href="https://docs.google.com/document/d/1_P3vOcmXYT6198NxXn5zkkHCN3xk0bMM/edit?usp=drive_link&ouid=115025805194682389159&rtpof=true&sd=true" target="_blank">⬇ Unduh</a>
         </div>
       </div>
       <div class="download-card">
         <div class="download-icon word">📑</div>
         <div class="download-card-title">Lembar Penilaian/Sertifikat IDUKA</div>
         <div class="download-card-desc">Formulir penilaian yang diisi oleh pembimbing lapangan dari pihak IDUKA. Mencakup aspek kedisiplinan, kompetensi, dan attitude siswa.</div>
-         <div class="download-meta">
-    <span class="download-type">DOCX · 128 KB</span>
-    <a class="btn-download"
-       href="https://drive.google.com/drive/folders/1nmQuBv402rrx-f0GH-lrZ6ZYItMDEVVl"
-       target="_blank">
-        ⬇ Unduh
-    </a>
-</div>
+        <div class="download-meta">
+          <span class="download-type">DOCX · 128 KB</span>
+          <a class="btn-download" href="https://drive.google.com/drive/folders/1nmQuBv402rrx-f0GH-lrZ6ZYItMDEVVl" target="_blank">⬇ Unduh</a>
+        </div>
+      </div>
       <div class="download-card">
         <div class="download-icon pdf">📋</div>
-        <div class="download-card-title">Daftar Sidang Praktik Kerja Lapangan(PKL)</div>
+        <div class="download-card-title">Daftar Sidang Praktik Kerja Lapangan (PKL)</div>
         <div class="download-card-desc">Jadwal Sidang Praktik Kerja Lapangan</div>
         <div class="download-meta">
           <span class="download-type">PDF · 180 KB</span>
-          <button class="btn-download" onclick="fakeDownload(this, 'Lembar_Penilaian_IDUKA.pdf')">⬇ Unduh</button>
+          <a class="btn-download" href="LINK_GOOGLE_DRIVE_5" target="_blank">⬇ Unduh</a>
         </div>
       </div>
       <div class="download-card">
@@ -768,7 +763,7 @@
         <div class="download-card-desc">Buku panduan komprehensif yang memuat seluruh prosedur, aturan, hak, kewajiban, dan mekanisme pengawasan selama PKL berlangsung.</div>
         <div class="download-meta">
           <span class="download-type">PDF · 1.2 MB</span>
-          <button class="btn-download" onclick="fakeDownload(this, 'Panduan_SOP_PKL_Lengkap.pdf')">⬇ Unduh</button>
+          <a class="btn-download" href="LINK_GOOGLE_DRIVE_6" target="_blank">⬇ Unduh</a>
         </div>
       </div>
     </div>
@@ -1031,4 +1026,3 @@
 </script>
 </body>
 </html>
- 
