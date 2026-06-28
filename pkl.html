@@ -412,21 +412,92 @@
   .footer-bottom { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
   .footer-gold { color: var(--gold); font-weight: 700; }
  
-  /* RESPONSIVE */
+  /* RESPONSIVE — TABLET (≤900px) */
   @media (max-width: 900px) {
-    .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
-    .hero-illustration { display: none; }
-    .alur-steps { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .alur-connector { display: none; }
-    .visi-grid, .esop-grid, .faq-grid { grid-template-columns: 1fr; }
+    nav { padding: 0 1.25rem; height: 60px; }
     .nav-links { display: none; }
-    .kompetensi-grid { grid-template-columns: 1fr; }
+    .nav-cta { font-size: 0.78rem; padding: 0.45rem 0.9rem; }
+
+    .hero-inner { grid-template-columns: 1fr; gap: 2rem; padding: 3.5rem 1.5rem; }
+    .hero-illustration { display: none; }
+    .hero-title { font-size: clamp(1.6rem, 5vw, 2.4rem); }
+
+    section { padding: 3.5rem 1.5rem; }
+    .section-title { font-size: clamp(1.4rem, 4vw, 2rem); }
+
+    .visi-grid { grid-template-columns: 1fr; }
+    .kompetensi-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .alur-steps { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; padding-bottom: 0.5rem; }
+    .alur-connector { display: none; }
+
     .download-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .esop-grid { grid-template-columns: 1fr; }
+    .esop-visual { margin-top: 1.5rem; }
+
+    .faq-grid { grid-template-columns: 1fr; }
+    .faq-grid > div:first-child { order: 2; }
+    .faq-list { order: 1; }
+
+    .footer-top { flex-direction: column; gap: 1.5rem; }
+    .footer-links { display: none; }
   }
+
+  /* RESPONSIVE — MOBILE (≤600px) */
   @media (max-width: 600px) {
-    section { padding: 3.5rem 1.25rem; }
-    .alur-steps { grid-template-columns: 1fr; }
+    nav { padding: 0 1rem; height: 56px; }
+    .nav-title { font-size: 0.78rem; }
+    .nav-cta { display: none; }
+
+    .hero-inner { padding: 2.5rem 1rem; }
+    .hero-eyebrow { font-size: 0.7rem; }
+    .hero-title { font-size: 1.5rem; }
+    .hero-desc { font-size: 0.9rem; }
+    .hero-actions { flex-direction: column; gap: 0.75rem; }
+    .btn-primary, .btn-outline { width: 100%; justify-content: center; padding: 0.85rem 1rem; }
+    .hero-stats { gap: 1.25rem; }
+    .hero-stat-num { font-size: 1.4rem; }
+
+    section { padding: 2.75rem 1rem; }
+    .section-header { margin-bottom: 2rem; }
+    .section-title { font-size: 1.4rem; }
+    .section-desc { font-size: 0.9rem; }
+
+    .kompetensi-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .kompetensi-chip { font-size: 0.72rem; padding: 0.45rem 0.6rem; }
+
+    .alur-steps { grid-template-columns: 1fr; gap: 1rem; }
+    .alur-detail { padding: 1.25rem; }
+
     .download-grid { grid-template-columns: 1fr; }
+    .download-card { padding: 1.25rem; }
+
+    .esop-tabs { gap: 0.35rem; }
+    .esop-tab { font-size: 0.75rem; padding: 0.4rem 0.7rem; }
+    .esop-visual { padding: 1.25rem; }
+    .rule-card { padding: 0.75rem 1rem; font-size: 0.78rem; }
+
+    table { font-size: 0.78rem; }
+    th, td { padding: 0.65rem 0.75rem; }
+    .iduka-search { flex-direction: column; gap: 0.5rem; padding: 1rem; }
+    .search-input { font-size: 0.82rem; }
+
+    .faq-q { font-size: 0.85rem; padding: 0.85rem 1rem; }
+    .faq-a.open { padding: 0.85rem 1rem; font-size: 0.82rem; }
+
+    .cta-section { padding: 3.5rem 1rem; }
+
+    footer { padding: 2rem 1rem 1rem; }
+    .footer-bottom { flex-direction: column; text-align: center; font-size: 0.75rem; }
+  }
+
+  /* RESPONSIVE — SMALL MOBILE (≤380px) */
+  @media (max-width: 380px) {
+    .hero-title { font-size: 1.3rem; }
+    .kompetensi-grid { grid-template-columns: 1fr; }
+    .hero-stats { flex-wrap: wrap; gap: 1rem; }
+    .nav-title span { display: none; }
   }
  
   /* ANIMATIONS */
@@ -527,6 +598,43 @@
   </div>
 </section>
  
+<!-- VISI MISI -->
+<section class="visi-section" id="profil">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow">Tentang Kami</div>
+      <h2 class="section-title">Profil Kompetensi Keahlian</h2>
+      <p class="section-desc">Manajemen Perkantoran SMK Pawiyatan Surabaya membentuk tenaga profesional yang siap kerja di bidang administrasi dan perkantoran modern.</p>
+    </div>
+    <div class="visi-grid">
+      <div class="visi-card visi">
+        <div class="visi-card-label">Visi</div>
+        <div class="visi-card-title">Menjadi Pusat Unggulan Pendidikan Manajemen Perkantoran Bertaraf Profesional</div>
+        <p style="font-size:0.875rem; color:var(--slate); line-height:1.7; margin-bottom:1.5rem;">
+          Mencetak lulusan kompeten, berintegritas, dan berdaya saing tinggi yang mampu beradaptasi dengan tuntutan dunia kerja dan industri (IDUKA) secara nasional maupun global.
+        </p>
+        <div class="kompetensi-grid">
+          <div class="kompetensi-chip"><span class="chip-icon">🖥️</span>Otomasi Perkantoran</div>
+          <div class="kompetensi-chip"><span class="chip-icon">📂</span>Arsip & Dokumen</div>
+          <div class="kompetensi-chip"><span class="chip-icon">💼</span>Korespondensi</div>
+          <div class="kompetensi-chip"><span class="chip-icon">📞</span>Humas & Protokol</div>
+        </div>
+      </div>
+      <div class="visi-card misi">
+        <div class="visi-card-label">Misi</div>
+        <div class="visi-card-title" style="color:var(--white)">Langkah Nyata Menuju Keunggulan</div>
+        <ul class="misi-list">
+          <li><div class="misi-dot"></div><span>Menyelenggarakan pembelajaran berbasis kompetensi yang relevan dengan kebutuhan IDUKA terkini</span></li>
+          <li><div class="misi-dot"></div><span>Membangun ekosistem kemitraan yang kuat dengan perusahaan dan instansi pemerintah</span></li>
+          <li><div class="misi-dot"></div><span>Mengintegrasikan teknologi digital dalam setiap proses administrasi dan pembelajaran</span></li>
+          <li><div class="misi-dot"></div><span>Membentuk karakter profesional, disiplin, dan beretika kerja tinggi pada setiap siswa</span></li>
+          <li><div class="misi-dot"></div><span>Melaksanakan PKL terstruktur sebagai jembatan antara teori dan praktik kerja nyata</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- E-SOP -->
 <section class="esop-section" id="esop">
   <div class="section-inner">
@@ -618,43 +726,6 @@
           <strong>📋 Batas Pengumpulan Laporan</strong>
           Laporan akhir dikumpulkan maksimal 14 hari setelah tanggal selesai PKL. Keterlambatan mengurangi nilai laporan.
         </div>
-      </div>
-    </div>
-  </div>
-</section>
- 
-<!-- VISI MISI -->
-<section class="visi-section" id="profil">
-  <div class="section-inner">
-    <div class="section-header">
-      <div class="section-eyebrow">Tentang Kami</div>
-      <h2 class="section-title">Profil Kompetensi Keahlian</h2>
-      <p class="section-desc">Manajemen Perkantoran SMK Pawiyatan Surabaya membentuk tenaga profesional yang siap kerja di bidang administrasi dan perkantoran modern.</p>
-    </div>
-    <div class="visi-grid">
-      <div class="visi-card visi">
-        <div class="visi-card-label">Visi</div>
-        <div class="visi-card-title">Menjadi Pusat Unggulan Pendidikan Manajemen Perkantoran Bertaraf Profesional</div>
-        <p style="font-size:0.875rem; color:var(--slate); line-height:1.7; margin-bottom:1.5rem;">
-          Mencetak lulusan kompeten, berintegritas, dan berdaya saing tinggi yang mampu beradaptasi dengan tuntutan dunia kerja dan industri (IDUKA) secara nasional maupun global.
-        </p>
-        <div class="kompetensi-grid">
-          <div class="kompetensi-chip"><span class="chip-icon">🖥️</span>Otomasi Perkantoran</div>
-          <div class="kompetensi-chip"><span class="chip-icon">📂</span>Arsip & Dokumen</div>
-          <div class="kompetensi-chip"><span class="chip-icon">💼</span>Korespondensi</div>
-          <div class="kompetensi-chip"><span class="chip-icon">📞</span>Humas & Protokol</div>
-        </div>
-      </div>
-      <div class="visi-card misi">
-        <div class="visi-card-label">Misi</div>
-        <div class="visi-card-title" style="color:var(--white)">Langkah Nyata Menuju Keunggulan</div>
-        <ul class="misi-list">
-          <li><div class="misi-dot"></div><span>Menyelenggarakan pembelajaran berbasis kompetensi yang relevan dengan kebutuhan IDUKA terkini</span></li>
-          <li><div class="misi-dot"></div><span>Membangun ekosistem kemitraan yang kuat dengan perusahaan dan instansi pemerintah</span></li>
-          <li><div class="misi-dot"></div><span>Mengintegrasikan teknologi digital dalam setiap proses administrasi dan pembelajaran</span></li>
-          <li><div class="misi-dot"></div><span>Membentuk karakter profesional, disiplin, dan beretika kerja tinggi pada setiap siswa</span></li>
-          <li><div class="misi-dot"></div><span>Melaksanakan PKL terstruktur sebagai jembatan antara teori dan praktik kerja nyata</span></li>
-        </ul>
       </div>
     </div>
   </div>
