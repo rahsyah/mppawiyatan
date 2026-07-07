@@ -1,304 +1,554 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-<meta charset="utf-8">
-<title>Homepage Manajemen Perkantoran SMK Pawiyatan Surabaya</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="" />
-<meta name="author" content="http://webthemez.com" />
-<meta name="google-site-verification" content="google9a8a6f1d907f669a.html" />
-<link rel="icon" href="img/favicon.ico" type="image/x-icon">
-<link rel="icon" href="https://revenant-three.vercel.app/img/7427.png" type="image/png">
-<!-- css -->
-<link href="css/bootstrap.min.css" rel="stylesheet" />
-<link href="css/fancybox/jquery.fancybox.css" rel="stylesheet">
-<link href="css/jcarousel.css" rel="stylesheet" />
-<link href="css/flexslider.css" rel="stylesheet" />
-<link href="js/owl-carousel/owl.carousel.css" rel="stylesheet">
-<link href="css/style.css" rel="stylesheet" />
- 
-<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-<!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manajemen Perkantoran — SMK Pawiyatan Surabaya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --navy:#0F2027;
+    --navy-soft:#5B6B72;   /* secondary text on white, derived from navy */
+    --cyan:#00A8CC;
+    --cyan-dark:#00839F;
+    --paper:#F6F9FA;       /* faint tint of white for section separation, not a new hue */
+    --line:#E3E9EB;
+    --radius:14px;
+    --maxw:1200px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--white);
+    color:var(--navy);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .num{font-family:'Space Grotesk',sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  ul{list-style:none;}
+  img{max-width:100%; display:block;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px;}
+  .eyebrow{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--cyan-dark);
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:""; width:22px; height:2px; background:var(--cyan); display:inline-block;}
+  h1,h2,h3{font-weight:800; letter-spacing:-0.02em;}
+  section{position:relative;}
 
+  /* ---------- REVEAL ---------- */
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:none;}
+
+  /* ---------- FOLDER TAB CARD (signature element) ---------- */
+  .tab-card{
+    position:relative;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:0 var(--radius) var(--radius) var(--radius);
+    padding:34px 26px 28px;
+    transition:transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+  }
+  .tab-card::before{
+    content:"";
+    position:absolute; top:-13px; left:0;
+    width:56px; height:14px;
+    background:var(--navy);
+    border-radius:6px 6px 0 0;
+    transition:background .35s ease;
+  }
+  .tab-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 18px 40px -20px rgba(15,32,39,.28);
+    border-color:var(--cyan);
+  }
+  .tab-card:hover::before{background:var(--cyan);}
+
+  /* ---------- NAV (folder-tab bar) ---------- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(255,255,255,.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .navrow{display:flex; align-items:center; justify-content:space-between; height:78px;}
+  .brand{display:flex; align-items:center; gap:12px; font-weight:800; font-size:17px;}
+  .brand-mark{
+    width:38px; height:38px; border-radius:0 8px 8px 8px; background:var(--navy);
+    position:relative; flex:none;
+  }
+  .brand-mark::before{content:""; position:absolute; top:-7px; left:0; width:16px; height:8px; background:var(--cyan); border-radius:4px 4px 0 0;}
+  .brand small{display:block; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:11px; letter-spacing:.08em; color:var(--navy-soft); text-transform:uppercase;}
+  nav ul{display:flex; gap:4px;}
+  nav a{
+    display:inline-block; padding:10px 16px; font-weight:600; font-size:14.5px;
+    border-radius:8px 8px 0 0; color:var(--navy); position:relative;
+    transition:color .25s ease;
+  }
+  nav a::after{
+    content:""; position:absolute; left:16px; right:16px; bottom:4px; height:2px;
+    background:var(--cyan); transform:scaleX(0); transform-origin:left; transition:transform .3s ease;
+  }
+  nav a:hover{color:var(--cyan-dark);}
+  nav a:hover::after{transform:scaleX(1);}
+  .cta{
+    background:var(--cyan); color:#fff; font-weight:700; font-size:14.5px;
+    padding:12px 24px; border-radius:8px; border:none; cursor:pointer;
+    box-shadow:0 10px 24px -10px rgba(0,168,204,.55);
+    transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+    white-space:nowrap;
+  }
+  .cta:hover{transform:translateY(-2px); background:var(--cyan-dark); box-shadow:0 14px 28px -10px rgba(0,131,159,.6);}
+  .cta.ghost{background:transparent; color:var(--navy); border:1.5px solid var(--navy); box-shadow:none;}
+  .cta.ghost:hover{background:var(--navy); color:#fff;}
+  .menu-btn{display:none; background:none; border:none; cursor:pointer;}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:76px 0 60px;}
+  .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center;}
+  .hero h1{font-size:clamp(34px,4.6vw,54px); line-height:1.08; margin:18px 0 20px;}
+  .hero h1 span{color:var(--cyan);}
+  .hero p.lead{font-size:17px; color:var(--navy-soft); line-height:1.7; max-width:480px; margin-bottom:32px;}
+  .hero-actions{display:flex; align-items:center; gap:22px; flex-wrap:wrap;}
+  .hero-actions .cta{padding:15px 30px; font-size:15.5px;}
+  .link-inline{font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px; color:var(--navy);}
+  .link-inline .arrow{width:20px; height:20px; border-radius:50%; background:var(--paper); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:12px; transition:transform .25s ease;}
+  .link-inline:hover .arrow{transform:translateX(4px); background:var(--cyan); color:#fff; border-color:var(--cyan);}
+
+  .hero-photo{position:relative;}
+  .hero-photo .frame{
+    aspect-ratio:4/5; border-radius:0 20px 20px 20px; overflow:hidden;
+    background:linear-gradient(150deg,#EAF6F8 0%, #DCEFF3 55%, #cfeaf0 100%);
+    position:relative; border:1px solid var(--line);
+  }
+  .hero-photo .frame::before{
+    content:""; position:absolute; top:-18px; left:0; width:96px; height:20px;
+    background:var(--navy); border-radius:10px 10px 0 0; z-index:2;
+  }
+  .photo-note{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--navy-soft); text-align:center; padding:28px; gap:10px;
+  }
+  .photo-note svg{width:52px; height:52px; opacity:.55;}
+  .photo-note span{font-size:12.5px; font-weight:600; max-width:220px; line-height:1.5;}
+  .float-chip{
+    position:absolute; bottom:22px; left:-26px; background:#fff; border:1px solid var(--line);
+    border-radius:12px; padding:14px 18px; box-shadow:0 20px 40px -18px rgba(15,32,39,.3);
+    display:flex; align-items:center; gap:12px; z-index:3; max-width:240px;
+  }
+  .float-chip .dot{width:38px; height:38px; border-radius:50%; background:var(--cyan); flex:none; display:flex; align-items:center; justify-content:center;}
+  .float-chip .dot svg{width:18px; height:18px; stroke:#fff;}
+  .float-chip b{display:block; font-size:14px;}
+  .float-chip small{color:var(--navy-soft); font-size:12px;}
+
+  /* ---------- STATS ---------- */
+  .stats-section{background:var(--navy); padding:52px 0;}
+  .stats-grid{display:grid; grid-template-columns:repeat(3,1fr);}
+  .stat{
+    text-align:center; padding:0 24px; position:relative; color:#fff;
+  }
+  .stat + .stat::before{
+    content:""; position:absolute; left:0; top:8px; bottom:8px; width:1px; background:rgba(255,255,255,.18);
+  }
+  .stat .num{font-size:clamp(32px,4vw,46px); font-weight:700; color:var(--cyan); display:flex; align-items:baseline; justify-content:center; gap:2px;}
+  .stat p{margin-top:8px; font-size:14px; color:rgba(255,255,255,.72); font-weight:500;}
+
+  /* ---------- SECTION HEADERS ---------- */
+  .sec-head{max-width:620px; margin-bottom:48px;}
+  .sec-head h2{font-size:clamp(26px,3.2vw,36px); margin-top:14px;}
+  .sec-head p{color:var(--navy-soft); margin-top:14px; font-size:15.5px; line-height:1.7;}
+  section.pad{padding:96px 0;}
+  .divider-dotted{border-top:1.5px dashed var(--line); margin:0;}
+
+  /* ---------- COMPETENCIES ---------- */
+  .comp-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:22px;}
+  .comp-icon{
+    width:52px; height:52px; border-radius:12px; background:var(--paper);
+    display:flex; align-items:center; justify-content:center; margin-bottom:20px;
+    transition:background .3s ease;
+  }
+  .tab-card:hover .comp-icon{background:var(--cyan); }
+  .tab-card:hover .comp-icon svg{stroke:#fff;}
+  .comp-icon svg{width:26px; height:26px; stroke:var(--navy); transition:stroke .3s ease;}
+  .comp-card h3{font-size:17.5px; margin-bottom:10px;}
+  .comp-card p{font-size:14px; color:var(--navy-soft); line-height:1.65;}
+
+  /* ---------- LAB GALLERY ---------- */
+  .lab-grid{display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(2,180px); gap:16px;}
+  .lab-item{position:relative; border-radius:12px; overflow:hidden; border:1px solid var(--line); cursor:pointer;}
+  .lab-item:nth-child(1){grid-column:span 2; grid-row:span 2;}
+  .lab-item .ph{
+    position:absolute; inset:0; background:linear-gradient(160deg,#EAF6F8,#D7ECF1);
+    display:flex; align-items:center; justify-content:center; transition:transform .5s ease;
+  }
+  .lab-item:hover .ph{transform:scale(1.06);}
+  .lab-item .ph svg{width:34px; height:34px; stroke:var(--navy-soft); opacity:.5;}
+  .lab-caption{
+    position:absolute; left:0; right:0; bottom:0; padding:16px 18px;
+    background:linear-gradient(to top, rgba(15,32,39,.86), transparent);
+    color:#fff; transform:translateY(70%); transition:transform .35s ease;
+  }
+  .lab-item:hover .lab-caption{transform:translateY(0);}
+  .lab-caption b{font-size:14px; display:block;}
+  .lab-caption span{font-size:12px; color:rgba(255,255,255,.75);}
+
+  /* ---------- PARTNERS MARQUEE ---------- */
+  .partners-wrap{overflow:hidden; position:relative; padding:14px 0;}
+  .partners-wrap::before, .partners-wrap::after{
+    content:""; position:absolute; top:0; bottom:0; width:90px; z-index:2;
+  }
+  .partners-wrap::before{left:0; background:linear-gradient(to right, var(--white), transparent);}
+  .partners-wrap::after{right:0; background:linear-gradient(to left, var(--white), transparent);}
+  .marquee{display:flex; gap:18px; width:max-content; animation:scroll 32s linear infinite;}
+  .partners-wrap:hover .marquee{animation-play-state:paused;}
+  @keyframes scroll{from{transform:translateX(0);} to{transform:translateX(-50%);}}
+  .logo-chip{
+    display:flex; align-items:center; gap:10px; padding:16px 26px; border:1px solid var(--line);
+    border-radius:10px; background:var(--paper); white-space:nowrap;
+    filter:grayscale(1); opacity:.7; transition:filter .3s ease, opacity .3s ease, border-color .3s ease;
+  }
+  .logo-chip:hover{filter:none; opacity:1; border-color:var(--cyan);}
+  .logo-chip .sq{width:26px; height:26px; border-radius:6px; background:var(--navy); flex:none;}
+  .logo-chip b{font-size:14.5px; font-weight:700;}
+
+  /* ---------- TESTIMONIALS ---------- */
+  .test-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  .test-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:16px;
+    padding:36px 26px 26px; text-align:center; position:relative;
+    transition:transform .35s ease, box-shadow .35s ease;
+  }
+  .test-card:hover{transform:translateY(-6px); box-shadow:0 20px 44px -22px rgba(15,32,39,.3);}
+  .avatar{
+    width:66px; height:66px; border-radius:50%; margin:0 auto 16px; background:#fff;
+    border:3px solid var(--white); outline:3px solid var(--cyan);
+    display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--navy); font-size:20px;
+  }
+  .quote{font-size:14.5px; color:var(--navy); line-height:1.75; margin-bottom:18px;}
+  .test-card b{font-size:15px; display:block;}
+  .test-card .role{color:var(--cyan-dark); font-size:13px; font-weight:600; margin-top:3px;}
+
+  /* ---------- CTA BAND ---------- */
+  .cta-band{
+    background:var(--navy); border-radius:24px; padding:56px 48px; text-align:center;
+    display:flex; flex-direction:column; align-items:center; gap:18px;
+  }
+  .cta-band h3{color:#fff; font-size:clamp(22px,2.8vw,30px); max-width:560px;}
+  .cta-band p{color:rgba(255,255,255,.7); font-size:14.5px;}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--navy); color:rgba(255,255,255,.8); padding:64px 0 28px; margin-top:40px;}
+  .footer-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:40px; padding-bottom:44px; border-bottom:1px solid rgba(255,255,255,.12);}
+  footer h4{color:#fff; font-size:14px; margin-bottom:16px; letter-spacing:.04em;}
+  footer li{margin-bottom:10px; font-size:14px;}
+  footer a:hover{color:var(--cyan);}
+  .bottom-bar{display:flex; justify-content:space-between; padding-top:24px; font-size:12.5px; color:rgba(255,255,255,.5); flex-wrap:wrap; gap:10px;}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media(max-width:980px){
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-photo{order:-1; max-width:420px; margin:0 auto;}
+    .comp-grid{grid-template-columns:repeat(2,1fr);}
+    .lab-grid{grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(3,160px);}
+    .lab-item:nth-child(1){grid-column:span 2; grid-row:span 1;}
+    .test-grid{grid-template-columns:1fr; max-width:420px; margin:0 auto;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media(max-width:760px){
+    nav{display:none;}
+    .menu-btn{display:block;}
+    .stats-grid{grid-template-columns:1fr; gap:28px;}
+    .stat + .stat::before{display:none;}
+    .comp-grid{grid-template-columns:1fr;}
+    section.pad{padding:64px 0;}
+    .cta-band{padding:40px 24px;}
+    .footer-grid{grid-template-columns:1fr;}
+  }
+  @media(prefers-reduced-motion: reduce){
+    .reveal{transition:none; opacity:1; transform:none;}
+    .marquee{animation:none;}
+  }
+</style>
 </head>
 <body>
-<div id="wrapper">
-	<!-- start header -->
-	<header>
-        <div class="navbar navbar-default navbar-static-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="index.html"><img src="img/logo.png" alt="logo"/></a>
-                </div>
-                <div class="navbar-collapse collapse ">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="index.html">Home</a></li>
-			<li><a href="courses.html">Prospect</a></li> 
-			<li><a href="about.html">Story</a></li>
-			<li><a href="portfolio.html">Galery</a></li>
-			<li><a href="https://smkpawiyatan.sch.id/category/jurusan/manajemen-perkantoran/kegiatan-mp/">Profile</a></li>
-                        <li><a href="https://mppawiyatan.vercel.app/pkl.html">Magang</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-	</header>
-	<!-- end header -->
-	<section id="featured">
-	 
-	<!-- Slider -->
-        <div id="main-slider" class="flexslider">
-            <ul class="slides">
-              <li>
-                <img src="img/slides/1.jpg" alt="" />
-                
-				
-               
-              </li>
-              <li>
-                <img src="img/slides/2.jpg" alt="" />
-               
-                
-              </li>
-              <li>
-                <img src="img/slides/3.jpg" alt="" />
-                
-              </li>
-            </ul>
-        </div>
-	<!-- end slider -->
- 
-	</section>
-	<section class="callaction">
-	<div class="container">
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="aligncenter"><h1 class="aligncenter">Layanan Kami</h1><span class="clear spacer_responsive_hide_mobile " style="height:13px;display:block;"></span>Manajemen Perkantoran adalah program studi yang mempelajari cara mengelola dan mengoptimalkan kegiatan perkantoran agar berjalan efektif dan efisien. Jurusan ini membekali dengan pengetahuan dan keterampilan dalam bidang administrasi, pengelolaan dokumen, keuangan, sumber daya manusia, dan sistem informasi perkantoran. Lulusannya diharapkan mampu menjalankan berbagai peran di bidang administrasi, manajemen operasional, atau bahkan mengelola bisnis sendiri.</div>
-			</div>
-		</div>
-	</div>
-	</section>
-	<section id="content">
-	
-	
-	<div class="container">
-			<div class="row">
-		<div class="skill-home"> <div class="skill-home-solid clearfix"> 
-		<div class="col-md-3 text-center">
-		<span class="icons c1"><i class="fa fa-trophy"></i></span> <div class="box-area">
-		<h3><a href="https://www.youtube.com/watch?v=o41aYqvy7Nw">Excellent Service</a></h3> <p>Excellent Service / Pelayanan prima  adalah upaya untuk memberikan layanan terbaik kepada pelanggan atau masyarakat, dengan tujuan memenuhi harapan dan kepuasan mereka.</p></div>
-		</div>
-		<div class="col-md-3 text-center"> 
-		<span class="icons c2"><i class="fa fa-picture-o"></i></span> <div class="box-area">
-		<h3><a href="https://www.youtube.com/watch?v=SPmf9XiiDN4">Digital Document</a></h3> <p>Proses ini melibatkan pemindaian dokumen dan menyimpannya dalam bentuk file digital, seperti PDF atau format gambar, yang kemudian dapat diakses, disimpan, dikelola melalui perangkat elektronik.</p></div>
-		</div>
-		<div class="col-md-3 text-center"> 
-		<span class="icons c3"><i class="fa fa-desktop"></i></span> <div class="box-area">
-		<h3><a href="https://www.youtube.com/watch?v=qPA56rMuFmM">Personal Assistant</a></h3> <p>Personal Assistant (PA) atau Sekretaris adalah seseorang yang memberikan dukungan administratif, manajerial, dan pribadi kepada individu, seringkali seorang eksekutif atau manajer dengan jadwal padat.</p></div>
-		</div>
-		<div class="col-md-3 text-center"> 
-		<span class="icons c4"><i class="fa fa-globe"></i></span> <div class="box-area">
-		<h3><a href="https://www.youtube.com/watch?v=ODkwZTC7zg0">Event Organizer</a></h3> <p>Event Organizer (EO) adalah pihak profesional yang bertanggung jawab dalam merencanakan, mengatur, dan melaksanakan berbagai jenis acara, mulai dari skala kecil hingga besar.</p>
-		</div></div>
-		</div></div>
-		</div> 
-		 
 
-	</div>
-	</section>
-	<div class="testimonial-area">
-    <div class="testimonial-solid">
-        <div class="container">
-            <div class="testi-icon-area">
-                <div class="quote">
-                    <i class="fa fa-microphone"></i>
-                </div>
-            </div>
-            <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
-                <ol class="carousel-indicators">
-                    <li data-target="#carousel-example-generic" data-slide-to="0" class="">
-                        <a href="#"></a>
-                    </li>
-                    <li data-target="#carousel-example-generic" data-slide-to="1" class="">
-                        <a href="#"></a>
-                    </li>
-                    <li data-target="#carousel-example-generic" data-slide-to="2" class="active">
-                        <a href="#"></a>
-                    </li>
-                    <li data-target="#carousel-example-generic" data-slide-to="3" class="">
-                        <a href="#"></a>
-                    </li>
-                </ol>
-                <div class="carousel-inner">
-                    <div class="item">
-                        <p>"Jika kamu tidak sanggup menahan lelahnya belajar, maka kamu harus sanggup menahan perihnya kebodohan."</p>
-                        <p>
-                            <b>- Ali bin Abi Thalib -</b>
-                        </p>
-                    </div>
-                    <div class="item">
-                        <p>"Saya terus-menerus melihat orang-orang yang bangkit dalam kehidupan, meskipun mereka bukanlah yang terpintar, terkadang bahkan bukan yang paling tekun, tetapi mereka adalah mesin pembelajar."</p>
-                        <p>
-                            <b>- Charlie Munger -</b>
-                        </p>
-                    </div>
-                    <div class="item active">
-                        <p>"Jika saya punya waktu delapan jam untuk menebang pohon, saya akan menghabiskan enam jam untuk mengasah kapak saya."</p>
-                        <p>
-                            <b>- Abraham Lincoln -</b>
-                        </p>
-                    </div>
-                    <div class="item">
-                        <p>"Untuk menghabiskan sepertiga pertama hidup seseorang dengan memperoleh semua pendidikan yang bisa diperoleh. Menghabiskan sepertiga waktu berikutnya untuk menghasilkan uang sebanyak-banyaknya. Untuk menghabiskan sepertiga terakhir dengan memberikan semuanya demi tujuan yang bermanfaat."</p>
-                        <p>
-                            <b>- Andrew Carnegie -</b>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+<header>
+  <div class="wrap navrow">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        Manajemen Perkantoran
+        <small>SMK Pawiyatan Surabaya</small>
+      </div>
     </div>
-</div>
-<section class="courses">
-<div class="container">
+    <nav>
+      <ul>
+        <li><a href="#kompetensi">Kompetensi</a></li>
+        <li><a href="#fasilitas">Fasilitas</a></li>
+        <li><a href="#mitra">Mitra Industri</a></li>
+        <li><a href="#testimoni">Testimoni</a></li>
+      </ul>
+    </nav>
+    <button class="cta">Daftar Sekarang</button>
+  </div>
+</header>
 
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="aligncenter"><h2 class="aligncenter">Keterampilan Kami</h1><span class="clear spacer_responsive_hide_mobile " style="height:13px;display:block;"></span>Manajemen Perkantoran dan Layanan Bisnis berkontribusi dalam menjadikan peserta didik memiliki kompetensi sebagai staf administrasi, resepsionis, asisten arsiparis, asisten sekretaris, layanan pelanggan, dan sebagai tenaga operator junior di bidang komputer dan otomatisasi perkantoran yang berakhlak mulia, mampu berkomunikasi, bernegosiasi, mampu bekerja dalam tim, mampu mengelola informasi dan gagasan, serta menumbuhkan kemampuan berpikir kritis, kreatif, mandiri, dan adaptif dalam menjalankan tugas dan fungsinya.</div>
-			</div>
-		</div>
-<div class="row">
-            <div class="col-md-4">
-			<div class="textbox">
-                <h3>Pengelolaan Dokumen</h3>
-				<p>Mulai dari pengarsipan, pengelolaan data, hingga sistem informasi perkantoran baik dokumen fisik atau digital.</p>
-            </div> </div>
-            <div class="col-md-4">
-			<div class="textbox">
-                  <h3>Administrasi</h3>
-				<p>Mencakup berbagai tugas administratif seperti pengelolaan surat-menyurat, penjadwalan, dan korespondensi.</p>
-            </div> </div>
-			<div class="col-md-4">
-			<div class="textbox">
-                  <h3>Petty Cash</h3>
-				<p>Mempelajari dasar-dasar pengelolaan keuangan kantor, termasuk pencatatan keuangan dan pelaporan.</p>
-            </div> </div>
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="reveal in">
+      <div class="eyebrow">Program Keahlian &middot; Jenjang SMK</div>
+      <h1>Cetak Talenta <span>Administrator Digital</span> Siap Kerja Sejak Bangku Sekolah</h1>
+      <p class="lead">Jurusan Manajemen Perkantoran membekali siswa dengan kompetensi kearsipan digital, korespondensi profesional, hingga otomatisasi kantor modern — dipadukan langsung dengan praktik kerja di dunia industri.</p>
+      <div class="hero-actions">
+        <button class="cta">Daftar Sekarang</button>
+        <a href="#kompetensi" class="link-inline">Lihat Kompetensi <span class="arrow">→</span></a>
+      </div>
+    </div>
+    <div class="hero-photo reveal in">
+      <div class="frame">
+        <div class="photo-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8l3 3M21 8v6M4 20l5-5 3 3 4-5 5 5"/></svg>
+          <span>Ganti dengan foto siswa berblazer resolusi tinggi di sini (area 4:5)</span>
         </div>
-		<div class="row">
-            <div class="col-md-4">
-			<div class="textbox">
-                <h3>Komunikasi</h3>
-				<p>Mengembangkan kemampuan komunikasi efektif, baik lisan maupun tulisan, yang penting dalam dunia kerja.</p>
-            </div> </div>
-            <div class="col-md-4">
-			<div class="textbox">
-                  <h3>Penggunaan Teknologi</h3>
-				<p>Membiasakan diri dengan berbagai perangkat lunak perkantoran dan teknologi informasi yang relevan.</p>
-            </div> </div>
-			<div class="col-md-4">
-			<div class="textbox">
-                  <h3>Sumber Daya Manusia</h3>
-				<p>Mempelajari pengelolaan tenaga kerja di kantor, mulai dari rekrutmen, pelatihan, hingga pengelolaan kinerja.</p>
-            </div> </div>
-        </div>
-</div>
+      </div>
+      <div class="float-chip">
+        <div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg></div>
+        <div><b>92% Terserap Kerja</b><small>Lulusan tahun ajaran terakhir</small></div>
+      </div>
+    </div>
+  </div>
 </section>
-	<footer>
-	<div class="container">
-		<div class="row">
-			<div class="col-lg-3">
-				<div class="widget">
-					<h5 class="widgetheading">Alamat Sekolah </h5>
-					<address>
-					<strong>SMK PAWIYATAN SURABAYA</strong><br>
-					Jl. Tangkis Turi No.4-6, Simomulyo, <br>
-					Kec. Sukomanunggal, Surabaya, Jawa Timur 60281</address>
-					<p>
-						<i class="icon-phone"></i> (031) 534-2508 <br>
-						<i class="icon-envelope-alt"></i> manajemenperkantoransmektan@gmail.com
 
-					</p>
-				</div>
-			</div>
-			<div class="col-lg-3">
-				<div class="widget">
-					<h5 class="widgetheading">Channel Kami</h5>
-					<ul class="link-list">
-						<li><a href="https://www.whatsapp.com/channel/0029VbCedDy9hXF3fRYR9O2i">Channel Jurusan</a></li>
-						<li><a href="https://www.instagram.com/mp_smektan/">Instagram Jurusan</a></li>
-						<li><a href="https://www.youtube.com/shorts/ECNtuIUQHxw">Promosi Youtube</a></li>						
-						<li><a href="https://drive.google.com/drive/folders/1BPbR3QCz4ZKelxh9SincjAG5gdZ4gYiv?usp=drive_link">Drive Dokumen</a></li>
-						<li><a href="https://wa.me/628986063500">Contact K3</a></li>
-					</ul>
-				</div>
-			</div>
-			<div class="col-lg-3">
-				<div class="widget">
-					<h5 class="widgetheading">Berita Terbaru</h5>
-					<ul class="link-list">
-						<li><a href="https://smkpawiyatan.sch.id/lomba-tari-dan-senam-peringati-world-dance-day-di-smk-pawiyatan-surabaya/">Jurusan MP sebagai EO di Event World Dance Day</a></li>
-						<li><a href="https://smkpawiyatan.sch.id/smk-pawiyatan-hadiri-penandatanganan-kerja-sama-teaching-factory-kurikulum-industri-bersama-puluhan-smk-se-indonesia/">Penandatanganan Kerja Sama Teaching Factory Kurikulum Industri</a></li>
-						<li><a href="https://smkpawiyatan.sch.id/pmr-smk-pawiyatan-raih-juara-2-di-ajang-wahana-jumpa-prestasi-tingkat-provinsi/">PMR SMK Pawiyatan Raih Juara 2</a></li>
-					</ul>
-				</div>
-			</div>
-			<div class="col-lg-3">
-				<div class="widget">
-					<h5 class="widgetheading">Postingan Terbaru</h5>
-					<ul class="link-list">
-						<li><a href="https://smkpawiyatan.sch.id/beauty-class-2/">Beauty Class bersama Wardah</a></li>
-						<li><a href="https://smkpawiyatan.sch.id/monitoring-pt-jasa-marga-siswa-jurusan-manajemen-perkantoran/">Monitoring Siswa Magang di PT.Jasa Marga Surabaya</a></li>
-						<li><a href="https://smkpawiyatan.sch.id/monitoring-prakerin-di-kodam-v-brawijaya-surabaya/">Monitoring Siswa Magang di Kodam V Brawijaya Surabaya</a></li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div id="sub-footer">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-6">
-					<div class="copyright">
-						<p>
-							<span>&copy; 2021 All right reserved. by </span><a href="https://templateswebsite.dawidolko.pl" target="_blank">K3 Manajemen Perkantoran</a>
-						</p>
-					</div>
-				</div>
-				<div class="col-lg-6">
-					<ul class="social-network">
-						<li><a href="https://www.instagram.com/mp_smektan/" data-placement="top" title="Meta"><i class="fa fa-facebook"></i></a></li>
-						<li><a href="https://sekolahloka.com/data/smks-pawiyatan-surabaya/" data-placement="top" title="Sekolahloka"><i class="fa fa-twitter"></i></a></li>
-						<li><a href="linkedin.com/in/lilis-rahayu-1b6860245" data-placement="top" title="Linkedin"><i class="fa fa-linkedin"></i></a></li>
-						<li><a href="https://smkpawiyatan.sch.id/visi-misi/" data-placement="top" title="Visi Sekolah"><i class="fa fa-pinterest"></i></a></li>
-						<li><a href="https://www.youtube.com/@senjaverseID" data-placement="top" title="Youtube"><i class="fa fa-google-plus"></i></a></li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</div>
-	</footer>
-</div>
-<a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
-<!-- javascript
-    ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="js/jquery.js"></script>
-<script src="js/jquery.easing.1.3.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/jquery.fancybox.pack.js"></script>
-<script src="js/jquery.fancybox-media.js"></script> 
-<script src="js/portfolio/jquery.quicksand.js"></script>
-<script src="js/portfolio/setting.js"></script>
-<script src="js/jquery.flexslider.js"></script>
-<script src="js/animate.js"></script>
-<script src="js/custom.js"></script>
-<script src="js/owl-carousel/owl.carousel.js"></script>
+<!-- ================= STATS ================= -->
+<section class="stats-section">
+  <div class="wrap stats-grid">
+    <div class="stat reveal">
+      <div class="num" data-count="480">0</div>
+      <p>Siswa Aktif Terdaftar</p>
+    </div>
+    <div class="stat reveal">
+      <div class="num" data-count="65">0<span>+</span></div>
+      <p>Mitra Industri (DU/DI)</p>
+    </div>
+    <div class="stat reveal">
+      <div class="num" data-count="92">0<span>%</span></div>
+      <p>Lulusan Siap Kerja</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KOMPETENSI ================= -->
+<section class="pad" id="kompetensi">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Kompetensi Unggulan</div>
+      <h2>Empat Pilar Keahlian Administrator Profesional</h2>
+      <p>Kurikulum dirancang selaras kebutuhan perkantoran modern, dari arsip berbasis cloud hingga otomasi alur kerja.</p>
+    </div>
+    <div class="comp-grid">
+      <div class="tab-card comp-card reveal">
+        <div class="comp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7l2-3h12l2 3M4 7v12a1 1 0 001 1h14a1 1 0 001-1V7M4 7h16M9 12h6"/></svg></div>
+        <h3>Kearsipan Digital</h3>
+        <p>Sistem penyimpanan &amp; pengambilan dokumen berbasis cloud yang cepat, aman, dan terstruktur.</p>
+      </div>
+      <div class="tab-card comp-card reveal">
+        <div class="comp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 12a3 3 0 100-6 3 3 0 000 6zM16 12a3 3 0 100-6 3 3 0 000 6zM2 20c0-3 3-5 6-5s6 2 6 5M12 20c.5-2.5 2.5-4 5-4s4.5 1.5 5 4"/></svg></div>
+        <h3>Hubungan Masyarakat</h3>
+        <p>Komunikasi lembaga, protokoler, dan pengelolaan citra publik secara profesional.</p>
+      </div>
+      <div class="tab-card comp-card reveal">
+        <div class="comp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6l9 6 9-6M4 5h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg></div>
+        <h3>Korespondensi</h3>
+        <p>Penyusunan surat dinas, email profesional, dan dokumen bisnis sesuai standar formal.</p>
+      </div>
+      <div class="tab-card comp-card reveal">
+        <div class="comp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></div>
+        <h3>Otomatisasi Kantor</h3>
+        <p>Pemanfaatan aplikasi &amp; alur kerja otomatis untuk efisiensi tugas administratif harian.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider-dotted">
+
+<!-- ================= FASILITAS LAB ================= -->
+<section class="pad" id="fasilitas">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Fasilitas Pembelajaran</div>
+      <h2>Lab Simulasi Perkantoran Modern</h2>
+      <p>Ruang praktik yang meniru lingkungan kantor sungguhan — lengkap dengan perangkat administrasi digital terkini.</p>
+    </div>
+    <div class="lab-grid reveal">
+      <div class="lab-item">
+        <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></div>
+        <div class="lab-caption"><b>Ruang Simulasi Utama</b><span>Meja kerja &amp; perangkat administrasi digital</span></div>
+      </div>
+      <div class="lab-item">
+        <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 4h16v16H4zM4 9h16M9 9v11"/></svg></div>
+        <div class="lab-caption"><b>Sudut Arsip Digital</b><span>Server &amp; rak dokumen terintegrasi</span></div>
+      </div>
+      <div class="lab-item">
+        <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M22 16.92V21a1 1 0 01-1.09 1 19.8 19.8 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.8 19.8 0 013 3.09 1 1 0 014 2h4.09a1 1 0 011 .75c.13.6.31 1.2.54 1.77a1 1 0 01-.24 1L8.1 6.8a16 16 0 006 6l1.28-1.27a1 1 0 011-.24c.57.23 1.16.4 1.77.54a1 1 0 01.75 1z"/></svg></div>
+        <div class="lab-caption"><b>Bilik Korespondensi</b><span>Simulasi layanan telepon &amp; komunikasi bisnis</span></div>
+      </div>
+      <div class="lab-item">
+        <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <div class="lab-caption"><b>Ruang Rapat Mini</b><span>Simulasi presentasi &amp; protokoler kantor</span></div>
+      </div>
+      <div class="lab-item">
+        <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 3h6l1 4H8zM4 7h16v13a1 1 0 01-1 1H5a1 1 0 01-1-1z"/></svg></div>
+        <div class="lab-caption"><b>Area Otomasi Kerja</b><span>Perangkat scanning &amp; alur kerja digital</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MITRA INDUSTRI ================= -->
+<section class="pad" id="mitra" style="background:var(--paper); padding-bottom:88px;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Kerja Sama DU/DI</div>
+      <h2>Mitra Industri Tempat Siswa PKL &amp; Magang</h2>
+      <p>Lebih dari 65 instansi dan perusahaan mitra menjadi rumah kedua siswa untuk mengasah kompetensi di dunia kerja nyata.</p>
+    </div>
+  </div>
+  <div class="partners-wrap reveal">
+    <div class="marquee" id="marquee"></div>
+  </div>
+</section>
+
+<!-- ================= TESTIMONI ================= -->
+<section class="pad" id="testimoni">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Testimoni Alumnus</div>
+      <h2>Jejak Karier Lulusan Manajemen Perkantoran</h2>
+      <p>Kisah nyata alumni yang kini berkarya di berbagai instansi dan perusahaan mitra.</p>
+    </div>
+    <div class="test-grid">
+      <div class="test-card reveal">
+        <div class="avatar">RA</div>
+        <p class="quote">"Materi kearsipan digital di sekolah membuat saya cepat beradaptasi dengan sistem dokumen perusahaan tempat saya bekerja sekarang."</p>
+        <b>Rara Anindya</b>
+        <div class="role">Staff Admin — PT Sinergi Logistik</div>
+      </div>
+      <div class="test-card reveal">
+        <div class="avatar">FD</div>
+        <p class="quote">"Praktik korespondensi bisnis benar-benar terpakai. Saya jadi terbiasa menyusun surat dan email formal sejak hari pertama kerja."</p>
+        <b>Farel Dwi S.</b>
+        <div class="role">Junior Secretary — Hotel Grand Surya</div>
+      </div>
+      <div class="test-card reveal">
+        <div class="avatar">NK</div>
+        <p class="quote">"Lab simulasi perkantoran terasa seperti kantor sungguhan, jadi saya percaya diri saat PKL dan langsung diterima kerja setelah lulus."</p>
+        <b>Nadia Kirana</b>
+        <div class="role">Admin HRD — Koperasi Sejahtera Jaya</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA BAND ================= -->
+<section class="wrap" style="padding-bottom:96px;">
+  <div class="cta-band reveal">
+    <h3>Siap Menjadi Administrator Digital Masa Depan?</h3>
+    <p>Kuota Penerimaan Peserta Didik Baru terbatas. Amankan kursi Anda di Jurusan Manajemen Perkantoran sekarang.</p>
+    <button class="cta">Daftar Sekarang</button>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="brand" style="color:#fff;">
+          <div class="brand-mark" style="background:var(--cyan);"></div>
+          <div>Manajemen Perkantoran<small style="color:rgba(255,255,255,.55);">SMK Pawiyatan Surabaya</small></div>
+        </div>
+        <p style="margin-top:16px; font-size:13.5px; color:rgba(255,255,255,.6); max-width:280px; line-height:1.7;">Mencetak administrator profesional yang siap kerja, adaptif teknologi, dan berintegritas tinggi.</p>
+      </div>
+      <div>
+        <h4>Navigasi</h4>
+        <ul>
+          <li><a href="#kompetensi">Kompetensi</a></li>
+          <li><a href="#fasilitas">Fasilitas</a></li>
+          <li><a href="#mitra">Mitra Industri</a></li>
+          <li><a href="#testimoni">Testimoni</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Program</h4>
+        <ul>
+          <li><a href="#">Kurikulum</a></li>
+          <li><a href="#">PKL &amp; Magang</a></li>
+          <li><a href="#">Sertifikasi Kompetensi</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kontak</h4>
+        <ul>
+          <li>Jl. Pawiyatan No.—, Surabaya</li>
+          <li>mp@pawiyatan.sch.id</li>
+          <li>(031) 000-0000</li>
+        </ul>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <span>© 2026 SMK Pawiyatan Surabaya — Jurusan Manajemen Perkantoran</span>
+      <span>Dirancang dengan skema "The Digital Administrator"</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // Count-up stats
+  const counters = document.querySelectorAll('.stat .num');
+  const cio = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const el = e.target;
+        const target = +el.dataset.count;
+        const suffixEl = el.querySelector('span');
+        const suffix = suffixEl ? suffixEl.outerHTML : '';
+        let cur = 0; const step = Math.max(1, Math.round(target/40));
+        const timer = setInterval(()=>{
+          cur += step;
+          if(cur >= target){ cur = target; clearInterval(timer); }
+          el.innerHTML = cur + suffix;
+        }, 25);
+        cio.unobserve(el);
+      }
+    });
+  }, {threshold:.4});
+  counters.forEach(el=>cio.observe(el));
+
+  // Partner marquee (duplicate list for seamless loop)
+  const partners = ["Bank Mitra Sejahtera","PT Sinergi Logistik","Hotel Grand Surya","Koperasi Sejahtera Jaya","Dinas Kearsipan Kota","PT Cipta Administrasi","Graha Perkantoran","Biro Umum Pemkot","PT Mediatama Nusantara","Klinik Sehat Prima"];
+  const mq = document.getElementById('marquee');
+  [...partners, ...partners].forEach(name=>{
+    const chip = document.createElement('div');
+    chip.className = 'logo-chip';
+    chip.innerHTML = `<div class="sq"></div><b>${name}</b>`;
+    mq.appendChild(chip);
+  });
+</script>
+
 </body>
 </html>
