@@ -9,24 +9,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#FBF7EC;
-    --paper-alt:#F2ECDB;
-    --line:#DED5BC;
-    --ink:#1F2A44;
-    --ink-soft:#66708A;
-    --green:#2E7D5B;
+    --paper:#1A2029;
+    --paper-alt:#232B37;
+    --line:#333E4E;
+    --ink:#EEF1F7;
+    --ink-soft:#93A0B8;
+    --green:#3EAE7D;
     --green-dark:#1B5B41;
-    --green-pale:#DCEFE4;
+    --green-pale:#173425;
     --amber:#F3A621;
     --amber-dark:#C97F0F;
-    --coral:#E4574A;
-    --coral-pale:#FBE1DE;
-    --blue:#3F7FCB;
+    --coral:#EA6B5D;
+    --coral-pale:#3A2220;
+    --blue:#5B9BE0;
     --white:#FFFFFF;
     --radius-lg:22px;
     --radius-md:14px;
     --radius-sm:9px;
-    --shadow-card: 0 14px 34px -12px rgba(31,42,68,.28);
+    --shadow-card: 0 14px 34px -12px rgba(0,0,0,.55);
     --shadow-btn: 0 6px 0 0;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
@@ -34,7 +34,7 @@
   body{
     font-family:'Plus Jakarta Sans', sans-serif;
     background:
-      linear-gradient(160deg, #F6F1E3 0%, #EDE4CC 100%);
+      linear-gradient(160deg, #10141C 0%, #171E29 100%);
     color:var(--ink);
     min-height:100vh;
     display:flex;
@@ -47,7 +47,7 @@
   body::before{
     content:"";
     position:fixed; inset:0;
-    background-image: repeating-linear-gradient(180deg, transparent 0 27px, rgba(31,42,68,.045) 27px 28px);
+    background-image: repeating-linear-gradient(180deg, transparent 0 27px, rgba(255,255,255,.03) 27px 28px);
     pointer-events:none;
     z-index:0;
   }
@@ -115,7 +115,7 @@
   @keyframes blink{0%,100%{opacity:.5; transform:scale(1);}50%{opacity:1; transform:scale(1.15);}}
 
   .start-body{padding:22px 22px 26px;}
-  .feature-list{list-style:none; margin:0 0 20px; padding:0; display:flex; flex-direction:column; gap:11px;}
+  .feature-list{list-style:none; margin:20px 0 0; padding:0; display:flex; flex-direction:column; gap:11px;}
   .feature-list li{
     display:flex; gap:10px; align-items:flex-start;
     font-size:14px; line-height:1.5; color:var(--ink-soft);
@@ -129,7 +129,7 @@
   .field-label{font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; display:block;}
   #playerName{
     width:100%; padding:12px 14px; border-radius:var(--radius-md);
-    border:2px solid var(--line); background:#fff; font-size:15px;
+    border:2px solid var(--line); background:var(--paper-alt); font-size:15px;
     font-family:inherit; color:var(--ink); margin-bottom:18px;
   }
   #playerName:focus{outline:none; border-color:var(--green);}
@@ -144,8 +144,8 @@
   .btn-primary:active{transform:translateY(4px); box-shadow:0 2px 0 0 var(--amber-dark);}
   .btn-secondary{
     width:100%; padding:13px 18px; border-radius:var(--radius-md);
-    background:var(--green-pale); color:var(--green-dark); font-weight:700; font-size:14.5px;
-    margin-top:10px; border:1px solid #C6E4D3;
+    background:var(--green-pale); color:var(--green); font-weight:700; font-size:14.5px;
+    margin:10px 0 14px; border:1px solid rgba(62,174,125,.35);
   }
   .btn-ghost{
     width:100%; padding:12px 18px; border-radius:var(--radius-md);
@@ -171,12 +171,12 @@
   .timer-fill.low{background:linear-gradient(90deg,var(--coral),#FF8A7A);}
 
   .formula-bar{
-    background:#fff; border-bottom:2px solid var(--line);
+    background:var(--paper-alt); border-bottom:2px solid var(--line);
     display:flex; align-items:stretch; font-family:'JetBrains Mono', monospace;
   }
   .name-box{
     padding:10px 12px; border-right:1px solid var(--line);
-    font-weight:700; font-size:13.5px; color:var(--green-dark);
+    font-weight:700; font-size:13.5px; color:var(--green);
     display:flex; align-items:center; min-width:78px; justify-content:center;
     background:var(--green-pale);
   }
@@ -195,7 +195,7 @@
     padding:14px 18px; font-size:14.5px; line-height:1.55; color:var(--ink);
     background:var(--paper-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);
   }
-  .question-text b{color:var(--green-dark);}
+  .question-text b{color:var(--green);}
 
   .grid-wrap{
     overflow-x:auto; overflow-y:hidden; padding:12px 10px 4px; background:var(--paper);
@@ -211,7 +211,7 @@
   .gcell{
     display:flex; align-items:center; justify-content:center;
     font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:700;
-    height:34px; border-radius:5px; color:var(--ink); background:#fff;
+    height:34px; border-radius:5px; color:var(--ink); background:var(--paper-alt);
     border:1px solid var(--line);
     transition:background .25s, box-shadow .25s, border-color .25s;
     transform-style:preserve-3d;
@@ -231,18 +231,18 @@
 
   /* card-flip reveal, triggered only after the student answers */
   @keyframes cardFlipCorrect{
-    0%{   transform:scaleY(1);    background:#fff; border-color:var(--line); color:var(--ink); box-shadow:none; }
-    45%{  transform:scaleY(.06);  background:#fff; border-color:var(--line); }
+    0%{   transform:scaleY(1);    background:var(--paper-alt); border-color:var(--line); color:var(--ink); box-shadow:none; }
+    45%{  transform:scaleY(.06);  background:var(--paper-alt); border-color:var(--line); }
     50%{  transform:scaleY(.06);  background:var(--amber); border-color:var(--amber-dark); color:#523300; }
     75%{  transform:scaleY(.7);   box-shadow:0 0 0 3px rgba(243,166,33,.4); }
     100%{ transform:scaleY(1);    background:var(--amber); border-color:var(--amber-dark); color:#523300; box-shadow:none; }
   }
   @keyframes cardFlipWrong{
-    0%{   transform:scaleY(1);    background:#fff; border-color:var(--line); color:var(--ink); box-shadow:none; }
-    45%{  transform:scaleY(.06);  background:#fff; border-color:var(--line); }
-    50%{  transform:scaleY(.06);  background:var(--coral-pale); border-color:var(--coral); color:#A33427; }
+    0%{   transform:scaleY(1);    background:var(--paper-alt); border-color:var(--line); color:var(--ink); box-shadow:none; }
+    45%{  transform:scaleY(.06);  background:var(--paper-alt); border-color:var(--line); }
+    50%{  transform:scaleY(.06);  background:var(--coral); border-color:#B23C30; color:#fff; }
     75%{  transform:scaleY(.7);   box-shadow:0 0 0 3px rgba(228,87,74,.35); }
-    100%{ transform:scaleY(1);    background:var(--coral-pale); border-color:var(--coral); color:#A33427; box-shadow:none; }
+    100%{ transform:scaleY(1);    background:var(--coral); border-color:#B23C30; color:#fff; box-shadow:none; }
   }
   .gcell.flip-correct{ animation:cardFlipCorrect 1.3s cubic-bezier(.4,0,.2,1) both; position:relative; z-index:3; }
   .gcell.flip-wrong{ animation:cardFlipWrong 1.15s cubic-bezier(.4,0,.2,1) both; position:relative; z-index:3; }
@@ -255,26 +255,26 @@
 
   .answer-zone{padding:14px 18px 20px; background:var(--paper);}
   .answer-display{
-    background:#fff; border:2px solid var(--line); border-radius:var(--radius-md);
+    background:var(--paper-alt); border:2px solid var(--line); border-radius:var(--radius-md);
     padding:12px 16px; text-align:right; font-family:'JetBrains Mono', monospace;
     font-size:22px; font-weight:700; color:var(--ink); margin-bottom:12px;
     min-height:52px; display:flex; align-items:center; justify-content:flex-end;
     letter-spacing:.02em;
   }
-  .answer-display .ph{color:#B9B2A0; font-weight:500; font-size:16px;}
+  .answer-display .ph{color:#69738C; font-weight:500; font-size:16px;}
   .answer-display.err{border-color:var(--coral); animation:shake .35s;}
   @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
 
   .keypad{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px;}
   .key{
-    background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm);
+    background:var(--paper-alt); border:1px solid var(--line); border-radius:var(--radius-sm);
     padding:13px 0; font-size:18px; font-weight:700; color:var(--ink);
     box-shadow:0 3px 0 0 var(--line);
     transition:transform .06s, box-shadow .06s;
   }
   .key:active{transform:translateY(3px); box-shadow:none;}
   .key.op{background:var(--paper-alt); color:var(--ink-soft); font-size:16px;}
-  .key.del{background:var(--coral-pale); color:#A33427;}
+  .key.del{background:var(--coral-pale); color:#FF9686;}
 
   .submit-btn{
     width:100%; padding:15px; border-radius:var(--radius-md);
@@ -301,8 +301,8 @@
   }
   .feedback-overlay.show .feedback-sheet{transform:translateY(0);}
   .fb-icon{width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:10px;}
-  .fb-icon.ok{background:var(--green-pale); color:var(--green-dark);}
-  .fb-icon.bad{background:var(--coral-pale); color:#A33427;}
+  .fb-icon.ok{background:var(--green-pale); color:var(--green);}
+  .fb-icon.bad{background:var(--coral-pale); color:#FF9686;}
   .feedback-sheet h3{font-size:19px; margin-bottom:6px;}
   .feedback-sheet .fb-detail{font-size:13.5px; color:var(--ink-soft); line-height:1.6; margin-bottom:14px;}
   .feedback-sheet .fb-detail .mono{background:var(--paper-alt); padding:2px 6px; border-radius:5px; color:var(--ink);}
@@ -331,7 +331,7 @@
     flex:1; background:var(--paper-alt); border:1px solid var(--line); border-radius:var(--radius-md);
     padding:14px 8px; text-align:center;
   }
-  .stat-box .v{font-family:'Baloo 2'; font-weight:800; font-size:21px; color:var(--green-dark);}
+  .stat-box .v{font-family:'Baloo 2'; font-weight:800; font-size:21px; color:var(--green);}
   .stat-box .l{font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-top:2px;}
 
   .review-title{font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px;}
@@ -361,18 +361,18 @@
       <div class="hero">
         <span class="eyebrow">📊 Kuis Dasar Excel</span>
         <h1>Formula Quest</h1>
-        <p>Uji kemampuanmu memahami CELL, KOLOM, BARIS, dan rumus dasar Excel lewat 13 soal seru dari tabel angka acak.</p>
+        <p>Uji kemampuanmu memahami rumus dasar Excel lewat quiz seru ini.</p>
         <div class="mini-grid-icon"><span></span><span></span><span></span><span></span></div>
       </div>
       <div class="start-body">
+        <label class="field-label" for="playerName">Nama kamu (opsional)</label>
+        <input type="text" id="playerName" placeholder="Tulis namamu di sini..." maxlength="20">
+        <button class="btn-primary" id="btnStart">Mulai Main <span>→</span></button>
         <ul class="feature-list">
           <li><span class="ic">🎲</span><span>Ada <b>13 Soal</b> Harus bersabar ini bukan Ujian!</span></li>
           <li><span class="ic">🧮</span><span>Pelajari Prinsip dasar rumus <b>SUM, AVERAGE, MAX, MIN,</b> dan <b>COUNT</b> Perhatikan dengan Seksama.</span></li>
           <li><span class="ic">⏱️</span><span>Waktu <b>25 detik</b> tiap soal — tetap tenang dan teliti membaca tiap baris dan kolom!</span></li>
         </ul>
-        <label class="field-label" for="playerName">Nama kamu (opsional)</label>
-        <input type="text" id="playerName" placeholder="Tulis namamu di sini..." maxlength="20">
-        <button class="btn-primary" id="btnStart">Mulai Main <span>→</span></button>
       </div>
     </div>
   </section>
@@ -426,6 +426,7 @@
         </div>
         <div class="review-title">Rekap 13 Soal</div>
         <div class="review-row" id="reviewRow"></div>
+        <button class="btn-secondary" id="btnShare">📸 Screenshot &amp; Bagikan</button>
         <button class="btn-primary" id="btnReplay">🔁 Main Lagi (Soal Baru)</button>
         <button class="btn-ghost" id="btnHome">Kembali ke Awal</button>
         <div class="footer-note">Dibuat untuk latihan Data Analis Administrasi · Semoga Sukses Selalu.</div>
@@ -446,6 +447,7 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 (function(){
   "use strict";
@@ -849,6 +851,66 @@
     document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
     $(id).classList.add("active");
   }
+
+  async function shareScreenshot(){
+    const btn = $("btnShare");
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = "⏳ Menyiapkan gambar...";
+
+    try{
+      const target = document.querySelector("#screen-result .card");
+      const canvas = await html2canvas(target, {
+        backgroundColor: "#1A2029",
+        scale: 2,
+        useCORS: true
+      });
+
+      canvas.toBlob(async (blob) => {
+        if(!blob){
+          throw new Error("Gagal membuat gambar");
+        }
+        const fileName = "formula-quest-hasil.png";
+        let shared = false;
+
+        try{
+          const file = new File([blob], fileName, { type: "image/png" });
+          if(navigator.canShare && navigator.canShare({ files: [file] })){
+            await navigator.share({
+              files: [file],
+              title: "Formula Quest",
+              text: "Lihat hasil permainan Formula Quest aku! 🏆"
+            });
+            shared = true;
+          }
+        }catch(shareErr){
+          // pengguna membatalkan share sheet, tidak masalah
+          shared = true;
+        }
+
+        if(!shared){
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(url), 4000);
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }, "image/png");
+    } catch(err){
+      console.error(err);
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      alert("Gagal membuat screenshot otomatis. Coba screenshot manual layar HP kamu ya!");
+    }
+  }
+
+  $("btnShare").addEventListener("click", shareScreenshot);
 
   $("btnStart").addEventListener("click", startGame);
   $("btnReplay").addEventListener("click", startGame);
