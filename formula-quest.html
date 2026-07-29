@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Formula Quest — Petualangan Rumus Excel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF7EC;
+    --paper-alt:#F2ECDB;
+    --line:#DED5BC;
+    --ink:#1F2A44;
+    --ink-soft:#66708A;
+    --green:#2E7D5B;
+    --green-dark:#1B5B41;
+    --green-pale:#DCEFE4;
+    --amber:#F3A621;
+    --amber-dark:#C97F0F;
+    --coral:#E4574A;
+    --coral-pale:#FBE1DE;
+    --blue:#3F7FCB;
+    --white:#FFFFFF;
+    --radius-lg:22px;
+    --radius-md:14px;
+    --radius-sm:9px;
+    --shadow-card: 0 14px 34px -12px rgba(31,42,68,.28);
+    --shadow-btn: 0 6px 0 0;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    background:
+      linear-gradient(160deg, #F6F1E3 0%, #EDE4CC 100%);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:18px 12px 40px;
+    overflow-x:hidden;
+  }
+  /* faint ledger-paper texture */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image: repeating-linear-gradient(180deg, transparent 0 27px, rgba(31,42,68,.045) 27px 28px);
+    pointer-events:none;
+    z-index:0;
+  }
+  h1,h2,h3{font-family:'Baloo 2', sans-serif; margin:0;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+  button{font-family:inherit; cursor:pointer; border:none;}
+  #app{
+    position:relative; z-index:1;
+    width:100%; max-width:480px;
+  }
+  .screen{display:none;}
+  .screen.active{display:block; animation:fadeIn .45s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ============ CARD SHELL ============ */
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-card);
+    overflow:hidden;
+  }
+
+  /* ============ START SCREEN ============ */
+  .hero{
+    background:
+      radial-gradient(120% 140% at 15% -10%, #3E9A6F 0%, var(--green) 45%, var(--green-dark) 100%);
+    padding:30px 24px 26px;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; right:-30px; top:-30px; width:170px; height:170px;
+    background:
+      linear-gradient(rgba(255,255,255,.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.10) 1px, transparent 1px);
+    background-size:22px 22px;
+    transform:rotate(8deg);
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.35);
+    padding:5px 12px; border-radius:100px;
+    font-size:12.5px; font-weight:700; letter-spacing:.04em;
+    text-transform:uppercase;
+  }
+  .hero h1{
+    font-size:30px; line-height:1.08; margin-top:14px; font-weight:800;
+    text-shadow:0 3px 0 rgba(0,0,0,.12);
+  }
+  .hero p{margin-top:10px; font-size:14.5px; line-height:1.55; color:rgba(255,255,255,.92); max-width:340px;}
+
+  .mini-grid-icon{display:flex; gap:4px; margin-top:16px;}
+  .mini-grid-icon span{
+    width:14px; height:14px; border-radius:4px; background:rgba(255,255,255,.85);
+    animation:blink 2.4s ease-in-out infinite;
+  }
+  .mini-grid-icon span:nth-child(1){background:var(--amber); animation-delay:0s;}
+  .mini-grid-icon span:nth-child(2){animation-delay:.2s;}
+  .mini-grid-icon span:nth-child(3){animation-delay:.4s;}
+  .mini-grid-icon span:nth-child(4){background:var(--amber); animation-delay:.6s;}
+  @keyframes blink{0%,100%{opacity:.5; transform:scale(1);}50%{opacity:1; transform:scale(1.15);}}
+
+  .start-body{padding:22px 22px 26px;}
+  .feature-list{list-style:none; margin:0 0 20px; padding:0; display:flex; flex-direction:column; gap:11px;}
+  .feature-list li{
+    display:flex; gap:10px; align-items:flex-start;
+    font-size:14px; line-height:1.5; color:var(--ink-soft);
+    background:var(--paper-alt);
+    border:1px solid var(--line);
+    padding:10px 12px; border-radius:var(--radius-md);
+  }
+  .feature-list li .ic{font-size:18px; line-height:1;}
+  .feature-list li b{color:var(--ink);}
+
+  .field-label{font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; display:block;}
+  #playerName{
+    width:100%; padding:12px 14px; border-radius:var(--radius-md);
+    border:2px solid var(--line); background:#fff; font-size:15px;
+    font-family:inherit; color:var(--ink); margin-bottom:18px;
+  }
+  #playerName:focus{outline:none; border-color:var(--green);}
+
+  .btn-primary{
+    width:100%; padding:15px 18px; border-radius:var(--radius-md);
+    background:var(--amber); color:#523300; font-weight:800; font-size:16px;
+    box-shadow: var(--shadow-btn) var(--amber-dark);
+    transition:transform .08s ease, box-shadow .08s ease;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn-primary:active{transform:translateY(4px); box-shadow:0 2px 0 0 var(--amber-dark);}
+  .btn-secondary{
+    width:100%; padding:13px 18px; border-radius:var(--radius-md);
+    background:var(--green-pale); color:var(--green-dark); font-weight:700; font-size:14.5px;
+    margin-top:10px; border:1px solid #C6E4D3;
+  }
+  .btn-ghost{
+    width:100%; padding:12px 18px; border-radius:var(--radius-md);
+    background:transparent; color:var(--ink-soft); font-weight:700; font-size:13.5px;
+    margin-top:6px;
+  }
+
+  /* ============ GAME SCREEN ============ */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px 10px; background:var(--green-dark); color:#fff;
+  }
+  .topbar .stat{text-align:center;}
+  .topbar .stat .num{font-family:'Baloo 2'; font-weight:800; font-size:17px;}
+  .topbar .stat .lbl{font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; opacity:.75;}
+  .streak-flame{display:flex; align-items:center; gap:4px; font-size:15px;}
+  .streak-flame .num{font-family:'Baloo 2'; font-weight:800; font-size:17px;}
+  .flame-emoji{display:inline-block; animation:flicker 1.1s ease-in-out infinite;}
+  @keyframes flicker{0%,100%{transform:scale(1) rotate(-2deg);}50%{transform:scale(1.12) rotate(2deg);}}
+
+  .timer-track{height:6px; background:rgba(255,255,255,.15);}
+  .timer-fill{height:100%; background:linear-gradient(90deg,var(--amber),#FFD166); width:100%; transition:width 1s linear, background .3s;}
+  .timer-fill.low{background:linear-gradient(90deg,var(--coral),#FF8A7A);}
+
+  .formula-bar{
+    background:#fff; border-bottom:2px solid var(--line);
+    display:flex; align-items:stretch; font-family:'JetBrains Mono', monospace;
+  }
+  .name-box{
+    padding:10px 12px; border-right:1px solid var(--line);
+    font-weight:700; font-size:13.5px; color:var(--green-dark);
+    display:flex; align-items:center; min-width:78px; justify-content:center;
+    background:var(--green-pale);
+  }
+  .fx-icon{
+    padding:10px 10px; display:flex; align-items:center; color:var(--ink-soft);
+    font-style:italic; font-weight:700; font-size:13px; border-right:1px solid var(--line);
+  }
+  .formula-text{
+    padding:10px 12px; font-size:14px; font-weight:600; color:var(--ink);
+    display:flex; align-items:center; flex:1; letter-spacing:.01em;
+  }
+  .formula-text .cursor{display:inline-block; width:2px; height:15px; background:var(--green); margin-left:2px; animation:caret 1s step-end infinite;}
+  @keyframes caret{0%,100%{opacity:1;}50%{opacity:0;}}
+
+  .question-text{
+    padding:14px 18px; font-size:14.5px; line-height:1.55; color:var(--ink);
+    background:var(--paper-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .question-text b{color:var(--green-dark);}
+
+  .grid-wrap{
+    overflow-x:auto; overflow-y:hidden; padding:12px 10px 4px; background:var(--paper);
+    -webkit-overflow-scrolling:touch;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 28px repeat(10, minmax(34px, 1fr));
+    gap:3px;
+    width:max-content;
+    min-width:100%;
+  }
+  .gcell{
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:700;
+    height:34px; border-radius:5px; color:var(--ink); background:#fff;
+    border:1px solid var(--line);
+    transition:background .25s, box-shadow .25s, border-color .25s;
+    transform-style:preserve-3d;
+  }
+  .gcell.head{
+    background:var(--paper-alt); color:var(--ink-soft); font-weight:700; border-color:var(--line);
+  }
+  .gcell.head.hl{
+    background:var(--green); color:#fff; border-color:var(--green-dark);
+    animation:headerPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes headerPulse{
+    0%,100%{ box-shadow:0 0 0 0 rgba(46,125,91,.4); }
+    50%{ box-shadow:0 0 0 4px rgba(46,125,91,.15); }
+  }
+  .gcell.corner{background:transparent; border:none;}
+
+  /* card-flip reveal, triggered only after the student answers */
+  @keyframes cardFlipCorrect{
+    0%{   transform:scaleY(1);    background:#fff; border-color:var(--line); color:var(--ink); box-shadow:none; }
+    45%{  transform:scaleY(.06);  background:#fff; border-color:var(--line); }
+    50%{  transform:scaleY(.06);  background:var(--amber); border-color:var(--amber-dark); color:#523300; }
+    75%{  transform:scaleY(.7);   box-shadow:0 0 0 3px rgba(243,166,33,.4); }
+    100%{ transform:scaleY(1);    background:var(--amber); border-color:var(--amber-dark); color:#523300; box-shadow:none; }
+  }
+  @keyframes cardFlipWrong{
+    0%{   transform:scaleY(1);    background:#fff; border-color:var(--line); color:var(--ink); box-shadow:none; }
+    45%{  transform:scaleY(.06);  background:#fff; border-color:var(--line); }
+    50%{  transform:scaleY(.06);  background:var(--coral-pale); border-color:var(--coral); color:#A33427; }
+    75%{  transform:scaleY(.7);   box-shadow:0 0 0 3px rgba(228,87,74,.35); }
+    100%{ transform:scaleY(1);    background:var(--coral-pale); border-color:var(--coral); color:#A33427; box-shadow:none; }
+  }
+  .gcell.flip-correct{ animation:cardFlipCorrect 1.3s cubic-bezier(.4,0,.2,1) both; position:relative; z-index:3; }
+  .gcell.flip-wrong{ animation:cardFlipWrong 1.15s cubic-bezier(.4,0,.2,1) both; position:relative; z-index:3; }
+
+  .scroll-hint{
+    text-align:center; font-size:11px; color:var(--ink-soft); padding:2px 0 8px;
+    display:none;
+  }
+  @media (max-width:400px){ .scroll-hint{display:block;} }
+
+  .answer-zone{padding:14px 18px 20px; background:var(--paper);}
+  .answer-display{
+    background:#fff; border:2px solid var(--line); border-radius:var(--radius-md);
+    padding:12px 16px; text-align:right; font-family:'JetBrains Mono', monospace;
+    font-size:22px; font-weight:700; color:var(--ink); margin-bottom:12px;
+    min-height:52px; display:flex; align-items:center; justify-content:flex-end;
+    letter-spacing:.02em;
+  }
+  .answer-display .ph{color:#B9B2A0; font-weight:500; font-size:16px;}
+  .answer-display.err{border-color:var(--coral); animation:shake .35s;}
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+
+  .keypad{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px;}
+  .key{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:13px 0; font-size:18px; font-weight:700; color:var(--ink);
+    box-shadow:0 3px 0 0 var(--line);
+    transition:transform .06s, box-shadow .06s;
+  }
+  .key:active{transform:translateY(3px); box-shadow:none;}
+  .key.op{background:var(--paper-alt); color:var(--ink-soft); font-size:16px;}
+  .key.del{background:var(--coral-pale); color:#A33427;}
+
+  .submit-btn{
+    width:100%; padding:15px; border-radius:var(--radius-md);
+    background:var(--green); color:#fff; font-weight:800; font-size:16px;
+    box-shadow:var(--shadow-btn) var(--green-dark);
+    transition:transform .08s, box-shadow .08s, opacity .2s;
+  }
+  .submit-btn:active{transform:translateY(4px); box-shadow:0 2px 0 0 var(--green-dark);}
+  .submit-btn:disabled{opacity:.45; pointer-events:none;}
+
+  /* ============ FEEDBACK SHEET ============ */
+  .feedback-overlay{
+    position:fixed; inset:0; background:rgba(31,42,68,.45);
+    display:flex; align-items:flex-end; justify-content:center;
+    z-index:50; opacity:0; pointer-events:none; transition:opacity .25s;
+    padding:0 0 0;
+  }
+  .feedback-overlay.show{opacity:1; pointer-events:auto;}
+  .feedback-sheet{
+    width:100%; max-width:480px; background:var(--paper);
+    border-radius:22px 22px 0 0; padding:22px 22px 26px;
+    transform:translateY(100%); transition:transform .32s cubic-bezier(.32,.72,0,1);
+    box-shadow:0 -10px 30px rgba(0,0,0,.2);
+  }
+  .feedback-overlay.show .feedback-sheet{transform:translateY(0);}
+  .fb-icon{width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:10px;}
+  .fb-icon.ok{background:var(--green-pale); color:var(--green-dark);}
+  .fb-icon.bad{background:var(--coral-pale); color:#A33427;}
+  .feedback-sheet h3{font-size:19px; margin-bottom:6px;}
+  .feedback-sheet .fb-detail{font-size:13.5px; color:var(--ink-soft); line-height:1.6; margin-bottom:14px;}
+  .feedback-sheet .fb-detail .mono{background:var(--paper-alt); padding:2px 6px; border-radius:5px; color:var(--ink);}
+  .fb-next-btn{
+    width:100%; padding:13px; border-radius:var(--radius-md); font-weight:800; font-size:15px;
+    background:var(--ink); color:#fff;
+  }
+  .fb-progress{height:3px; background:var(--line); border-radius:3px; margin-top:12px; overflow:hidden;}
+  .fb-progress-fill{height:100%; background:var(--green); width:100%;}
+
+  /* ============ RESULT SCREEN ============ */
+  .result-hero{
+    background:radial-gradient(120% 140% at 85% -10%, #FFD166 0%, var(--amber) 40%, var(--amber-dark) 100%);
+    padding:34px 24px 24px; text-align:center; color:#4A2E00; position:relative; overflow:hidden;
+  }
+  .trophy{font-size:52px; display:block; margin-bottom:6px; animation:trophyPop .6s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes trophyPop{ from{transform:scale(0) rotate(-15deg); opacity:0;} to{transform:scale(1) rotate(0); opacity:1;} }
+  .result-hero h2{font-size:22px; margin-bottom:4px;}
+  .result-hero .tier{font-size:14px; font-weight:700; opacity:.85;}
+  .confetti{position:absolute; top:-10px; width:8px; height:14px; opacity:.9; animation:confettiFall linear forwards;}
+  @keyframes confettiFall{ to{ transform:translateY(320px) rotate(540deg); opacity:0; } }
+
+  .result-body{padding:22px;}
+  .stat-row{display:flex; gap:10px; margin-bottom:18px;}
+  .stat-box{
+    flex:1; background:var(--paper-alt); border:1px solid var(--line); border-radius:var(--radius-md);
+    padding:14px 8px; text-align:center;
+  }
+  .stat-box .v{font-family:'Baloo 2'; font-weight:800; font-size:21px; color:var(--green-dark);}
+  .stat-box .l{font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-top:2px;}
+
+  .review-title{font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px;}
+  .review-row{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px;}
+  .review-dot{
+    width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:800; color:#fff;
+  }
+  .review-dot.ok{background:var(--green);}
+  .review-dot.bad{background:var(--coral);}
+
+  .footer-note{
+    text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:16px; line-height:1.6;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===================== START SCREEN ===================== -->
+  <section id="screen-start" class="screen active">
+    <div class="card">
+      <div class="hero">
+        <span class="eyebrow">📊 Kuis Dasar Excel</span>
+        <h1>Formula Quest</h1>
+        <p>Uji kemampuanmu memahami CELL, KOLOM, BARIS, dan rumus dasar Excel lewat 13 soal seru dari tabel angka acak.</p>
+        <div class="mini-grid-icon"><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="start-body">
+        <ul class="feature-list">
+          <li><span class="ic">🎲</span><span><b>13 soal acak</b> setiap kali main — satu kelas bermain bareng, tapi soal tiap siswa berbeda-beda.</span></li>
+          <li><span class="ic">🧮</span><span>Belajar rumus <b>SUM, AVERAGE, MAX, MIN,</b> dan <b>COUNT</b> langsung dari tabel 10×10 berisi angka 0–9 — mirip-mirip angkanya, jadi harus teliti!</span></li>
+          <li><span class="ic">⏱️</span><span>Waktu <b>25 detik</b> tiap soal — tetap tenang dan teliti membaca cell!</span></li>
+        </ul>
+        <label class="field-label" for="playerName">Nama kamu (opsional)</label>
+        <input type="text" id="playerName" placeholder="Tulis namamu di sini..." maxlength="20">
+        <button class="btn-primary" id="btnStart">Mulai Main <span>→</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GAME SCREEN ===================== -->
+  <section id="screen-game" class="screen">
+    <div class="card">
+      <div class="topbar">
+        <div class="stat"><div class="num" id="qCounter">1/13</div><div class="lbl">Soal</div></div>
+        <div class="streak-flame"><span class="flame-emoji">🔥</span><span class="num" id="streakNum">0</span></div>
+        <div class="stat"><div class="num" id="scoreNum">0</div><div class="lbl">Skor</div></div>
+      </div>
+      <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
+
+      <div class="formula-bar">
+        <div class="name-box" id="nameBox">A1</div>
+        <div class="fx-icon">fx</div>
+        <div class="formula-text"><span id="formulaText"></span><span class="cursor"></span></div>
+      </div>
+
+      <div class="grid-wrap"><div class="grid" id="grid"></div></div>
+      <div class="scroll-hint">↔ Geser tabel untuk lihat semua kolom</div>
+      <div class="question-text" id="questionText"></div>
+
+      <div class="answer-zone">
+        <div class="answer-display" id="answerDisplay"><span class="ph">Masukkan jawaban...</span></div>
+        <div class="keypad" id="keypad">
+          <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button>
+          <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button>
+          <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
+          <button class="key op" data-k=".">,</button><button class="key" data-k="0">0</button><button class="key del" data-k="del">⌫</button>
+        </div>
+        <button class="submit-btn" id="btnSubmit" disabled>Cek Jawaban ✓</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RESULT SCREEN ===================== -->
+  <section id="screen-result" class="screen">
+    <div class="card">
+      <div class="result-hero" id="resultHero">
+        <span class="trophy" id="trophyEmoji">🏆</span>
+        <h2 id="resultGreeting">Kerja Bagus!</h2>
+        <div class="tier" id="resultTier">Jago Excel!</div>
+      </div>
+      <div class="result-body">
+        <div class="stat-row">
+          <div class="stat-box"><div class="v" id="statCorrect">0/13</div><div class="l">Jawaban Benar</div></div>
+          <div class="stat-box"><div class="v" id="statScore">0</div><div class="l">Skor Total</div></div>
+          <div class="stat-box"><div class="v" id="statAcc">0%</div><div class="l">Akurasi</div></div>
+        </div>
+        <div class="review-title">Rekap 13 Soal</div>
+        <div class="review-row" id="reviewRow"></div>
+        <button class="btn-primary" id="btnReplay">🔁 Main Lagi (Soal Baru)</button>
+        <button class="btn-ghost" id="btnHome">Kembali ke Awal</button>
+        <div class="footer-note">Dibuat untuk latihan Data Analis Administrasi · setiap permainan mengacak tabel &amp; soal secara otomatis.</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- feedback overlay -->
+<div class="feedback-overlay" id="fbOverlay">
+  <div class="feedback-sheet">
+    <div class="fb-icon" id="fbIcon">✅</div>
+    <h3 id="fbTitle">Tepat sekali!</h3>
+    <div class="fb-detail" id="fbDetail"></div>
+    <button class="fb-next-btn" id="btnNext">Lanjut →</button>
+    <div class="fb-progress"><div class="fb-progress-fill" id="fbProgressFill"></div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const ROWS = 10, COLS = 10;
+  const QUESTION_TIME = 25; // seconds
+  const TOTAL_QUESTIONS = 13;
+
+  let gridData = [];
+  let questions = [];
+  let currentIndex = 0;
+  let score = 0;
+  let streak = 0;
+  let currentInput = "";
+  let answered = false;
+  let timerInterval = null;
+  let timeLeft = QUESTION_TIME;
+  let history = []; // {correct}
+
+  // ---------- helpers ----------
+  const $ = (id) => document.getElementById(id);
+  function letter(i){ return String.fromCharCode(65 + i); }
+  function randInt(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function shuffle(arr){
+    for(let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  function round2(n){ return Math.round(n * 100) / 100; }
+  function fmt(n){
+    if (Number.isInteger(n)) return String(n);
+    return String(round2(n)).replace(".", ",");
+  }
+
+  // ---------- grid ----------
+  function generateGrid(){
+    gridData = [];
+    for(let r = 0; r < ROWS; r++){
+      const row = [];
+      for(let c = 0; c < COLS; c++){ row.push(randInt(0, 9)); }
+      gridData.push(row);
+    }
+  }
+
+  function renderGrid(){
+    let html = '<div class="gcell corner"></div>';
+    for(let c = 0; c < COLS; c++){
+      html += `<div class="gcell head" id="colhead-${c}">${letter(c)}</div>`;
+    }
+    for(let r = 0; r < ROWS; r++){
+      html += `<div class="gcell head" id="rowhead-${r}">${r+1}</div>`;
+      for(let c = 0; c < COLS; c++){
+        html += `<div class="gcell" id="cell-${r}-${c}">${gridData[r][c]}</div>`;
+      }
+    }
+    $("grid").innerHTML = html;
+  }
+
+  function clearHeaderHighlight(){
+    document.querySelectorAll(".gcell.head.hl").forEach((el) => el.classList.remove("hl"));
+  }
+
+  function highlightHeaders(cells){
+    clearHeaderHighlight();
+    const cols = new Set(), rows = new Set();
+    cells.forEach(({r, c}) => { cols.add(c); rows.add(r); });
+    cols.forEach((c) => { const el = $(`colhead-${c}`); if(el) el.classList.add("hl"); });
+    rows.forEach((r) => { const el = $(`rowhead-${r}`); if(el) el.classList.add("hl"); });
+  }
+
+  function flipQuestionCells(cells, correct){
+    const cls = correct ? "flip-correct" : "flip-wrong";
+    cells.forEach(({r, c}, i) => {
+      const el = $(`cell-${r}-${c}`);
+      if(!el) return;
+      el.classList.remove("flip-correct", "flip-wrong");
+      void el.offsetWidth; // allow re-trigger
+      el.style.animationDelay = (i * 160) + "ms";
+      el.classList.add(cls);
+    });
+  }
+
+  function resetFlippedCells(){
+    document.querySelectorAll(".gcell.flip-correct, .gcell.flip-wrong").forEach((el) => {
+      el.classList.remove("flip-correct", "flip-wrong");
+      el.style.animationDelay = "";
+    });
+  }
+
+  // ---------- question generation ----------
+  function buildQuestion(type){
+    let cells = [], rangeRef = "", formula = "", text = "", answer = 0;
+
+    function pickRange(){
+      const orientation = Math.random() < 0.5 ? "col" : "row";
+      const length = randInt(3, 6);
+      if(orientation === "col"){
+        const col = randInt(0, COLS - 1);
+        const startRow = randInt(0, ROWS - length);
+        const cs = [];
+        for(let r = startRow; r < startRow + length; r++) cs.push({r, c: col});
+        const ref = `${letter(col)}${startRow+1}:${letter(col)}${startRow+length}`;
+        return {cs, ref};
+      } else {
+        const row = randInt(0, ROWS - 1);
+        const startCol = randInt(0, COLS - length);
+        const cs = [];
+        for(let c = startCol; c < startCol + length; c++) cs.push({r: row, c});
+        const ref = `${letter(startCol)}${row+1}:${letter(startCol+length-1)}${row+1}`;
+        return {cs, ref};
+      }
+    }
+
+    if(type === "LOOKUP"){
+      const r = randInt(0, ROWS - 1), c = randInt(0, COLS - 1);
+      cells = [{r, c}];
+      rangeRef = `${letter(c)}${r+1}`;
+      answer = gridData[r][c];
+      formula = `=${rangeRef}`;
+      text = `Berapa nilai pada cell <b>${rangeRef}</b>?`;
+    } else {
+      let cs, ref, values;
+
+      if(type === "AVG"){
+        // retry until the range produces a whole-number average (no fractions)
+        let attempts = 0;
+        do{
+          const picked = pickRange();
+          cs = picked.cs; ref = picked.ref;
+          values = cs.map(({r,c}) => gridData[r][c]);
+          attempts++;
+        } while(values.reduce((a,b) => a+b, 0) % values.length !== 0 && attempts < 60);
+      } else {
+        const picked = pickRange();
+        cs = picked.cs; ref = picked.ref;
+        values = cs.map(({r,c}) => gridData[r][c]);
+      }
+
+      cells = cs; rangeRef = ref;
+
+      if(type === "SUM"){
+        answer = values.reduce((a,b) => a+b, 0);
+        formula = `=SUM(${rangeRef})`;
+        text = `Hitung <b>jumlah (SUM)</b> nilai pada cell <b>${rangeRef}</b>.`;
+      } else if(type === "AVG"){
+        answer = round2(values.reduce((a,b) => a+b, 0) / values.length);
+        formula = `=AVERAGE(${rangeRef})`;
+        text = `Hitung <b>rata-rata (AVERAGE)</b> nilai pada cell <b>${rangeRef}</b>.`;
+      } else if(type === "MAX"){
+        answer = Math.max(...values);
+        formula = `=MAX(${rangeRef})`;
+        text = `Cari nilai <b>tertinggi (MAX)</b> pada cell <b>${rangeRef}</b>.`;
+      } else if(type === "MIN"){
+        answer = Math.min(...values);
+        formula = `=MIN(${rangeRef})`;
+        text = `Cari nilai <b>terendah (MIN)</b> pada cell <b>${rangeRef}</b>.`;
+      } else if(type === "COUNTIF"){
+        const avg = values.reduce((a,b) => a+b, 0) / values.length;
+        const threshold = Math.round(avg);
+        answer = values.filter(v => v > threshold).length;
+        formula = `=COUNTIF(${rangeRef},">${threshold}")`;
+        text = `Ada berapa cell pada <b>${rangeRef}</b> yang nilainya <b>lebih dari ${threshold}</b>?`;
+      }
+    }
+
+    return { type, cells, rangeRef, formula, text, answer };
+  }
+
+  function generateQuestions(){
+    let pool = [].concat(
+      Array(2).fill("LOOKUP"),
+      Array(3).fill("SUM"),
+      Array(3).fill("AVG"),
+      Array(2).fill("MAX"),
+      Array(2).fill("MIN"),
+      Array(1).fill("COUNTIF")
+    );
+    shuffle(pool);
+    return pool.map(buildQuestion);
+  }
+
+  // ---------- typewriter ----------
+  function typeFormula(text){
+    const el = $("formulaText");
+    el.textContent = "";
+    let i = 0;
+    const speed = 22;
+    function step(){
+      if(i <= text.length){
+        el.textContent = text.slice(0, i);
+        i++;
+        setTimeout(step, speed);
+      }
+    }
+    step();
+  }
+
+  // ---------- game flow ----------
+  function startGame(){
+    generateGrid();
+    questions = generateQuestions();
+    currentIndex = 0; score = 0; streak = 0; history = [];
+    renderGrid();
+    updateTopbar();
+    showScreen("screen-game");
+    loadQuestion();
+  }
+
+  function updateTopbar(){
+    $("qCounter").textContent = `${currentIndex+1}/${TOTAL_QUESTIONS}`;
+    $("scoreNum").textContent = score;
+    $("streakNum").textContent = streak;
+  }
+
+  function loadQuestion(){
+    answered = false;
+    currentInput = "";
+    updateAnswerDisplay();
+    $("btnSubmit").disabled = true;
+    resetFlippedCells();
+
+    const q = questions[currentIndex];
+    $("nameBox").textContent = q.rangeRef;
+    $("questionText").innerHTML = q.text;
+    highlightHeaders(q.cells);
+    typeFormula(q.formula);
+    updateTopbar();
+    startTimer();
+  }
+
+  function startTimer(){
+    clearInterval(timerInterval);
+    timeLeft = QUESTION_TIME;
+    const fill = $("timerFill");
+    fill.style.transition = "none";
+    fill.style.width = "100%";
+    fill.classList.remove("low");
+    // force reflow so the next transition applies
+    void fill.offsetWidth;
+    fill.style.transition = "width 1s linear, background .3s";
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      const pct = Math.max(0, (timeLeft / QUESTION_TIME) * 100);
+      fill.style.width = pct + "%";
+      if(timeLeft <= 7) fill.classList.add("low");
+      if(timeLeft <= 0){
+        clearInterval(timerInterval);
+        if(!answered) submitAnswer(true);
+      }
+    }, 1000);
+  }
+
+  function updateAnswerDisplay(){
+    const disp = $("answerDisplay");
+    if(currentInput === ""){
+      disp.innerHTML = '<span class="ph">Masukkan jawaban...</span>';
+    } else {
+      disp.textContent = currentInput.replace(".", ",");
+    }
+    $("btnSubmit").disabled = currentInput === "" || currentInput === "-" || currentInput === ".";
+  }
+
+  $("keypad").addEventListener("click", (e) => {
+    const btn = e.target.closest(".key");
+    if(!btn || answered) return;
+    const k = btn.dataset.k;
+    if(k === "del"){
+      currentInput = currentInput.slice(0, -1);
+    } else if(k === "."){
+      if(!currentInput.includes(".") && currentInput.length > 0) currentInput += ".";
+    } else {
+      if(currentInput.length < 7) currentInput += k;
+    }
+    updateAnswerDisplay();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if(!$("screen-game").classList.contains("active") || answered) return;
+    if(/^[0-9]$/.test(e.key)){ if(currentInput.length < 7){ currentInput += e.key; updateAnswerDisplay(); } }
+    else if(e.key === "," || e.key === "."){ if(!currentInput.includes(".") && currentInput.length>0){ currentInput += "."; updateAnswerDisplay(); } }
+    else if(e.key === "Backspace"){ currentInput = currentInput.slice(0,-1); updateAnswerDisplay(); }
+    else if(e.key === "Enter"){ if(!$("btnSubmit").disabled) submitAnswer(false); }
+  });
+
+  $("btnSubmit").addEventListener("click", () => submitAnswer(false));
+
+  function submitAnswer(timedOut){
+    if(answered) return;
+    answered = true;
+    clearInterval(timerInterval);
+
+    const q = questions[currentIndex];
+    const userVal = parseFloat(currentInput.replace(",", "."));
+    const correct = !timedOut && !isNaN(userVal) && Math.abs(round2(userVal) - round2(q.answer)) <= 0.05;
+
+    if(correct){
+      streak++;
+      const bonus = Math.min(streak, 5) * 2;
+      score += 10 + bonus;
+    } else {
+      streak = 0;
+      if(!timedOut) {
+        $("answerDisplay").classList.add("err");
+        setTimeout(() => $("answerDisplay").classList.remove("err"), 400);
+      }
+    }
+    history.push({ correct });
+    updateTopbar();
+    flipQuestionCells(q.cells, correct);
+    showFeedback(correct, timedOut, q);
+  }
+
+  function showFeedback(correct, timedOut, q){
+    $("fbIcon").className = "fb-icon " + (correct ? "ok" : "bad");
+    $("fbIcon").textContent = correct ? "✅" : (timedOut ? "⏰" : "❌");
+    $("fbTitle").textContent = correct ? "Tepat sekali!" : (timedOut ? "Waktu habis!" : "Belum tepat");
+    $("fbDetail").innerHTML = `<span class="mono">${q.formula}</span> = <b>${fmt(q.answer)}</b>`;
+
+    const overlay = $("fbOverlay");
+    overlay.classList.add("show");
+
+    const fillEl = $("fbProgressFill");
+    fillEl.style.transition = "none";
+    fillEl.style.width = "100%";
+    void fillEl.offsetWidth;
+    fillEl.style.transition = "width 3.2s linear";
+    fillEl.style.width = "0%";
+
+    clearTimeout(window.__fbTimeout);
+    window.__fbTimeout = setTimeout(nextQuestion, 3200);
+  }
+
+  $("btnNext").addEventListener("click", () => {
+    clearTimeout(window.__fbTimeout);
+    nextQuestion();
+  });
+
+  function nextQuestion(){
+    $("fbOverlay").classList.remove("show");
+    currentIndex++;
+    if(currentIndex >= TOTAL_QUESTIONS){
+      setTimeout(showResults, 250);
+    } else {
+      setTimeout(loadQuestion, 200);
+    }
+  }
+
+  function showResults(){
+    const correctCount = history.filter(h => h.correct).length;
+    const acc = Math.round((correctCount / TOTAL_QUESTIONS) * 100);
+    const name = $("playerName").value.trim();
+
+    $("statCorrect").textContent = `${correctCount}/${TOTAL_QUESTIONS}`;
+    $("statScore").textContent = score;
+    $("statAcc").textContent = `${acc}%`;
+
+    let tier, trophy, greeting;
+    if(correctCount >= 12){ tier = "Excel Master! 🏆"; trophy = "🏆"; }
+    else if(correctCount >= 9){ tier = "Jago Banget! 🌟"; trophy = "🌟"; }
+    else if(correctCount >= 6){ tier = "Lumayan, Terus Berlatih! 💪"; trophy = "💪"; }
+    else { tier = "Yuk Coba Lagi! 🔁"; trophy = "🔁"; }
+    greeting = name ? `Kerja bagus, ${name}!` : "Kerja bagus!";
+
+    $("resultTier").textContent = tier;
+    $("trophyEmoji").textContent = trophy;
+    $("resultGreeting").textContent = greeting;
+
+    const reviewRow = $("reviewRow");
+    reviewRow.innerHTML = "";
+    history.forEach((h, i) => {
+      const d = document.createElement("div");
+      d.className = "review-dot " + (h.correct ? "ok" : "bad");
+      d.textContent = h.correct ? "✓" : "✕";
+      d.title = `Soal ${i+1}`;
+      reviewRow.appendChild(d);
+    });
+
+    spawnConfetti();
+    showScreen("screen-result");
+  }
+
+  function spawnConfetti(){
+    const hero = $("resultHero");
+    hero.querySelectorAll(".confetti").forEach(el => el.remove());
+    const colors = ["#2E7D5B", "#F3A621", "#E4574A", "#3F7FCB", "#FFFFFF"];
+    for(let i = 0; i < 26; i++){
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = randInt(0, 100) + "%";
+      c.style.background = colors[randInt(0, colors.length - 1)];
+      c.style.animationDuration = (1.4 + Math.random() * 1.2) + "s";
+      c.style.animationDelay = (Math.random() * 0.6) + "s";
+      c.style.borderRadius = Math.random() < 0.5 ? "50%" : "2px";
+      hero.appendChild(c);
+    }
+  }
+
+  function showScreen(id){
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    $(id).classList.add("active");
+  }
+
+  $("btnStart").addEventListener("click", startGame);
+  $("btnReplay").addEventListener("click", startGame);
+  $("btnHome").addEventListener("click", () => showScreen("screen-start"));
+
+})();
+</script>
+</body>
+</html>
