@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ular Tangga Birokrasi - Multiplayer</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 for beautiful alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .board-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 4px solid #1e3a8a;
+        }
+
+        .board-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: rgba(30, 58, 138, 0.3);
+            border: 2px solid #e2e8f0;
+            background-color: #f8fafc;
+            transition: all 0.2s ease;
+        }
+
+        .cell-start { background-color: #dcfce7; border-color: #22c55e; color: #15803d; }
+        .cell-end { background-color: #fef08a; border-color: #eab308; color: #a16207; }
+
+        /* Container to hold multiple pawns in one cell */
+        .pawns-container {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 4px;
+            pointer-events: none;
+        }
+
+        .pawn {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.65rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            border: 2px solid white;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10;
+        }
+
+        /* Specific Pawn Colors */
+        .pawn-1 { background: linear-gradient(135deg, #ef4444, #b91c1c); } /* Red */
+        .pawn-2 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); } /* Blue */
+        .pawn-3 { background: linear-gradient(135deg, #22c55e, #15803d); } /* Green */
+        .pawn-4 { background: linear-gradient(135deg, #a855f7, #7e22ce); } /* Purple */
+        .pawn-5 { background: linear-gradient(135deg, #ec4899, #be185d); } /* Pink */
+
+        .bounce-in {
+            animation: bounceIn 0.5s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3) translateY(-20px); opacity: 0; }
+            50% { transform: scale(1.2) translateY(0); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes rollDice {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg) scale(1.2); }
+            50% { transform: rotate(180deg) scale(0.8); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        .rolling {
+            animation: rollDice 0.6s ease-in-out;
+        }
+
+        #quiz-modal {
+            backdrop-filter: blur(5px);
+        }
+
+        /* Active player highlight in leaderboard */
+        .active-player-card {
+            border-left: 4px solid #f97316 !important;
+            background-color: #fff7ed !important;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-800">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white shadow-md p-4 text-center">
+        <h1 class="text-2xl md:text-3xl font-black uppercase tracking-wider">
+            <i class="fas fa-users mr-2 text-orange-400"></i>
+            Ular Tangga Birokrasi (5 Pemain)
+        </h1>
+        <p class="text-blue-200 text-sm md:text-base mt-1">Divisi Manajemen Perkantoran & Perjalanan Dinas</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto p-4 flex flex-col lg:flex-row gap-6 items-start justify-center mt-4">
+        
+        <!-- Left Side: Game Board -->
+        <div class="w-full lg:w-2/3 max-w-2xl mx-auto">
+            <div id="board" class="board-container relative">
+                <!-- Cells will be generated here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Right Side: Controls & Info -->
+        <div class="w-full lg:w-1/3 flex flex-col gap-4">
+            
+            <!-- Turn Indicator & Dice Control -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-orange-500">
+                <div class="text-center mb-4">
+                    <h2 class="text-lg font-bold text-slate-500 uppercase tracking-wide">Giliran Saat Ini</h2>
+                    <div id="current-turn-display" class="text-2xl font-black text-slate-800 mt-1 flex items-center justify-center gap-2">
+                        <!-- Player turn injected here -->
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center space-x-4 p-4 bg-slate-100 rounded-lg mb-6">
+                    <div id="dice-display" class="text-5xl text-blue-800">
+                        <i class="fas fa-dice-d6"></i>
+                    </div>
+                </div>
+
+                <button id="btn-roll" onclick="rollDice()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex items-center justify-center text-lg">
+                    <i class="fas fa-dice mr-2"></i> Lempar Dadu
+                </button>
+            </div>
+
+            <!-- Leaderboard / Player Status -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="font-bold text-slate-700 border-b pb-2 mb-3"><i class="fas fa-list-ol mr-1"></i> Status Pemain</h3>
+                <div id="players-list" class="flex flex-col space-y-2">
+                    <!-- Players list injected via JS -->
+                </div>
+            </div>
+
+            <!-- Rules -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="font-bold text-slate-700 border-b pb-2 mb-3"><i class="fas fa-info-circle mr-1"></i> Aturan Main</h3>
+                <ul class="text-sm text-slate-600 space-y-2 list-disc pl-5">
+                    <li>Giliran berganti secara berurutan.</li>
+                    <li>Jawab kuis dengan benar untuk maju ekstra <b>2 kotak</b>.</li>
+                    <li>Jawaban salah membuat mundur <b>2 kotak</b>.</li>
+                    <li>Capai <b>Kotak 30</b> pertama kali untuk menang!</li>
+                </ul>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Quiz Modal (Hidden by default) -->
+    <div id="quiz-modal" class="fixed inset-0 bg-slate-900 bg-opacity-70 flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white w-11/12 max-w-md rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="quiz-content">
+            <div class="bg-blue-600 p-4 flex items-center justify-between" id="quiz-header">
+                <h3 class="text-white font-bold text-lg"><i class="fas fa-file-signature mr-2"></i> Verifikasi Dokumen</h3>
+            </div>
+            <div class="p-6">
+                <div id="quiz-player-turn" class="text-center mb-2 font-bold text-orange-600 uppercase text-sm"></div>
+                <p id="quiz-question" class="text-lg font-semibold text-slate-800 mb-6 text-center leading-relaxed">
+                    [Pertanyaan]
+                </p>
+                <div id="quiz-options" class="flex flex-col space-y-3">
+                    <!-- Options injected via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 mt-auto">
+        <small class="text-slate-500 font-medium">
+            <i class="fas fa-plane-departure mr-1 text-blue-500"></i> Tour & Travel Tycoon Educational Series
+        </small>
+    </footer>
+
+    <script>
+        // --- GAME STATE FOR 5 PLAYERS ---
+        const TOTAL_CELLS = 30;
+        let isRolling = false;
+        
+        // Data 5 Pemain
+        const players = [
+            { id: 1, name: "Pemain 1", colorClass: "pawn-1", textCol: "text-red-600", icon: "fa-user-tie", pos: 1 },
+            { id: 2, name: "Pemain 2", colorClass: "pawn-2", textCol: "text-blue-600", icon: "fa-user-nurse", pos: 1 },
+            { id: 3, name: "Pemain 3", colorClass: "pawn-3", textCol: "text-green-600", icon: "fa-user-secret", pos: 1 },
+            { id: 4, name: "Pemain 4", colorClass: "pawn-4", textCol: "text-purple-600", icon: "fa-user-graduate", pos: 1 },
+            { id: 5, name: "Pemain 5", colorClass: "pawn-5", textCol: "text-pink-600", icon: "fa-user-astronaut", pos: 1 }
+        ];
+        
+        let currentPlayerIndex = 0; // Index 0 to 4
+
+        // Data Bank Soal Spesifik untuk Setiap Kotak (Kotak 2 - 29)
+        const cellQuestions = {
+            2: { q: "Apa fungsi utama dari Paspor?", options: ["Sebagai tiket pesawat", "Sebagai identitas resmi warga negara di luar negeri", "Sebagai bukti pembayaran pajak"], answer: 1, explanation: "Paspor adalah dokumen resmi dari negara yang memuat identitas pemegangnya untuk perjalanan antar negara." },
+            3: { q: "Pihak manakah yang berwenang menerbitkan Paspor Republik Indonesia?", options: ["Kementerian Luar Negeri", "Kedutaan Besar", "Direktorat Jenderal Imigrasi"], answer: 2, explanation: "Paspor RI diterbitkan oleh Ditjen Imigrasi di bawah Kementerian Hukum dan HAM." },
+            4: { q: "Apa yang dimaksud dengan Visa?", options: ["Izin tertulis masuk ke suatu negara", "Surat bebas pajak", "Sertifikat kesehatan"], answer: 0, explanation: "Visa adalah izin yang diberikan oleh suatu negara kepada warga negara asing untuk memasuki wilayahnya." },
+            5: { q: "Berapa minimal masa berlaku paspor yang umumnya disyaratkan untuk perjalanan internasional?", options: ["1 Bulan", "3 Bulan", "6 Bulan"], answer: 2, explanation: "Aturan internasional umumnya mensyaratkan paspor memiliki masa berlaku minimal 6 bulan sebelum kedatangan." },
+            6: { q: "Apa kepanjangan dari SPPD yang digunakan untuk penugasan pegawai?", options: ["Surat Perintah Perjalanan Dinas", "Surat Persetujuan Perjalanan Dinas", "Surat Pengantar Perjalanan Dinas"], answer: 0, explanation: "SPPD adalah dokumen resmi yang memberikan perintah kepada pegawai untuk perjalanan dinas." },
+            7: { q: "Jika seorang eksekutif akan bertugas keliling negara-negara Eropa, Visa apa yang paling efisien diurus?", options: ["Visa Transit", "Visa Schengen", "Visa on Arrival"], answer: 1, explanation: "Visa Schengen memungkinkan pemegangnya bepergian bebas di dalam 27 negara kawasan Schengen." },
+            8: { q: "Apa warna sampul Paspor Biasa (Reguler) warga negara Indonesia?", options: ["Biru", "Hitam", "Hijau"], answer: 2, explanation: "Paspor biasa RI bersampul Hijau, Paspor Dinas Biru, dan Paspor Diplomatik Hitam." },
+            9: { q: "Apa keuntungan utama menggunakan E-Paspor (Paspor Elektronik)?", options: ["Bebas visa ke seluruh dunia", "Bisa menggunakan fasilitas Autogate di bandara", "Tidak ada masa kadaluarsa"], answer: 1, explanation: "E-Paspor memiliki chip biometrik yang memungkinkan pelintas batas menggunakan Autogate untuk proses imigrasi yang lebih cepat." },
+            10: { q: "Visa yang diurus dan didapatkan saat seseorang tiba di bandara negara tujuan disebut...", options: ["Visa on Arrival (VoA)", "Multiple Entry Visa", "Visa Kunjungan"], answer: 0, explanation: "VoA dapat diurus di pintu kedatangan (bandara/pelabuhan) negara tujuan bagi negara yang memiliki perjanjian." },
+            11: { q: "Untuk masuk pesawat setelah check-in, dokumen spesifik apa yang harus ditunjukkan?", options: ["E-Ticket", "Kwitansi Pembayaran", "Boarding Pass"], answer: 2, explanation: "Boarding pass adalah tiket akses fisik/digital yang memberikan hak kepada penumpang untuk naik ke pesawat." },
+            12: { q: "Surat yang berisi rincian jadwal, penerbangan, hotel, dan aktivitas selama perjalanan disebut...", options: ["Kuitansi", "Itinerary", "Brosur"], answer: 1, explanation: "Itinerary adalah jadwal lengkap perjalanan yang membantu mengatur waktu dan logistik." },
+            13: { q: "Aturan penerbangan internasional membatasi cairan (LAGs) yang dibawa ke kabin maksimal...", options: ["100 ml per wadah", "250 ml per wadah", "500 ml per wadah"], answer: 0, explanation: "Aturan keamanan penerbangan global membatasi cairan, aerosol, dan gel di bagasi kabin maksimal 100ml per wadah." },
+            14: { q: "Visa yang memungkinkan pemegangnya keluar masuk suatu negara berkali-kali selama masa berlaku adalah...", options: ["Single Entry Visa", "Multiple Entry Visa", "Transit Visa"], answer: 1, explanation: "Multiple Entry Visa berguna untuk pebisnis yang sering bolak-balik ke negara yang sama." },
+            15: { q: "Tindakan tinggal di suatu negara melebihi batas waktu yang diizinkan oleh Visa disebut...", options: ["Overloading", "Overbooking", "Overstay"], answer: 2, explanation: "Overstay adalah pelanggaran keimigrasian yang dapat berujung pada denda, deportasi, atau blacklist." },
+            16: { q: "Apa yang harus dilakukan pertama kali jika paspor hilang saat perjalanan dinas di luar negeri?", options: ["Membuat paspor baru di bandara", "Melapor ke Kedutaan Besar / KJRI setempat", "Langsung pulang ke Indonesia"], answer: 1, explanation: "KBRI/KJRI akan menerbitkan SPLP (Surat Perjalanan Laksana Paspor) agar WNI dapat pulang." },
+            17: { q: "Pihak yang memiliki wewenang untuk menyetujui dan menandatangani Surat Tugas adalah...", options: ["Resepsionis", "Karyawan itu sendiri", "Atasan / Pejabat Berwenang"], answer: 2, explanation: "Surat Tugas merupakan wujud delegasi tugas, karenanya wajib ditandatangani oleh atasan berwenang." },
+            18: { q: "Manakah yang diterbitkan oleh perwakilan negara tujuan (Kedutaan/Konsulat)?", options: ["Paspor", "Visa", "KTP"], answer: 1, explanation: "Visa diterbitkan oleh Kedutaan Besar atau Konsulat dari negara tujuan perjalanan." },
+            19: { q: "Apa fungsi dari Asuransi Perjalanan (Travel Insurance)?", options: ["Sebagai pengganti Visa", "Menjamin kompensasi delay, kehilangan bagasi, dan medis", "Syarat wajib check-in hotel"], answer: 1, explanation: "Asuransi perjalanan memproteksi finansial klien dari risiko tak terduga selama dinas luar kota/negeri." },
+            20: { q: "Warna Paspor Dinas untuk pegawai pemerintah yang melakukan perjalanan dinas resmi adalah...", options: ["Hijau", "Biru", "Hitam"], answer: 1, explanation: "Paspor Dinas RI (Official Passport) memiliki sampul berwarna Biru." },
+            21: { q: "Formulir yang diisi untuk melaporkan barang bawaan penumpang dari luar negeri kepada bea cukai disebut...", options: ["Boarding Pass", "Customs Declaration", "Exit Permit"], answer: 1, explanation: "Customs Declaration wajib diisi untuk mencegah masuknya barang ilegal dan menentukan bea masuk barang." },
+            22: { q: "Sertifikat vaksin Yellow Fever biasanya diwajibkan untuk perjalanan ke benua...", options: ["Eropa dan Australia", "Afrika dan Amerika Selatan", "Asia Timur"], answer: 1, explanation: "Penyakit Demam Kuning endemis di banyak negara di Afrika dan Amerika Selatan." },
+            23: { q: "Kapan sebaiknya penumpang tiba di bandara untuk penerbangan internasional?", options: ["30 menit sebelum berangkat", "1 Jam sebelum berangkat", "Minimal 2-3 jam sebelum berangkat"], answer: 2, explanation: "Penerbangan internasional membutuhkan waktu ekstra untuk proses imigrasi dan pemeriksaan keamanan." },
+            24: { q: "Waktu dimana penumpang harus sudah berada di ruang tunggu dan mulai masuk ke pesawat disebut...", options: ["Departure Time", "Boarding Time", "Check-in Time"], answer: 1, explanation: "Boarding time biasanya 30-45 menit sebelum waktu keberangkatan (departure time)." },
+            25: { q: "Apakah seseorang dengan Visa Turis diperbolehkan bekerja secara legal dan dibayar di negara tujuan?", options: ["Boleh, asal waktunya singkat", "Tidak diperbolehkan sama sekali", "Boleh, jika lapor polisi"], answer: 1, explanation: "Penyalahgunaan visa turis untuk bekerja adalah pelanggaran imigrasi berat." },
+            26: { q: "Dokumen SPLP (Surat Perjalanan Laksana Paspor) berlaku untuk...", options: ["Satu kali perjalanan pulang ke Indonesia", "Lima tahun perjalanan", "Keliling Eropa"], answer: 0, explanation: "SPLP hanya bersifat sementara, digunakan untuk kondisi darurat (seperti paspor hilang) agar bisa pulang." },
+            27: { q: "Batas berat bagasi tercatat (checked baggage) yang tidak berbayar pada kelas ekonomi umumnya...", options: ["5 - 7 Kg", "20 - 30 Kg", "50 Kg"], answer: 1, explanation: "Rata-rata maskapai memberikan free baggage allowance 20-30 Kg untuk rute reguler." },
+            28: { q: "Dokumen yang memuat rincian anggaran biaya perjalanan dinas adalah...", options: ["Surat Tugas", "Bukti Kas Keluar (BKK) / SPPD", "Buku Tamu"], answer: 1, explanation: "SPPD biasanya dilampiri dengan Rincian Biaya Perjalanan Dinas (RBPD) untuk pertanggungjawaban keuangan." },
+            29: { q: "Prosedur 'Check-in' pada penerbangan bertujuan untuk...", options: ["Membeli makanan", "Menukar tiket dengan Boarding Pass & mendaftarkan bagasi", "Pemeriksaan paspor"], answer: 1, explanation: "Check-in adalah proses konfirmasi penumpang untuk terbang, menyerahkan bagasi besar, dan mendapat tempat duduk." }
+        };
+
+        function initBoard() {
+            const boardEl = document.getElementById('board');
+            boardEl.innerHTML = ''; 
+
+            for (let row = 5; row >= 0; row--) {
+                let rowNumbers = [];
+                for (let col = 1; col <= 5; col++) {
+                    rowNumbers.push(row * 5 + col);
+                }
+                
+                // Reverse odd rows for zigzag
+                if (row % 2 !== 0) rowNumbers.reverse();
+
+                rowNumbers.forEach(num => {
+                    let cell = document.createElement('div');
+                    cell.className = 'board-cell';
+                    cell.id = `cell-${num}`;
+                    
+                    let label = document.createElement('span');
+                    label.innerText = num;
+                    cell.appendChild(label);
+
+                    if (num === 1) {
+                        cell.classList.add('cell-start');
+                        cell.innerHTML += '<span class="absolute top-1 text-xs font-bold text-green-600 uppercase tracking-widest">Start</span>';
+                    } else if (num === TOTAL_CELLS) {
+                        cell.classList.add('cell-end');
+                        cell.innerHTML += '<i class="fas fa-flag-checkered absolute top-1 text-orange-600 opacity-50"></i>';
+                    }
+
+                    // Container for pawns so they can group together beautifully
+                    let pawnsContainer = document.createElement('div');
+                    pawnsContainer.className = 'pawns-container';
+                    pawnsContainer.id = `pawns-container-${num}`;
+                    cell.appendChild(pawnsContainer);
+
+                    boardEl.appendChild(cell);
+                });
+            }
+
+            // Create and place all 5 pawns on Cell 1
+            players.forEach(p => {
+                const pawn = document.createElement('div');
+                pawn.id = `pawn-${p.id}`;
+                pawn.className = `pawn ${p.colorClass}`;
+                pawn.innerHTML = `<i class="fas ${p.icon}"></i>`;
+                document.getElementById(`pawns-container-1`).appendChild(pawn);
+            });
+
+            updateDashboardUI();
+        }
+
+        function updateDashboardUI() {
+            const currPlayer = players[currentPlayerIndex];
+            
+            // Update Turn Display
+            const turnDisplay = document.getElementById('current-turn-display');
+            turnDisplay.innerHTML = `
+                <div class="pawn ${currPlayer.colorClass} relative" style="width: 30px; height: 30px; font-size: 14px;">
+                    <i class="fas ${currPlayer.icon}"></i>
+                </div>
+                <span class="${currPlayer.textCol}">${currPlayer.name}</span>
+            `;
+
+            // Update List
+            const listEl = document.getElementById('players-list');
+            listEl.innerHTML = '';
+            
+            players.forEach((p, idx) => {
+                const isActive = (idx === currentPlayerIndex);
+                const activeClass = isActive ? 'active-player-card' : 'border-l-4 border-transparent bg-slate-50 opacity-70';
+                
+                listEl.innerHTML += `
+                    <div class="flex items-center justify-between p-2 rounded-lg transition-all duration-300 ${activeClass}">
+                        <div class="flex items-center gap-3">
+                            <div class="pawn ${p.colorClass} shadow-sm" style="width: 24px; height: 24px;">
+                                <i class="fas ${p.icon}"></i>
+                            </div>
+                            <span class="font-semibold ${isActive ? p.textCol : 'text-slate-600'} text-sm">${p.name}</span>
+                        </div>
+                        <div class="text-xs font-bold bg-white px-2 py-1 rounded border shadow-sm text-slate-500">
+                            Kotak ${p.pos}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function getDiceIcon(num) {
+            const icons = ['fa-dice-d6', 'fa-dice-one', 'fa-dice-two', 'fa-dice-three', 'fa-dice-four', 'fa-dice-five', 'fa-dice-six'];
+            return `<i class="fas ${icons[num]}"></i>`;
+        }
+
+        async function rollDice() {
+            if (isRolling) return;
+            isRolling = true;
+            document.getElementById('btn-roll').disabled = true;
+            document.getElementById('btn-roll').classList.add('opacity-50', 'cursor-not-allowed');
+
+            const diceDisplay = document.getElementById('dice-display');
+            diceDisplay.classList.add('text-orange-500', 'rolling');
+
+            // Animation
+            let rollInterval = setInterval(() => {
+                let randomFace = Math.floor(Math.random() * 6) + 1;
+                diceDisplay.innerHTML = getDiceIcon(randomFace);
+            }, 100);
+
+            // Wait 1s
+            await new Promise(resolve => setTimeout(resolve, 800));
+            clearInterval(rollInterval);
+
+            // Final Result
+            const finalRoll = Math.floor(Math.random() * 6) + 1;
+            diceDisplay.innerHTML = getDiceIcon(finalRoll);
+            diceDisplay.classList.remove('rolling', 'text-orange-500');
+            diceDisplay.classList.add('text-blue-800');
+
+            const currPlayer = players[currentPlayerIndex];
+
+            Swal.fire({
+                title: `${currPlayer.name} mendapat angka ${finalRoll}!`,
+                text: "Memindahkan bidak...",
+                icon: 'info',
+                timer: 1500,
+                showConfirmButton: false,
+                backdrop: `rgba(0,0,123,0.2)`
+            }).then(() => {
+                moveCurrentPlayer(finalRoll);
+            });
+        }
+
+        function moveCurrentPlayer(steps) {
+            const currPlayer = players[currentPlayerIndex];
+            let targetPos = currPlayer.pos + steps;
+            if (targetPos > TOTAL_CELLS) targetPos = TOTAL_CELLS; 
+            
+            updatePawnUIPosition(currPlayer, targetPos);
+
+            setTimeout(() => {
+                if (currPlayer.pos >= TOTAL_CELLS) {
+                    handleWin(currPlayer);
+                } else {
+                    triggerQuiz(currPlayer);
+                }
+            }, 600); 
+        }
+
+        function updatePawnUIPosition(player, targetPos) {
+            player.pos = targetPos;
+            const pawn = document.getElementById(`pawn-${player.id}`);
+            const targetContainer = document.getElementById(`pawns-container-${player.pos}`);
+            
+            targetContainer.appendChild(pawn);
+            
+            pawn.classList.remove('bounce-in');
+            void pawn.offsetWidth; // trigger reflow
+            pawn.classList.add('bounce-in');
+
+            updateDashboardUI();
+        }
+
+        function triggerQuiz(player) {
+            const questionData = cellQuestions[player.pos] || {
+                q: "Dokumen utama yang wajib dibawa saat bepergian ke luar negeri adalah...",
+                options: ["SIM", "KTP", "Paspor"],
+                answer: 2,
+                explanation: "Paspor adalah dokumen identitas antarnegara yang mutlak."
+            };
+
+            // Set UI
+            document.getElementById('quiz-player-turn').innerHTML = `<i class="fas ${player.icon}"></i> Giliran ${player.name} Menjawab`;
+            document.getElementById('quiz-question').innerText = `[KOTAK ${player.pos}] ${questionData.q}`;
+            
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            questionData.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50 transition-colors font-medium text-slate-700";
+                btn.innerHTML = `<span class="inline-block w-6 font-bold text-blue-500">${String.fromCharCode(65 + idx)}.</span> ${opt}`;
+                btn.onclick = () => evaluateAnswer(player, idx, questionData.answer, questionData.explanation);
+                optionsContainer.appendChild(btn);
+            });
+
+            showModal();
+        }
+
+        function evaluateAnswer(player, selectedIdx, correctIdx, explanation) {
+            hideModal();
+
+            if (selectedIdx === correctIdx) {
+                // CORRECT
+                Swal.fire({
+                    title: 'Jalur VIP Terbuka! 🚀',
+                    html: `<b>Kerja Bagus, ${player.name}!</b><br><br><span class="text-sm text-gray-600">${explanation}</span><br><br><i>Bonus: Maju 2 kotak!</i>`,
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Lanjutkan'
+                }).then(() => applyBonusPenalty(player, 2));
+            } else {
+                // WRONG
+                Swal.fire({
+                    title: 'Dokumen Ditolak! 🛑',
+                    html: `<b>Oops, ${player.name}! Jawaban Kurang Tepat.</b><br><br><span class="text-sm text-red-600 font-medium">Teguran Supervisor:</span><br><span class="text-sm text-gray-600">${explanation}</span><br><br><i>Penalti: Mundur 2 kotak!</i>`,
+                    icon: 'error',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Baik, Mengerti'
+                }).then(() => applyBonusPenalty(player, -2));
+            }
+        }
+
+        function applyBonusPenalty(player, modifier) {
+            let targetPos = player.pos + modifier;
+            if (targetPos < 1) targetPos = 1;
+            if (targetPos > TOTAL_CELLS) targetPos = TOTAL_CELLS;
+
+            updatePawnUIPosition(player, targetPos);
+
+            setTimeout(() => {
+                if (player.pos >= TOTAL_CELLS) {
+                    handleWin(player);
+                } else {
+                    nextTurn();
+                }
+            }, 600);
+        }
+
+        function nextTurn() {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            updateDashboardUI();
+            
+            // Allow rolling again
+            isRolling = false;
+            document.getElementById('btn-roll').disabled = false;
+            document.getElementById('btn-roll').classList.remove('opacity-50', 'cursor-not-allowed');
+
+            const nextPlayer = players[currentPlayerIndex];
+            
+            // Optional: Small toast to show whose turn it is now
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'info',
+                title: `Giliran ${nextPlayer.name}!`,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+
+        function handleWin(winner) {
+            Swal.fire({
+                title: 'Misi Dinas Selesai! 🏆',
+                html: `Selamat! <b>${winner.name}</b> berhasil mencapai Kotak 30 lebih dulu dan memenangkan permainan!`,
+                icon: 'success',
+                confirmButtonColor: '#22c55e',
+                confirmButtonText: 'Main Lagi'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Reset all players
+                    players.forEach(p => p.pos = 1);
+                    currentPlayerIndex = 0;
+                    
+                    players.forEach(p => {
+                        const pawn = document.getElementById(`pawn-${p.id}`);
+                        document.getElementById('pawns-container-1').appendChild(pawn);
+                    });
+                    
+                    updateDashboardUI();
+                    isRolling = false;
+                    document.getElementById('btn-roll').disabled = false;
+                    document.getElementById('btn-roll').classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
+        }
+
+        // Modal Utility
+        function showModal() {
+            const modal = document.getElementById('quiz-modal');
+            const content = document.getElementById('quiz-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.classList.add('opacity-100');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function hideModal() {
+            const modal = document.getElementById('quiz-modal');
+            const content = document.getElementById('quiz-content');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        // Initialize on load
+        window.onload = () => {
+            initBoard();
+        };
+    </script>
+</body>
+</html>
