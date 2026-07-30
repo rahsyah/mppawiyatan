@@ -116,12 +116,55 @@
             background-color: #fff7ed !important;
             transform: scale(1.02);
         }
+
+        /* ================= DARK MODE ================= */
+        body.dark-mode {
+            background-color: #0f172a;
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #e2e8f0;
+        }
+        body.dark-mode .board-container {
+            background: #1e293b;
+            border-color: #3b82f6;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+        body.dark-mode .board-cell {
+            background-color: #0f172a;
+            border-color: #334155;
+            color: rgba(226, 232, 240, 0.35);
+        }
+        body.dark-mode .cell-start { background-color: #064e3b; border-color: #22c55e; color: #4ade80; }
+        body.dark-mode .cell-end { background-color: #78350f; border-color: #eab308; color: #fde047; }
+        body.dark-mode .bg-white { background-color: #1e293b !important; color: #e2e8f0; }
+        body.dark-mode .bg-blue-900 { background-color: #0b1229 !important; }
+        body.dark-mode .bg-slate-100 { background-color: #334155 !important; }
+        body.dark-mode .bg-slate-50 { background-color: #1e293b !important; }
+        body.dark-mode .text-slate-800 { color: #e2e8f0 !important; }
+        body.dark-mode .text-slate-700 { color: #cbd5e1 !important; }
+        body.dark-mode .text-slate-600 { color: #94a3b8 !important; }
+        body.dark-mode .text-slate-500 { color: #94a3b8 !important; }
+        body.dark-mode .border-slate-200 { border-color: #334155 !important; }
+        body.dark-mode .border-b { border-color: #334155 !important; }
+        body.dark-mode #quiz-content, body.dark-mode #start-content { background-color: #1e293b; color: #e2e8f0; }
+        body.dark-mode .active-player-card { background-color: #3f2d1a !important; }
+        body.dark-mode input.name-field {
+            background-color: #0f172a;
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+        #dark-toggle-btn {
+            transition: all 0.2s ease;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-slate-800">
 
     <!-- Header -->
-    <header class="bg-blue-900 text-white shadow-md p-4 text-center">
+    <header class="bg-blue-900 text-white shadow-md p-4 text-center relative">
+        <button id="dark-toggle-btn" onclick="toggleDarkMode()" class="absolute top-3 right-3 md:top-4 md:right-6 bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg">
+            <i id="dark-toggle-icon" class="fas fa-moon"></i>
+        </button>
         <h1 class="text-2xl md:text-3xl font-black uppercase tracking-wider">
             <i class="fas fa-users mr-2 text-orange-400"></i>
             Ular Tangga Birokrasi (5 Pemain)
@@ -177,7 +220,7 @@
                     <li>Giliran berganti secara berurutan.</li>
                     <li>Jawab kuis dengan benar untuk maju ekstra <b>2 kotak</b>.</li>
                     <li>Jawaban salah membuat mundur <b>2 kotak</b>.</li>
-                    <li>Capai <b>Kotak 30</b> pertama kali untuk menang!</li>
+                    <li>Capai <b>Kotak 50</b> pertama kali untuk menang!</li>
                 </ul>
             </div>
 
@@ -202,6 +245,22 @@
         </div>
     </div>
 
+    <!-- Start Modal: Input Nama Pemain -->
+    <div id="start-modal" class="fixed inset-0 bg-slate-900 bg-opacity-80 flex items-center justify-center z-[60]">
+        <div class="bg-white w-11/12 max-w-lg rounded-2xl shadow-2xl p-6" id="start-content">
+            <h2 class="text-xl font-black text-center text-blue-900 mb-1">
+                <i class="fas fa-flag mr-2 text-orange-500"></i>Masukkan Nama Pemain
+            </h2>
+            <p class="text-sm text-slate-500 text-center mb-4">Isi nama untuk 5 pemain sebelum memulai permainan. Nama akan tampil di dashboard.</p>
+            <div class="space-y-3 mb-6" id="name-inputs">
+                <!-- 5 input nama pemain diinjeksi oleh JS -->
+            </div>
+            <button id="btn-start-game" onclick="startGame()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <i class="fas fa-play mr-2"></i> Mulai Permainan
+            </button>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="text-center py-6 mt-auto">
         <small class="text-slate-500 font-medium">
@@ -211,7 +270,7 @@
 
     <script>
         // --- GAME STATE FOR 5 PLAYERS ---
-        const TOTAL_CELLS = 30;
+        const TOTAL_CELLS = 50;
         let isRolling = false;
         
         // Data 5 Pemain
@@ -254,14 +313,34 @@
             26: { q: "Dokumen SPLP (Surat Perjalanan Laksana Paspor) berlaku untuk...", options: ["Satu kali perjalanan pulang ke Indonesia", "Lima tahun perjalanan", "Keliling Eropa"], answer: 0, explanation: "SPLP hanya bersifat sementara, digunakan untuk kondisi darurat (seperti paspor hilang) agar bisa pulang." },
             27: { q: "Batas berat bagasi tercatat (checked baggage) yang tidak berbayar pada kelas ekonomi umumnya...", options: ["5 - 7 Kg", "20 - 30 Kg", "50 Kg"], answer: 1, explanation: "Rata-rata maskapai memberikan free baggage allowance 20-30 Kg untuk rute reguler." },
             28: { q: "Dokumen yang memuat rincian anggaran biaya perjalanan dinas adalah...", options: ["Surat Tugas", "Bukti Kas Keluar (BKK) / SPPD", "Buku Tamu"], answer: 1, explanation: "SPPD biasanya dilampiri dengan Rincian Biaya Perjalanan Dinas (RBPD) untuk pertanggungjawaban keuangan." },
-            29: { q: "Prosedur 'Check-in' pada penerbangan bertujuan untuk...", options: ["Membeli makanan", "Menukar tiket dengan Boarding Pass & mendaftarkan bagasi", "Pemeriksaan paspor"], answer: 1, explanation: "Check-in adalah proses konfirmasi penumpang untuk terbang, menyerahkan bagasi besar, dan mendapat tempat duduk." }
+            29: { q: "Prosedur 'Check-in' pada penerbangan bertujuan untuk...", options: ["Membeli makanan", "Menukar tiket dengan Boarding Pass & mendaftarkan bagasi", "Pemeriksaan paspor"], answer: 1, explanation: "Check-in adalah proses konfirmasi penumpang untuk terbang, menyerahkan bagasi besar, dan mendapat tempat duduk." },
+            30: { q: "Proses penggantian biaya yang telah dikeluarkan pegawai lebih dahulu disebut...", options: ["Reimbursement", "Down Payment", "Refund"], answer: 0, explanation: "Reimbursement adalah proses klaim penggantian biaya yang sudah dibayar terlebih dahulu oleh pegawai." },
+            31: { q: "Uang saku harian yang diberikan kepada pegawai selama dinas disebut...", options: ["Uang Muka", "Per Diem", "Uang Lembur"], answer: 1, explanation: "Per diem adalah tunjangan harian untuk menutup biaya makan dan kebutuhan kecil selama dinas." },
+            32: { q: "Sertifikasi dokumen internasional yang diakui negara anggota Konvensi Den Haag disebut...", options: ["Apostille", "Notarial Deed", "Power of Attorney"], answer: 0, explanation: "Apostille adalah sertifikasi dokumen yang diakui secara internasional oleh negara peserta Konvensi Den Haag 1961." },
+            33: { q: "Izin tinggal terbatas bagi warga negara asing yang bekerja di Indonesia disebut...", options: ["KITAS", "KTP", "SIM"], answer: 0, explanation: "KITAS (Kartu Izin Tinggal Terbatas) diberikan kepada WNA yang bekerja/tinggal sementara di Indonesia." },
+            34: { q: "Sebelum dinas ke luar negeri, ASN umumnya wajib mengurus...", options: ["Surat Izin ke Luar Negeri (SIKLN)", "SIM Internasional", "NPWP baru"], answer: 0, explanation: "ASN wajib mendapatkan izin resmi sebelum bepergian ke luar negeri untuk keperluan dinas." },
+            35: { q: "Kelas penerbangan yang umum diatur untuk pejabat tinggi dalam SPPD adalah...", options: ["Ekonomi", "Bisnis", "First Class"], answer: 1, explanation: "Standar biaya perjalanan dinas biasanya mengatur kelas Bisnis untuk pejabat setingkat tertentu." },
+            36: { q: "Laporan akhir yang wajib dibuat pegawai setelah menyelesaikan perjalanan dinas disebut...", options: ["Laporan Perjalanan Dinas", "Curriculum Vitae", "Surat Lamaran"], answer: 0, explanation: "Laporan perjalanan dinas berisi ringkasan kegiatan dan hasil selama penugasan di luar kantor." },
+            37: { q: "Apa kepanjangan dari LHKPN yang wajib dilaporkan sebagian pejabat negara?", options: ["Laporan Harta Kekayaan Penyelenggara Negara", "Laporan Hasil Kerja Pegawai Negeri", "Lembar Hasil Kinerja Pegawai Negeri"], answer: 0, explanation: "LHKPN adalah laporan kekayaan yang wajib disampaikan penyelenggara negara kepada KPK." },
+            38: { q: "Dokumen yang memberikan kuasa kepada orang lain untuk bertindak atas nama seseorang disebut...", options: ["Surat Kuasa", "Surat Edaran", "Nota Dinas"], answer: 0, explanation: "Surat Kuasa (Power of Attorney) memberi wewenang hukum kepada pihak lain untuk bertindak mewakili." },
+            39: { q: "Apa fungsi utama Nota Dinas dalam korespondensi kantor?", options: ["Komunikasi resmi antar unit internal instansi", "Surat pribadi karyawan", "Pengumuman untuk publik"], answer: 0, explanation: "Nota Dinas digunakan untuk komunikasi resmi dan internal antar pejabat/unit dalam satu instansi." },
+            40: { q: "Forum evaluasi capaian kerja pegawai secara berkala disebut...", options: ["Town Hall", "Performance Review", "Coffee Break"], answer: 1, explanation: "Performance review adalah forum evaluasi capaian kerja pegawai secara berkala." },
+            41: { q: "Dokumen yang berisi kesepakatan kerja sama resmi antara dua instansi disebut...", options: ["Memorandum of Understanding (MoU)", "Surat Cuti", "Absensi"], answer: 0, explanation: "MoU adalah nota kesepahaman yang menjadi dasar kerja sama formal antar lembaga." },
+            42: { q: "Hak pegawai untuk beristirahat dari pekerjaan dalam periode tertentu setiap tahun disebut...", options: ["Cuti Tahunan", "Sanksi Administratif", "Surat Peringatan"], answer: 0, explanation: "Cuti tahunan adalah hak pegawai untuk beristirahat dari pekerjaan dalam periode tertentu setiap tahun." },
+            43: { q: "Dokumen resmi yang menyatakan seseorang telah menyelesaikan tugas belajar/pelatihan disebut...", options: ["Sertifikat", "Kwitansi", "Nota"], answer: 0, explanation: "Sertifikat adalah bukti resmi penyelesaian suatu program pendidikan atau pelatihan." },
+            44: { q: "Rapat singkat berdiri untuk berbagi progres kerja harian tim disebut...", options: ["Stand-up Meeting", "Rapat Pleno", "Sidang Umum"], answer: 0, explanation: "Stand-up meeting adalah rapat singkat harian yang biasa dipakai tim untuk berbagi progres kerja." },
+            45: { q: "Bagian email resmi yang berisi ringkasan maksud surat sebelum isi utama disebut...", options: ["Subject/Perihal", "Lampiran", "Tembusan"], answer: 0, explanation: "Perihal (Subject) memberi gambaran singkat isi surat kepada penerima." },
+            46: { q: "Daftar salinan surat yang dikirim kepada pihak lain dalam surat resmi disebut...", options: ["Tembusan", "Draft", "Revisi"], answer: 0, explanation: "Tembusan mencantumkan pihak lain yang turut menerima salinan surat resmi tersebut." },
+            47: { q: "Rapat yang dihadiri seluruh anggota organisasi untuk mengambil keputusan penting disebut...", options: ["Rapat Pleno", "Rapat Kilat", "Coffee Morning"], answer: 0, explanation: "Rapat Pleno melibatkan seluruh anggota untuk membahas dan memutuskan agenda penting organisasi." },
+            48: { q: "Dokumen konfirmasi kehadiran pegawai di kantor setiap hari kerja disebut...", options: ["Absensi", "Sertifikat", "Nota Dinas"], answer: 0, explanation: "Absensi mencatat kehadiran pegawai sebagai dasar penghitungan kinerja dan gaji." },
+            49: { q: "Periode di mana pegawai baru masih dalam masa penilaian sebelum diangkat tetap disebut...", options: ["Masa Percobaan (Probation)", "Masa Pensiun", "Masa Cuti"], answer: 0, explanation: "Masa percobaan adalah periode evaluasi awal sebelum pegawai baru diangkat menjadi karyawan tetap." }
         };
 
         function initBoard() {
             const boardEl = document.getElementById('board');
             boardEl.innerHTML = ''; 
 
-            for (let row = 5; row >= 0; row--) {
+            for (let row = 9; row >= 0; row--) {
                 let rowNumbers = [];
                 for (let col = 1; col <= 5; col++) {
                     rowNumbers.push(row * 5 + col);
@@ -510,7 +589,7 @@
         function handleWin(winner) {
             Swal.fire({
                 title: 'Misi Dinas Selesai! 🏆',
-                html: `Selamat! <b>${winner.name}</b> berhasil mencapai Kotak 30 lebih dulu dan memenangkan permainan!`,
+                html: `Selamat! <b>${winner.name}</b> berhasil mencapai Kotak ${TOTAL_CELLS} lebih dulu dan memenangkan permainan!`,
                 icon: 'success',
                 confirmButtonColor: '#22c55e',
                 confirmButtonText: 'Main Lagi'
@@ -556,9 +635,58 @@
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
+        // --- NAME INPUT / START SCREEN ---
+        function renderNameInputs() {
+            const container = document.getElementById('name-inputs');
+            container.innerHTML = '';
+            players.forEach((p, idx) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex items-center gap-3';
+                wrapper.innerHTML = `
+                    <div class="pawn ${p.colorClass} shrink-0" style="width: 30px; height: 30px;">
+                        <i class="fas ${p.icon}"></i>
+                    </div>
+                    <input
+                        type="text"
+                        id="name-input-${p.id}"
+                        class="name-field w-full border-2 border-slate-200 rounded-lg px-3 py-2 font-semibold text-slate-700 focus:outline-none focus:border-blue-500 transition-colors"
+                        placeholder="${p.name}"
+                        maxlength="16"
+                    />
+                `;
+                container.appendChild(wrapper);
+            });
+        }
+
+        function startGame() {
+            players.forEach(p => {
+                const input = document.getElementById(`name-input-${p.id}`);
+                const val = input ? input.value.trim() : '';
+                if (val) p.name = val;
+            });
+
+            const startModal = document.getElementById('start-modal');
+            startModal.classList.add('opacity-0');
+            startModal.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => {
+                startModal.classList.add('hidden');
+            }, 300);
+
+            initBoard();
+        }
+
+        // --- DARK MODE ---
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('dark-toggle-icon');
+            const isDark = document.body.classList.contains('dark-mode');
+            icon.classList.toggle('fa-moon', !isDark);
+            icon.classList.toggle('fa-sun', isDark);
+        }
+
         // Initialize on load
         window.onload = () => {
-            initBoard();
+            renderNameInputs();
         };
     </script>
 </body>
