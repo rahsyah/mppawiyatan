@@ -18,6 +18,17 @@
             background-color: #f0f4f8;
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 20px 20px;
+            animation: bgDrift 30s linear infinite;
+        }
+
+        @keyframes bgDrift {
+            0% { background-position: 0 0; }
+            100% { background-position: 200px 200px; }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .board-frame {
@@ -28,6 +39,7 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             border: 4px solid #1e3a8a;
             overflow: hidden;
+            animation: fadeUp 0.6s ease both;
         }
 
         /* Decorative vector illustration behind the board */
@@ -67,8 +79,23 @@
             transition: all 0.2s ease;
         }
 
-        .cell-start { background-color: rgba(220, 252, 231, 0.65); border-color: #22c55e; color: #15803d; }
-        .cell-end { background-color: rgba(254, 240, 138, 0.7); border-color: #eab308; color: #a16207; }
+        .cell-start { background-color: rgba(220, 252, 231, 0.65); border-color: #22c55e; color: #15803d; animation: pulseStart 2.5s ease-in-out infinite; }
+        .cell-end { background-color: rgba(254, 240, 138, 0.7); border-color: #eab308; color: #a16207; animation: pulseEnd 2s ease-in-out infinite; }
+
+        .board-cell:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 14px rgba(30, 58, 138, 0.25);
+            z-index: 5;
+        }
+
+        @keyframes pulseStart {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35); }
+            50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+        }
+        @keyframes pulseEnd {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.45); }
+            50% { box-shadow: 0 0 0 7px rgba(234, 179, 8, 0); }
+        }
 
         /* Container to hold multiple pawns in one cell */
         .pawns-container {
@@ -136,7 +163,51 @@
             border-left: 4px solid #f97316 !important;
             background-color: #fff7ed !important;
             transform: scale(1.02);
+            animation: activeGlow 1.8s ease-in-out infinite;
         }
+
+        @keyframes activeGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.35); }
+            50% { box-shadow: 0 0 12px 2px rgba(249, 115, 22, 0.35); }
+        }
+
+        .player-row {
+            animation: fadeUp 0.4s ease both;
+        }
+
+        /* Card entrance + hover lift for right-side panels */
+        .game-card {
+            animation: fadeUp 0.6s ease both;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .game-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Roll dice button shine sweep */
+        #btn-roll {
+            position: relative;
+            overflow: hidden;
+        }
+        #btn-roll::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent);
+            transform: skewX(-25deg);
+            transition: left 0.6s ease;
+        }
+        #btn-roll:hover::after { left: 130%; }
+
+        @keyframes idlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        #dice-display:not(.rolling) i { display: inline-block; animation: idlePulse 2.4s ease-in-out infinite; }
 
         /* ================= DARK MODE ================= */
         body.dark-mode {
@@ -166,7 +237,10 @@
         body.dark-mode .cell-start { background-color: rgba(6, 78, 59, 0.65); border-color: #22c55e; color: #4ade80; }
         body.dark-mode .cell-end { background-color: rgba(120, 53, 15, 0.7); border-color: #eab308; color: #fde047; }
         body.dark-mode .bg-white { background-color: #1e293b !important; color: #e2e8f0; }
-        body.dark-mode .bg-blue-900 { background-color: #0b1229 !important; }
+        body.dark-mode .app-header {
+            background: linear-gradient(120deg, #0b1229, #1e3a8a, #0b1229);
+            background-size: 200% 200%;
+        }
         body.dark-mode .bg-slate-100 { background-color: #334155 !important; }
         body.dark-mode .bg-slate-50 { background-color: #1e293b !important; }
         body.dark-mode .text-slate-800 { color: #e2e8f0 !important; }
@@ -182,15 +256,76 @@
             border-color: #334155;
             color: #e2e8f0;
         }
+        #start-content {
+            animation: modalPopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+        @keyframes modalPopIn {
+            0% { opacity: 0; transform: scale(0.85) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
         #dark-toggle-btn {
             transition: all 0.2s ease;
+        }
+
+        /* ================= ILLUSTRATION ANIMATIONS ================= */
+        .cloud-a { animation: driftCloud 22s ease-in-out infinite; }
+        .cloud-b { animation: driftCloud 16s ease-in-out infinite reverse; }
+        @keyframes driftCloud {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(18px); }
+        }
+
+        .plane-fly {
+            animation: flyPlane 3.5s ease-in-out infinite;
+            transform-origin: center;
+        }
+        @keyframes flyPlane {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(6px, -8px) rotate(-4deg); }
+        }
+
+        .sun-glow { animation: glowSun 3s ease-in-out infinite; transform-origin: center; }
+        @keyframes glowSun {
+            0%, 100% { opacity: 0.45; transform: scale(1); }
+            50% { opacity: 0.75; transform: scale(1.12); }
+        }
+
+        .skyline-windows rect { animation: twinkleWindow 3s ease-in-out infinite; }
+        .skyline-windows rect:nth-child(3n) { animation-delay: 0.4s; }
+        .skyline-windows rect:nth-child(3n+1) { animation-delay: 0.9s; }
+        .skyline-windows rect:nth-child(3n+2) { animation-delay: 1.4s; }
+        @keyframes twinkleWindow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.9; }
+        }
+
+        /* Header animated gradient */
+        .app-header {
+            background: linear-gradient(120deg, #1e3a8a, #1d4ed8, #1e3a8a);
+            background-size: 200% 200%;
+            animation: headerGradient 8s ease infinite;
+        }
+        @keyframes headerGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Respect users who prefer less motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-slate-800">
 
     <!-- Header -->
-    <header class="bg-blue-900 text-white shadow-md p-4 text-center relative">
+    <header class="app-header text-white shadow-md p-4 text-center relative">
         <button id="dark-toggle-btn" onclick="toggleDarkMode()" class="absolute top-3 right-3 md:top-4 md:right-6 bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg">
             <i id="dark-toggle-icon" class="fas fa-moon"></i>
         </button>
@@ -211,20 +346,22 @@
                 <div class="board-illustration" aria-hidden="true">
                     <svg viewBox="0 0 300 650" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                         <!-- clouds -->
-                        <g fill="currentColor" opacity="0.7">
+                        <g class="cloud-a" fill="currentColor" opacity="0.7">
                             <ellipse cx="55" cy="60" rx="28" ry="13"/>
                             <ellipse cx="80" cy="50" rx="20" ry="11"/>
+                        </g>
+                        <g class="cloud-b" fill="currentColor" opacity="0.7">
                             <ellipse cx="235" cy="120" rx="26" ry="12"/>
                             <ellipse cx="258" cy="112" rx="17" ry="9"/>
                         </g>
                         <!-- dashed flight path -->
                         <path d="M20 210 Q110 170 190 120" stroke="currentColor" stroke-width="2" stroke-dasharray="5 7" fill="none" opacity="0.5"/>
                         <!-- paper airplane -->
-                        <g fill="currentColor">
+                        <g class="plane-fly" fill="currentColor">
                             <path d="M190 120 L120 145 L138 152 L132 172 L150 158 L166 168 L160 148 L190 120 Z"/>
                         </g>
                         <!-- sun/moon circle -->
-                        <circle cx="250" cy="55" r="20" fill="currentColor" opacity="0.5"/>
+                        <circle class="sun-glow" cx="250" cy="55" r="20" fill="currentColor" opacity="0.5"/>
                         <!-- city skyline -->
                         <g fill="currentColor">
                             <rect x="0"   y="480" width="28" height="170"/>
@@ -285,7 +422,7 @@
         <div class="w-full lg:w-1/3 flex flex-col gap-4">
             
             <!-- Turn Indicator & Dice Control -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-orange-500">
+            <div class="game-card bg-white p-6 rounded-xl shadow-lg border-t-4 border-orange-500" style="animation-delay:0.05s;">
                 <div class="text-center mb-4">
                     <h2 class="text-lg font-bold text-slate-500 uppercase tracking-wide">Giliran Saat Ini</h2>
                     <div id="current-turn-display" class="text-2xl font-black text-slate-800 mt-1 flex items-center justify-center gap-2">
@@ -305,7 +442,7 @@
             </div>
 
             <!-- Leaderboard / Player Status -->
-            <div class="bg-white p-6 rounded-xl shadow-lg">
+            <div class="game-card bg-white p-6 rounded-xl shadow-lg" style="animation-delay:0.15s;">
                 <h3 class="font-bold text-slate-700 border-b pb-2 mb-3"><i class="fas fa-list-ol mr-1"></i> Status Pemain</h3>
                 <div id="players-list" class="flex flex-col space-y-2">
                     <!-- Players list injected via JS -->
@@ -313,7 +450,7 @@
             </div>
 
             <!-- Rules -->
-            <div class="bg-white p-6 rounded-xl shadow-lg">
+            <div class="game-card bg-white p-6 rounded-xl shadow-lg" style="animation-delay:0.25s;">
                 <h3 class="font-bold text-slate-700 border-b pb-2 mb-3"><i class="fas fa-info-circle mr-1"></i> Aturan Main</h3>
                 <ul class="text-sm text-slate-600 space-y-2 list-disc pl-5">
                     <li>Giliran berganti secara berurutan.</li>
@@ -363,7 +500,7 @@
     <!-- Footer -->
     <footer class="text-center py-6 mt-auto">
         <small class="text-slate-500 font-medium">
-            <i class="fas fa-plane-departure mr-1 text-blue-500"></i> Manajemen Perkantoran SMK Pawiyatan Surabaya
+            <i class="fas fa-plane-departure mr-1 text-blue-500"></i> Manajemen Perkantoran Gaming
         </small>
     </footer>
 
@@ -508,7 +645,7 @@
                 const activeClass = isActive ? 'active-player-card' : 'border-l-4 border-transparent bg-slate-50 opacity-70';
                 
                 listEl.innerHTML += `
-                    <div class="flex items-center justify-between p-2 rounded-lg transition-all duration-300 ${activeClass}">
+                    <div class="player-row flex items-center justify-between p-2 rounded-lg transition-all duration-300 ${activeClass}" style="animation-delay:${idx * 0.08}s;">
                         <div class="flex items-center gap-3">
                             <div class="pawn ${p.colorClass} shadow-sm" style="width: 24px; height: 24px;">
                                 <i class="fas ${p.icon}"></i>
@@ -789,4 +926,4 @@
         };
     </script>
 </body>
-</html>
+</html>Tour
