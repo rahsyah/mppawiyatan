@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Archive Detective: 5 Systems Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090d16; --bg-card: rgba(22, 30, 46, 0.85);
+            --border: #2a364f; --primary: #6366f1; --primary-hover: #4f46e5;
+            --accent: #06b6d4; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --text: #f8fafc; --text-sub: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; user-select: none; }
+
+        body {
+            height: 100vh; overflow: hidden; background-color: var(--bg-dark);
+            background-image: radial-gradient(at 10% 20%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                              radial-gradient(at 90% 80%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
+            color: var(--text); display: flex; flex-direction: column;
+        }
+
+        /* Top Bar */
+        #navbar {
+            height: 60px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 2rem;
+            backdrop-filter: blur(10px); z-index: 50;
+        }
+        .brand { font-weight: 800; font-size: 1.1rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+        .brand span { color: var(--accent); }
+        .system-badges { display: flex; gap: 0.5rem; }
+        .badge { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background: #1e293b; color: var(--text-sub); border: 1px solid var(--border); }
+        .badge.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .badge.completed { background: rgba(16, 185, 129, 0.2); color: var(--success); border-color: var(--success); }
+
+        /* Main Game Layout */
+        #game-container { flex: 1; display: flex; padding: 1.5rem; gap: 1.5rem; overflow: hidden; }
+
+        /* Sidebar Manual SOP */
+        #sop-sidebar {
+            width: 320px; background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.2rem; display: flex; flex-direction: column; gap: 1rem;
+            backdrop-filter: blur(10px); overflow-y: auto;
+        }
+        #sop-sidebar h3 { font-size: 1rem; color: var(--accent); display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; }
+        .sop-content { font-size: 0.85rem; line-height: 1.6; color: var(--text-sub); }
+        .sop-content strong { color: var(--text); }
+        .sop-box { background: rgba(15, 23, 42, 0.6); border-left: 3px solid var(--accent); padding: 0.8rem; border-radius: 0 6px 6px 0; margin-top: 0.8rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+
+        /* Work Area */
+        #workspace { flex: 1; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+        
+        .level-header { margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .level-title { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+        .level-desc { font-size: 0.875rem; color: var(--text-sub); margin-top: 0.2rem; }
+
+        /* Generic Interactive UI Elements */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .file-card { background: #1e293b; border: 1px solid var(--border); padding: 1rem; border-radius: 8px; cursor: grab; transition: 0.2s; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: space-between; }
+        .file-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .file-card:active { cursor: grabbing; }
+
+        .drop-target { background: rgba(15, 23, 42, 0.5); border: 2px dashed var(--border); border-radius: 8px; padding: 1rem; min-height: 120px; transition: 0.2s; display: flex; flex-direction: column; gap: 0.5rem; }
+        .drop-target.hover { border-color: var(--accent); background: rgba(6, 182, 212, 0.1); }
+        .drop-target h4 { font-size: 0.9rem; color: var(--accent); margin-bottom: 0.5rem; }
+
+        /* Terminal UI for System 5 */
+        .terminal { background: #050811; border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; color: #10b981; }
+        .term-input { background: transparent; border: none; border-bottom: 2px solid #10b981; color: #10b981; font-family: 'JetBrains Mono', monospace; font-size: 1rem; outline: none; width: 120px; margin-left: 0.5rem; text-transform: uppercase; }
+
+        /* Buttons */
+        .btn { padding: 0.8rem 1.5rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; background: var(--primary); color: white; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn:hover { background: var(--primary-hover); }
+        
+        /* Modal Overlay */
+        #modal { position: fixed; inset: 0; background: rgba(9, 13, 22, 0.9); display: flex; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(8px); }
+        .modal-box { background: var(--bg-card); border: 1px solid var(--border); padding: 2.5rem; border-radius: 16px; text-align: center; max-width: 480px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <div id="navbar">
+        <div class="brand">🕵️‍♂️ Archive Detective <span>v4.0</span></div>
+        <div class="system-badges">
+            <div class="badge active" id="b-1">1. Subjek</div>
+            <div class="badge" id="b-2">2. Abjad</div>
+            <div class="badge" id="b-3">3. Tanggal</div>
+            <div class="badge" id="b-4">4. Wilayah</div>
+            <div class="badge" id="b-5">5. Nomor</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="game-container">
+        <!-- Sidebar Manual SOP -->
+        <div id="sop-sidebar">
+            <h3>📘 Panduan Kearsipan</h3>
+            <div class="sop-content" id="sop-text">
+                <!-- Filled dynamically by level -->
+            </div>
+        </div>
+
+        <!-- Interactive Workspace -->
+        <div id="workspace">
+            <div class="level-header">
+                <div>
+                    <div class="level-title" id="lvl-title">Level Loading...</div>
+                    <div class="level-desc" id="lvl-desc">...</div>
+                </div>
+                <div style="font-weight: bold; font-size: 1.2rem; color: var(--accent);" id="score-disp">Skor: 0</div>
+            </div>
+
+            <div id="stage-area" style="flex: 1;">
+                <!-- Stage Content Inserted Here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Instructions & Results -->
+    <div id="modal">
+        <div class="modal-box">
+            <div style="font-size: 3.5rem; margin-bottom: 1rem;" id="modal-icon">🗄️</div>
+            <h2 style="margin-bottom: 0.5rem;" id="modal-title">Sistem Kearsipan Terpadu</h2>
+            <p style="color: var(--text-sub); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.6;" id="modal-msg">
+                Selamat Datang, Detektif Digital! Selesaikan 5 tantangan sistem kearsipan resmi untuk memulihkan arsip perusahaan.
+            </p>
+            <button class="btn" style="width: 100%; justify-content: center;" onclick="game.closeModal()">Mulai Misi</button>
+        </div>
+    </div>
+
+    <script>
+        // Audio Synthesizer Engine
+        const sfx = {
+            ctx: new (window.AudioContext || window.webkitAudioContext)(),
+            play(type) {
+                if(this.ctx.state === 'suspended') this.ctx.resume();
+                const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+                o.connect(g); g.connect(this.ctx.destination);
+                if(type === 'ok') { o.type='sine'; o.frequency.setValueAtTime(523, this.ctx.currentTime); o.frequency.setValueAtTime(659, this.ctx.currentTime+0.1); g.gain.setValueAtTime(0.1, this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime+0.3); o.start(); o.stop(this.ctx.currentTime+0.3); }
+                if(type === 'err') { o.type='sawtooth'; o.frequency.setValueAtTime(180, this.ctx.currentTime); g.gain.setValueAtTime(0.1, this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime+0.3); o.start(); o.stop(this.ctx.currentTime+0.3); }
+            }
+        };
+
+        // Main Game Logic
+        const game = {
+            currentLevel: 1,
+            score: 0,
+            levelProgress: 0,
+
+            init() {
+                this.loadLevel(1);
+            },
+
+            closeModal() {
+                document.getElementById('modal').classList.add('hidden');
+            },
+
+            showModal(icon, title, msg, btnText, callback) {
+                document.getElementById('modal-icon').innerText = icon;
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-msg').innerHTML = msg;
+                const btn = document.querySelector('#modal .btn');
+                btn.innerText = btnText;
+                btn.onclick = () => {
+                    this.closeModal();
+                    if(callback) callback();
+                };
+                document.getElementById('modal').classList.remove('hidden');
+            },
+
+            loadLevel(lvl) {
+                this.currentLevel = lvl;
+                this.levelProgress = 0;
+                
+                // Update Badges
+                for(let i=1; i<=5; i++) {
+                    const b = document.getElementById(`b-${i}`);
+                    b.className = 'badge';
+                    if(i < lvl) b.classList.add('completed');
+                    if(i === lvl) b.classList.add('active');
+                }
+
+                const stage = document.getElementById('stage-area');
+                const sop = document.getElementById('sop-text');
+                
+                if (lvl === 1) { // SUBJEK
+                    document.getElementById('lvl-title').innerText = "Misi 1: Sistem Klasifikasi Subjek";
+                    document.getElementById('lvl-desc').innerText = "Kelompokkan surat berikut berdasarkan Pokok Masalah utamanya.";
+                    sop.innerHTML = `
+                        <strong>Sistem Subjek</strong> mengelompokkan dokumen berdasarkan isi kandungan surat.<br><br>
+                        <strong>Kategori Utama:</strong>
+                        <ul style="margin-left:1.2rem; margin-top:0.5rem;">
+                            <li><strong>Keuangan:</strong> Kuitansi, Invoice, Pajak.</li>
+                            <li><strong>Kepegawaian:</strong> SK Cuti, Lamaran, Presensi.</li>
+                            <li><strong>Kerjasama:</strong> MoU, Kontrak Bisnis.</li>
+                        </ul>
+                    `;
+                    this.renderLevel1(stage);
+                } 
+                else if (lvl === 2) { // ABJAD
+                    document.getElementById('lvl-title').innerText = "Misi 2: Sistem Abjad (Indexing Name)";
+                    document.getElementById('lvl-desc').innerText = "Indeks nama pemilik dokumen berikut, lalu masukkan ke Folder Abjad yang benar.";
+                    sop.innerHTML = `
+                        <strong>Sistem Abjad</strong> menyimpan dokumen berdasarkan nama orang/badan usaha yang diindeks.<br><br>
+                        <strong>Aturan Mengindeks Nama Orang:</strong><br>
+                        Nama Orang dibalik: Kata belakang menjadi Kata Utama.<br><br>
+                        <strong>Contoh:</strong><br>
+                        <em>Budi Santoso</em> &rarr; <strong>SANTOSO, Budi</strong><br>
+                        Huruf Pertama = <strong>S</strong>.
+                    `;
+                    this.renderLevel2(stage);
+                }
+                else if (lvl === 3) { // TANGGAL
+                    document.getElementById('lvl-title').innerText = "Misi 3: Sistem Tanggal (Kronologis)";
+                    document.getElementById('lvl-desc').innerText = "Urutkan kuitansi transaksi keuangan sesuai tanggal penerbitan.";
+                    sop.innerHTML = `
+                        <strong>Sistem Tanggal</strong> mengelompokkan dokumen berdasarkan urutan waktu (Tahun, Bulan, Tanggal).<br><br>
+                        <strong>Struktur Laci:</strong><br>
+                        Laci <strong>Tahun 2026</strong> &rarr; Guide <strong>Maret</strong> &rarr; Folder <strong>Tanggal (1-31)</strong>.
+                    `;
+                    this.renderLevel3(stage);
+                }
+                else if (lvl === 4) { // WILAYAH
+                    document.getElementById('lvl-title').innerText = "Misi 4: Sistem Wilayah (Geografis)";
+                    document.getElementById('lvl-desc').innerText = "Rute dokumen ke Laci Provinsi dan Folder Kota tujuan yang tepat.";
+                    sop.innerHTML = `
+                        <strong>Sistem Wilayah</strong> menyusun dokumen berdasarkan lokasi pengirim atau tujuan surat.<br><br>
+                        <strong>Hirarki:</strong><br>
+                        Wilayah Utama (Provinsi) &rarr; Sub Wilayah (Kota/Kabupaten).
+                    `;
+                    this.renderLevel4(stage);
+                }
+                else if (lvl === 5) { // NOMOR
+                    document.getElementById('lvl-title').innerText = "Misi 5: Sistem Nomor (Klasifikasi Dewey)";
+                    document.getElementById('lvl-desc').innerText = "Inputkan Kode Rekam Nomor Klasifikasi untuk mengunci brankas arsip.";
+                    sop.innerHTML = `
+                        <strong>Sistem Nomor (Dewey)</strong> menggunakan nomor kode desimal untuk menggantikan nama subjek.<br><br>
+                        <strong>Daftar Kode Perusahaan:</strong>
+                        <div class="sop-box">
+                            100 : KEPEGAWAIAN<br>
+                            110 : Cuti Pegawai<br>
+                            200 : KEUANGAN<br>
+                            210 : Laporan Pajak
+                        </div>
+                    `;
+                    this.renderLevel5(stage);
+                }
+            },
+
+            // --- LEVEL RENDERERS ---
+            renderLevel1(stage) {
+                stage.innerHTML = `
+                    <div class="grid-2">
+                        <div>
+                            <h4 style="margin-bottom:1rem;">Tumpukan Surat Masuk:</h4>
+                            <div class="file-card" draggable="true" data-cat="keuangan" id="f1">📄 Invoice Pembelian Server AWS</div>
+                            <div class="file-card" draggable="true" data-cat="kepegawaian" id="f2">📄 Surat Permohonan Cuti - Rina</div>
+                            <div class="file-card" draggable="true" data-cat="kerjasama" id="f3">📄 Draft MoU PT. Mitra Sejahtera</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:1rem;">
+                            <div class="drop-target" data-cat="keuangan"><h4>💰 Laci KEUANGAN</h4></div>
+                            <div class="drop-target" data-cat="kepegawaian"><h4>👥 Laci KEPEGAWAIAN</h4></div>
+                            <div class="drop-target" data-cat="kerjasama"><h4>🤝 Laci KERJASAMA</h4></div>
+                        </div>
+                    </div>
+                `;
+                this.initDragDrop(3);
+            },
+
+            renderLevel2(stage) {
+                stage.innerHTML = `
+                    <div style="max-width: 600px; margin: 0 auto;">
+                        <div style="background: rgba(15,23,42,0.8); border:1px solid var(--border); padding:1.5rem; border-radius:12px; margin-bottom:1.5rem;">
+                            <p style="color:var(--text-sub); font-size:0.85rem;">Dokumen Pegawai Baru:</p>
+                            <h3 style="color:var(--accent); font-size:1.4rem; margin:0.5rem 0;">Nama Pegawai: "Ahmad Zaelani"</h3>
+                            <p style="font-size:0.9rem;">Bagaimana hasil indexing namanya dan di folder mana arsip ini disimpan?</p>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                            <button class="btn" style="background:#1e293b; justify-content:center;" onclick="game.checkL2(false)">AHMAD, Zaelani (Folder A)</button>
+                            <button class="btn" style="background:#1e293b; justify-content:center;" onclick="game.checkL2(true)">ZAELANI, Ahmad (Folder Z)</button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            checkL2(isCorrect) {
+                if(isCorrect) {
+                    sfx.play('ok');
+                    this.score += 20;
+                    document.getElementById('score-disp').innerText = `Skor: ${this.score}`;
+                    this.showModal('✅', 'Indexing Tepat!', '<b>ZAELANI, Ahmad</b> diindeks dari kata nama belakang. Arsip tersimpan di Folder Z.', 'Lanjut ke Misi 3', () => this.loadLevel(3));
+                } else {
+                    sfx.play('err');
+                    alert("Salah! Mengindeks nama orang harus mendahulukan nama belakang.");
+                }
+            },
+
+            renderLevel3(stage) {
+                stage.innerHTML = `
+                    <div class="grid-2">
+                        <div>
+                            <h4 style="margin-bottom:1rem;">Kuitansi Pembayaran:</h4>
+                            <div class="file-card" draggable="true" data-tgl="15" id="t1">🧾 Kuitansi No. 042 (Tanggal: 15 Maret 2026)</div>
+                            <div class="file-card" draggable="true" data-tgl="20" id="t2">🧾 Kuitansi No. 043 (Tanggal: 20 Maret 2026)</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:1rem;">
+                            <div class="drop-target" data-tgl="15"><h4>📅 Laci 2026 > MARET > Folder Tgl 15</h4></div>
+                            <div class="drop-target" data-tgl="20"><h4>📅 Laci 2026 > MARET > Folder Tgl 20</h4></div>
+                        </div>
+                    </div>
+                `;
+                this.initDragDrop(2);
+            },
+
+            renderLevel4(stage) {
+                stage.innerHTML = `
+                    <div class="grid-2">
+                        <div>
+                            <h4 style="margin-bottom:1rem;">Surat Cabang Perusahaan:</h4>
+                            <div class="file-card" draggable="true" data-wil="bdg" id="w1">✉️ Surat dari PT. Bandung Jaya (Kota Bandung)</div>
+                            <div class="file-card" draggable="true" data-wil="sya" id="w2">✉️ Surat dari CV. Surabaya Makmur (Kota Surabaya)</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:1rem;">
+                            <div class="drop-target" data-wil="bdg"><h4>🗺️ Laci JAWA BARAT > Folder BANDUNG</h4></div>
+                            <div class="drop-target" data-wil="sya"><h4>🗺️ Laci JAWA TIMUR > Folder SURABAYA</h4></div>
+                        </div>
+                    </div>
+                `;
+                this.initDragDrop(2);
+            },
+
+            renderLevel5(stage) {
+                stage.innerHTML = `
+                    <div class="terminal" style="max-width:600px; margin:0 auto;">
+                        <div>> SYSTEM ACCESS CODE REQUIRED</div>
+                        <div>> TARGET ARSIP: "SK Cuti Pegawai"</div>
+                        <div style="margin-top:1rem; color:var(--text-sub);">
+                            Petunjuk Dewey System:<br>
+                            100 = Kepegawaian<br>
+                            110 = Cuti Pegawai<br>
+                            200 = Keuangan
+                        </div>
+                        <div style="margin-top:1.5rem; display:flex; align-items:center;">
+                            <span>> MASUKKAN KODE DEWEY:</span>
+                            <input type="text" id="term-inp" class="term-input" maxlength="3" autocomplete="off">
+                            <button class="btn" style="padding:0.4rem 1rem; margin-left:1rem;" onclick="game.checkL5()">DECRYPT</button>
+                        </div>
+                    </div>
+                `;
+                setTimeout(() => document.getElementById('term-inp').focus(), 100);
+            },
+
+            checkL5() {
+                const val = document.getElementById('term-inp').value.trim();
+                if(val === '110') {
+                    sfx.play('ok');
+                    this.score += 20;
+                    document.getElementById('score-disp').innerText = `Skor: ${this.score}`;
+                    this.showModal('🏆', 'SEMUA MISI SELESAI!', `Selamat! Anda berhasil menguasai 5 Sistem Kearsipan dengan Skor Akhir: <b>${this.score}</b>.`, 'Main Lagi', () => location.reload());
+                } else {
+                    sfx.play('err');
+                    alert("Kode Salah! Lihat daftar kode pada Buku Panduan Kearsipan di sebelah kiri.");
+                }
+            },
+
+            initDragDrop(targetCount) {
+                document.querySelectorAll('.file-card').forEach(fc => {
+                    fc.ondragstart = e => {
+                        e.dataTransfer.setData('id', fc.id);
+                        e.dataTransfer.setData('cat', fc.dataset.cat || fc.dataset.tgl || fc.dataset.wil);
+                    };
+                });
+
+                document.querySelectorAll('.drop-target').forEach(dt => {
+                    dt.ondragover = e => { e.preventDefault(); dt.classList.add('hover'); };
+                    dt.ondragleave = () => dt.classList.remove('hover');
+                    dt.ondrop = e => {
+                        e.preventDefault(); dt.classList.remove('hover');
+                        const id = e.dataTransfer.getData('id');
+                        const cat = e.dataTransfer.getData('cat');
+                        const targetCat = dt.dataset.cat || dt.dataset.tgl || dt.dataset.wil;
+
+                        if (cat === targetCat) {
+                            sfx.play('ok');
+                            const el = document.getElementById(id);
+                            dt.appendChild(el); el.draggable = false;
+                            el.style.background = 'rgba(16, 185, 129, 0.2)';
+                            el.style.borderColor = 'var(--success)';
+                            
+                            this.levelProgress++;
+                            this.score += 10;
+                            document.getElementById('score-disp').innerText = `Skor: ${this.score}`;
+
+                            if(this.levelProgress === targetCount) {
+                                setTimeout(() => {
+                                    this.showModal('🎉', 'Misi Selesai!', 'Sistem Kearsipan berhasil dikelompokkan dengan benar.', `Lanjut ke Misi ${this.currentLevel + 1}`, () => this.loadLevel(this.currentLevel + 1));
+                                }, 500);
+                            }
+                        } else {
+                            sfx.play('err');
+                        }
+                    };
+                });
+            }
+        };
+
+        // Start Game on Load
+        window.onload = () => game.init();
+    </script>
+</body>
+</html>
