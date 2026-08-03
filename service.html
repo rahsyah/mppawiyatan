@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Service Excellence - EduGame</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #39ff14;
+            --dark-bg: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: #fff;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(57, 255, 20, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 200, 255, 0.05), transparent 25%);
+        }
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 1.5rem;
+        }
+        .btn-neon {
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .btn-neon:hover:not(:disabled) {
+            background: var(--neon-green);
+            color: var(--dark-bg);
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+        .btn-neon:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: gray;
+            color: gray;
+        }
+        /* Hide all sections initially */
+        .screen { display: none; opacity: 0; transition: opacity 0.4s ease; }
+        .screen.active { display: flex; opacity: 1; }
+        
+        /* Game Specifics */
+        .match-btn { transition: all 0.2s; }
+        .match-btn.selected { background: rgba(57, 255, 20, 0.2); border-color: var(--neon-green); }
+        .match-btn.matched { background: rgba(255, 255, 255, 0.05); opacity: 0.3; cursor: default; border-color: gray; }
+        
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
+            flex-direction: column; backdrop-filter: blur(5px);
+        }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 3px solid rgba(57,255,20, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--neon-green);
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p class="mt-4 text-neon-green font-semibold tracking-wider" id="loading-text">Memproses...</p>
+    </div>
+
+    <!-- PREVIEW BADGE -->
+    <div id="preview-badge" class="hidden fixed top-2 right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded font-bold z-50">
+        ⚠️ MODE PREVIEW
+    </div>
+
+    <main id="start-screen" class="screen active flex-col w-full max-w-md glass-panel p-8">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold mb-2"><span class="text-[var(--neon-green)]">SERVICE</span> EXCELLENCE</h1>
+            <p class="text-gray-400 text-sm">EduGame Interaktif SMK Kelas X</p>
+        </div>
+        <form id="start-form" class="flex flex-col gap-5">
+            <div>
+                <label class="block text-xs text-gray-400 mb-1 ml-1">NAMA LENGKAP</label>
+                <input type="text" id="player-name" required class="w-full bg-transparent border-b border-gray-600 focus:border-[var(--neon-green)] text-white p-2 outline-none transition-colors" placeholder="Masukkan nama...">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1 ml-1">KELAS</label>
+                <select id="player-class" required class="w-full bg-slate-800 border-b border-gray-600 focus:border-[var(--neon-green)] text-white p-2 outline-none">
+                    <option value="" disabled selected>Pilih Kelas</option>
+                    <option value="X AKL">X Akuntansi (AKL)</option>
+                    <option value="X OTKP">X Perkantoran (OTKP)</option>
+                    <option value="X BDP">X Pemasaran (BDP)</option>
+                    <option value="X RPL">X Rekayasa Perangkat Lunak (RPL)</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-neon w-full py-3 rounded mt-4">MULAI GAME</button>
+        </form>
+    </main>
+
+    <main id="quiz-screen" class="screen flex-col w-full max-w-2xl glass-panel p-6">
+        <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-3">
+            <div class="text-[var(--neon-green)] font-bold">Skor: <span id="quiz-score">0</span></div>
+            <div class="text-xl font-bold tracking-widest text-white"><span id="quiz-timer">03:00</span></div>
+            <div class="text-gray-400 text-sm">Kuis <span id="q-current">1</span>/<span id="q-total">5</span></div>
+        </div>
+        <div id="question-container" class="mb-8">
+            <h2 id="question-text" class="text-xl font-semibold mb-6">Pertanyaan dimuat...</h2>
+            <div id="options-container" class="flex flex-col gap-3">
+                <!-- Options will be injected here -->
+            </div>
+        </div>
+    </main>
+
+    <main id="matching-screen" class="screen flex-col w-full max-w-4xl glass-panel p-6">
+        <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-3">
+            <div class="text-[var(--neon-green)] font-bold">Skor: <span id="match-score">0</span></div>
+            <div class="text-xl font-bold tracking-widest text-white"><span id="match-timer">00:00</span></div>
+            <div class="text-gray-400 text-sm">Cocokkan Karakteristik!</div>
+        </div>
+        
+        <p class="text-center text-sm text-gray-300 mb-6">Pilih salah satu Istilah di kiri, lalu pilih definisinya di kanan.</p>
+        
+        <div class="grid grid-cols-2 gap-4 md:gap-8">
+            <!-- Terms Left -->
+            <div id="terms-container" class="flex flex-col gap-3"></div>
+            <!-- Definitions Right -->
+            <div id="defs-container" class="flex flex-col gap-3"></div>
+        </div>
+    </main>
+
+    <main id="result-screen" class="screen flex-col w-full max-w-3xl glass-panel p-6">
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-bold text-[var(--neon-green)] mb-2">GAME SELESAI!</h2>
+            <p id="result-message" class="text-lg">Kerja bagus, <span id="res-name">Nama</span>!</p>
+            
+            <div class="flex justify-center gap-8 mt-6">
+                <div class="text-center">
+                    <p class="text-gray-400 text-xs">SKOR AKHIR</p>
+                    <p id="res-score" class="text-4xl font-extrabold text-white">0</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-400 text-xs">WAKTU (Detik)</p>
+                    <p id="res-time" class="text-4xl font-extrabold text-white">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 border-t border-gray-700 pt-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Leaderboard Top 10</h3>
+                <button onclick="fetchLeaderboard()" class="text-xs btn-neon px-3 py-1 rounded">Refresh</button>
+            </div>
+            <div class="overflow-x-auto rounded-lg border border-gray-700">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-800 text-gray-400 text-xs uppercase">
+                        <tr>
+                            <th class="px-4 py-3">Peringkat</th>
+                            <th class="px-4 py-3">Nama</th>
+                            <th class="px-4 py-3">Kelas</th>
+                            <th class="px-4 py-3">Skor</th>
+                            <th class="px-4 py-3">Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <!-- Data will be injected -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button onclick="location.reload()" class="btn-neon px-8 py-3 rounded">MAINKAN LAGI</button>
+        </div>
+    </main>
+
+    <footer class="text-center mt-8 mb-4">
+        <small class="text-gray-600">
+            Generated by <a href="https://andie.basuki.com" target="_blank" class="text-decoration-none text-gray-400 hover:text-[var(--neon-green)] transition-colors">GAS Apps</a>
+        </small>
+    </footer>
+
+    <script>
+        // Data Game Kuis
+        const quizData = [
+            { q: "Apa yang dimaksud dengan Pelayanan Prima (Service Excellence)?", opts: ["Pelayanan yang biasa saja", "Pelayanan terbaik yang melampaui harapan pelanggan", "Pelayanan yang hanya menguntungkan perusahaan", "Pelayanan yang dilakukan dengan terpaksa"], ans: 1 },
+            { q: "Salah satu tujuan utama dari pelayanan prima adalah...", opts: ["Membuat pelanggan bingung", "Menghabiskan waktu pelanggan", "Menimbulkan loyalitas pelanggan", "Mengurangi jumlah karyawan"], ans: 2 },
+            { q: "Apa manfaat pelayanan prima bagi perusahaan?", opts: ["Meningkatkan citra baik perusahaan", "Menambah biaya operasional drastis", "Membuat karyawan cepat resign", "Menurunkan target penjualan"], ans: 0 },
+            { q: "Saat menghadapi pelanggan yang marah, sikap kita sebaiknya...", opts: ["Ikut marah", "Mendengarkan dengan empati dan mencari solusi", "Mengabaikan pelanggan", "Menyuruh pelanggan pulang"], ans: 1 },
+            { q: "Sikap ramah dalam pelayanan prima ditunjukkan melalui...", opts: ["Senyum, sapa, dan salam", "Berbicara dengan nada tinggi", "Menghindari kontak mata", "Bermain HP saat melayani"], ans: 0 }
+        ];
+
+        // Data Game Mencocokkan
+        const matchData = [
+            { id: "M1", term: "Cepat", def: "Menyelesaikan layanan sesuai batas waktu tanpa menunda" },
+            { id: "M2", term: "Tepat", def: "Memberikan layanan yang akurat dan sesuai kebutuhan" },
+            { id: "M3", term: "Ramah", def: "Menunjukkan sikap hangat, senyum, dan bersahabat" },
+            { id: "M4", term: "Sopan", def: "Berperilaku menghargai dan menjaga etika komunikasi" },
+            { id: "M5", term: "Tanggung Jawab", def: "Berani menanggung risiko atas layanan yang diberikan" }
+        ];
+
+        // State Global
+        let gameState = {
+            nama: '', kelas: '', skor: 0,
+            quizIndex: 0, timeTotal: 180, timeLeft: 180, timerInterval: null,
+            selectedTerm: null, selectedDef: null, matchesFound: 0
+        };
+
+        // UI Utils
+        function startLoading(text = "Memproses...") {
+            document.getElementById('loading-text').innerText = text;
+            document.getElementById('loading-overlay').style.display = 'flex';
+        }
+        function endLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Init Check
+        window.onload = () => {
+            if (typeof google === 'undefined') {
+                document.getElementById('preview-badge').classList.remove('hidden');
+            }
+        };
+
+        document.getElementById('start-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            gameState.nama = document.getElementById('player-name').value;
+            gameState.kelas = document.getElementById('player-class').value;
+            
+            startLoading("Menyiapkan Soal...");
+            setTimeout(() => {
+                endLoading();
+                startTimer();
+                initQuiz();
+            }, 800);
+        });
+
+        // Timer Logic
+        function startTimer() {
+            gameState.timerInterval = setInterval(() => {
+                gameState.timeLeft--;
+                updateTimerUI();
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    finishGame(true); // Time's up
+                }
+            }, 1000);
+        }
+        function updateTimerUI() {
+            const m = String(Math.floor(gameState.timeLeft / 60)).padStart(2, '0');
+            const s = String(gameState.timeLeft % 60).padStart(2, '0');
+            document.getElementById('quiz-timer').innerText = `${m}:${s}`;
+            document.getElementById('match-timer').innerText = `${m}:${s}`;
+        }
+
+        function initQuiz() {
+            switchScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            document.getElementById('quiz-score').innerText = gameState.skor;
+            const qData = quizData[gameState.quizIndex];
+            document.getElementById('q-current').innerText = gameState.quizIndex + 1;
+            document.getElementById('question-text').innerText = qData.q;
+            
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = '';
+            
+            qData.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded border border-gray-600 bg-gray-800 hover:bg-gray-700 hover:border-[var(--neon-green)] transition-all";
+                btn.innerText = opt;
+                btn.onclick = () => handleQuizAnswer(idx, qData.ans);
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleQuizAnswer(selectedIdx, correctIdx) {
+            if (selectedIdx === correctIdx) {
+                gameState.skor += 10;
+            }
+            gameState.quizIndex++;
+            if (gameState.quizIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                initMatching();
+            }
+        }
+
+        function initMatching() {
+            switchScreen('matching-screen');
+            document.getElementById('match-score').innerText = gameState.skor;
+            
+            // Shuffle data
+            const terms = [...matchData].sort(() => Math.random() - 0.5);
+            const defs = [...matchData].sort(() => Math.random() - 0.5);
+            
+            const termsCont = document.getElementById('terms-container');
+            const defsCont = document.getElementById('defs-container');
+            termsCont.innerHTML = ''; defsCont.innerHTML = '';
+
+            terms.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = "match-btn w-full p-3 border border-gray-600 rounded bg-gray-800 text-sm font-semibold text-center";
+                btn.innerText = item.term;
+                btn.dataset.id = item.id;
+                btn.onclick = () => selectTerm(btn, item.id);
+                termsCont.appendChild(btn);
+            });
+
+            defs.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = "match-btn w-full p-3 border border-gray-600 rounded bg-gray-800 text-xs text-left";
+                btn.innerText = item.def;
+                btn.dataset.id = item.id;
+                btn.onclick = () => selectDef(btn, item.id);
+                defsCont.appendChild(btn);
+            });
+        }
+
+        function selectTerm(btn, id) {
+            if(btn.classList.contains('matched')) return;
+            document.querySelectorAll('#terms-container .match-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            gameState.selectedTerm = { elem: btn, id: id };
+            checkMatch();
+        }
+
+        function selectDef(btn, id) {
+            if(btn.classList.contains('matched')) return;
+            document.querySelectorAll('#defs-container .match-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            gameState.selectedDef = { elem: btn, id: id };
+            checkMatch();
+        }
+
+        function checkMatch() {
+            if (gameState.selectedTerm && gameState.selectedDef) {
+                const isMatch = gameState.selectedTerm.id === gameState.selectedDef.id;
+                
+                if (isMatch) {
+                    gameState.skor += 10;
+                    document.getElementById('match-score').innerText = gameState.skor;
+                    
+                    gameState.selectedTerm.elem.classList.replace('selected', 'matched');
+                    gameState.selectedDef.elem.classList.replace('selected', 'matched');
+                    gameState.matchesFound++;
+                    
+                    if (gameState.matchesFound === matchData.length) {
+                        setTimeout(() => finishGame(false), 800);
+                    }
+                } else {
+                    // Reset selection visual if wrong
+                    gameState.selectedTerm.elem.classList.remove('selected');
+                    gameState.selectedDef.elem.classList.remove('selected');
+                }
+                gameState.selectedTerm = null;
+                gameState.selectedDef = null;
+            }
+        }
+
+        // Data Mocking Anti-Stuck
+        let mockLeaderboard = [
+            { id_main: "PLAY-SIM-1", nama: "Alex", kelas: "X RPL", skor: 100, waktu: 45 },
+            { id_main: "PLAY-SIM-2", nama: "Bima", kelas: "X TKJ", skor: 80, waktu: 60 }
+        ];
+
+        function finishGame(isTimeUp = false) {
+            clearInterval(gameState.timerInterval);
+            const timeUsed = gameState.timeTotal - gameState.timeLeft;
+            
+            if(isTimeUp) Swal.fire('Waktu Habis!', 'Skor Anda akan dihitung.', 'info');
+            
+            // Safe Payload (Primitive Types Only)
+            const payload = {
+                nama: gameState.nama,
+                kelas: gameState.kelas,
+                skor: gameState.skor,
+                waktu: timeUsed
+            };
+
+            startLoading("Menyimpan Skor ke Database...");
+            
+            if (typeof google === 'undefined') {
+                // SIMULATION MODE
+                setTimeout(() => {
+                    endLoading();
+                    mockLeaderboard.push(payload);
+                    mockLeaderboard.sort((a,b) => b.skor - a.skor || a.waktu - b.waktu);
+                    showResultScreen(payload.skor, payload.waktu);
+                    renderLeaderboard(mockLeaderboard);
+                    Swal.fire('Berhasil (Simulasi)', 'Data tersimpan ke memory browser.', 'success');
+                }, 1000);
+            } else {
+                // PRODUCTION GAS MODE
+                google.script.run
+                    .withSuccessHandler((res) => {
+                        endLoading(); // Wajib di baris pertama
+                        if(res.success) {
+                            showResultScreen(payload.skor, payload.waktu);
+                            fetchLeaderboard(); // Ambil dari server u/ optimis load
+                        } else {
+                            Swal.fire('Gagal Menyimpan', res.message, 'error');
+                            showResultScreen(payload.skor, payload.waktu); // Tetap ke hasil
+                        }
+                    })
+                    .withFailureHandler((err) => {
+                        endLoading(); // Wajib
+                        Swal.fire('Error Server', err.message, 'error');
+                        showResultScreen(payload.skor, payload.waktu); 
+                    })
+                    .saveGameResult(payload);
+            }
+        }
+
+        function showResultScreen(skor, waktu) {
+            switchScreen('result-screen');
+            document.getElementById('res-name').innerText = gameState.nama;
+            document.getElementById('res-score').innerText = skor;
+            document.getElementById('res-time').innerText = waktu;
+        }
+
+        function fetchLeaderboard() {
+            startLoading("Memuat Leaderboard...");
+            
+            if (typeof google === 'undefined') {
+                setTimeout(() => {
+                    endLoading();
+                    renderLeaderboard(mockLeaderboard);
+                }, 500);
+            } else {
+                google.script.run
+                    .withSuccessHandler((res) => {
+                        endLoading();
+                        if(res.success) {
+                            renderLeaderboard(res.data);
+                        } else {
+                            renderLeaderboard([]);
+                        }
+                    })
+                    .withFailureHandler((err) => {
+                        endLoading();
+                        console.error(err);
+                        renderLeaderboard([]);
+                    })
+                    .getLeaderboard(1, 10);
+            }
+        }
+
+        function renderLeaderboard(data) {
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '';
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-gray-500">Belum ada data</td></tr>`;
+                return;
+            }
+
+            data.forEach((row, idx) => {
+                let rankClass = "text-gray-300";
+                if(idx === 0) rankClass = "text-yellow-400 font-bold";
+                if(idx === 1) rankClass = "text-gray-300 font-bold";
+                if(idx === 2) rankClass = "text-orange-400 font-bold";
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-gray-700 hover:bg-gray-800 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-4 py-3 ${rankClass}">#${idx + 1}</td>
+                    <td class="px-4 py-3 font-semibold">${row.nama}</td>
+                    <td class="px-4 py-3 text-xs">${row.kelas}</td>
+                    <td class="px-4 py-3 text-[var(--neon-green)] font-bold">${row.skor}</td>
+                    <td class="px-4 py-3 text-gray-400">${row.waktu}s</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
