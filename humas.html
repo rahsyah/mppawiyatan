@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PR Master: Misi Klasifikasi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #f1c40f;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card {
+            background: #fff;
+            color: #333;
+            padding: 30px 20px;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: 600;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-internal {
+            background: #2ecc71;
+            color: white;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-external {
+            background: #e74c3c;
+            color: white;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #result-screen h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #f1c40f;
+        }
+
+        #result-screen p {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        .btn-restart {
+            background: #3498db;
+            color: white;
+        }
+
+        /* Animations */
+        .flash-green { animation: flashGreen 0.5s; }
+        .flash-red { animation: flashRed 0.5s; }
+
+        @keyframes flashGreen {
+            0% { background-color: #fff; }
+            50% { background-color: #d4edda; color: #155724; }
+            100% { background-color: #fff; }
+        }
+
+        @keyframes flashRed {
+            0% { background-color: #fff; }
+            50% { background-color: #f8d7da; color: #721c24; }
+            100% { background-color: #fff; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <h1>PR Master</h1>
+            <p style="margin-bottom: 30px; font-size: 16px; line-height: 1.6;">
+                Selamat datang, Manajer Humas! Tugas Anda adalah memilah kasus-kasus yang masuk. 
+                Tentukan apakah ini tugas <b>Humas Internal</b> (karyawan/manajemen) atau <b>Humas Eksternal</b> (media/masyarakat/konsumen).
+            </p>
+            <button class="btn-restart" onclick="startGame()">Mulai Game</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="hidden">
+            <h1>Misi Humas</h1>
+            <div class="status-bar">
+                <span>Skor: <span id="score">0</span></span>
+                <span>Sisa: <span id="remaining">10</span></span>
+            </div>
+            
+            <div id="scenario-card" class="card">
+                <!-- Skenario akan muncul di sini -->
+            </div>
+
+            <div class="buttons">
+                <button class="btn-internal" onclick="checkAnswer('internal')">Humas Internal</button>
+                <button class="btn-external" onclick="checkAnswer('external')">Humas Eksternal</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden">
+            <h2>Misi Selesai!</h2>
+            <p>Skor Akhir Anda: <strong id="final-score">0</strong> / 100</p>
+            <p id="feedback-message" style="font-size: 16px; font-style: italic; margin-bottom: 30px;"></p>
+            <button class="btn-restart" onclick="location.reload()">Main Lagi</button>
+        </div>
+    </div>
+
+    <script>
+        // Data Materi: Skenario Public Relations
+        const scenarios = [
+            { text: "Mengirim Press Release ke jurnalis mengenai peluncuran produk baru.", type: "external" },
+            { text: "Membuat buletin bulanan untuk memberi info terbaru kepada seluruh karyawan.", type: "internal" },
+            { text: "Mengadakan konferensi pers untuk mengklarifikasi isu pencemaran lingkungan.", type: "external" },
+            { text: "Menyelenggarakan program 'Family Gathering' untuk keluarga staf perusahaan.", type: "internal" },
+            { text: "Melaksanakan program CSR (Corporate Social Responsibility) untuk warga sekitar pabrik.", type: "external" },
+            { text: "Memfasilitasi dialog antara manajemen perusahaan dengan serikat pekerja.", type: "internal" },
+            { text: "Menjawab keluhan pelanggan dan menjaga citra merek di media sosial (Instagram/X).", type: "external" },
+            { text: "Menyusun program penghargaan (Employee of the Month) untuk memotivasi staf.", type: "internal" },
+            { text: "Membangun hubungan baik dengan pejabat pemerintah daerah setempat.", type: "external" },
+            { text: "Mensosialisasikan visi, misi, dan budaya perusahaan (Corporate Culture) kepada pegawai baru.", type: "internal" }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let gameData = [];
+
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            
+            // Acak urutan pertanyaan
+            gameData = scenarios.sort(() => Math.random() - 0.5);
+            currentQuestion = 0;
+            score = 0;
+            updateUI();
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= gameData.length) {
+                endGame();
+                return;
+            }
+            
+            const card = document.getElementById('scenario-card');
+            card.className = 'card'; // Reset animasi
+            card.innerText = gameData[currentQuestion].text;
+            updateUI();
+        }
+
+        function checkAnswer(answer) {
+            const card = document.getElementById('scenario-card');
+            const correctAnswer = gameData[currentQuestion].type;
+
+            if (answer === correctAnswer) {
+                score += 10;
+                card.classList.add('flash-green');
+            } else {
+                card.classList.add('flash-red');
+            }
+
+            // Tunggu animasi sebentar sebelum lanjut
+            setTimeout(() => {
+                currentQuestion++;
+                showQuestion();
+            }, 600);
+        }
+
+        function updateUI() {
+            document.getElementById('score').innerText = score;
+            document.getElementById('remaining').innerText = gameData.length - currentQuestion;
+        }
+
+        function endGame() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+
+            let feedback = document.getElementById('feedback-message');
+            if (score === 100) {
+                feedback.innerText = "Luar Biasa! Anda adalah seorang Maestro PR sejati!";
+            } else if (score >= 70) {
+                feedback.innerText = "Kerja Bagus! Insting Humas Anda sudah sangat tajam.";
+            } else {
+                feedback.innerText = "Terus belajar! Perbanyak pemahaman beda audiens internal dan eksternal ya.";
+            }
+        }
+    </script>
+</body>
+</html>
