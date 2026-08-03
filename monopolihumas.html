@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monopoli Humas — Corporate Public Relations Monopoly</title>
+<style>
+:root{
+  --navy:#0B2A5B;
+  --blue-800:#123B87;
+  --blue-700:#1D4ED8;
+  --blue-600:#2563EB;
+  --blue-500:#3B82F6;
+  --blue-100:#DCEAFE;
+  --blue-50:#EFF6FF;
+  --white:#FFFFFF;
+  --ink:#0F1B33;
+  --gray:#5B6B85;
+  --line:#C9D9F2;
+  --bg:#EEF3FC;
+  --good:#15803D;
+  --bad:#C0272D;
+  --warn:#B45309;
+  --gold:#D9A441;
+  --radius:14px;
+  --shadow:0 10px 30px rgba(11,42,91,.14);
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  background:
+    radial-gradient(1200px 500px at 10% -10%, var(--blue-100), transparent),
+    radial-gradient(900px 500px at 110% 10%, #d7e6ff, transparent),
+    var(--bg);
+  color:var(--ink);
+  min-height:100%;
+}
+.app{max-width:1360px;margin:0 auto;padding:18px 18px 40px;}
+header.top{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:linear-gradient(120deg,var(--navy),var(--blue-700) 70%);
+  color:#fff;border-radius:var(--radius);padding:18px 22px;box-shadow:var(--shadow);
+  margin-bottom:18px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand .mark{
+  width:46px;height:46px;border-radius:12px;background:#fff;color:var(--blue-700);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;
+  box-shadow:inset 0 0 0 2px var(--blue-100);flex-shrink:0;
+}
+.brand h1{margin:0;font-size:20px;letter-spacing:.3px;font-weight:800;}
+.brand p{margin:2px 0 0;font-size:12.5px;color:var(--blue-100);font-weight:500;}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap;}
+button{font-family:inherit;cursor:pointer;border:none;}
+.btn{
+  padding:9px 16px;border-radius:10px;font-weight:700;font-size:13.5px;
+  background:#fff;color:var(--blue-700);transition:transform .12s,box-shadow .12s;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(0,0,0,.15);}
+.btn:active{transform:translateY(0);}
+.btn.ghost{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);}
+.btn.danger{background:#fff;color:var(--bad);}
+.btn.gold{background:var(--gold);color:#4A2E00;}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* ---------- SETUP SCREEN ---------- */
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;}
+#setupScreen .card{max-width:720px;margin:0 auto;}
+#setupScreen h2{margin:0 0 6px;color:var(--navy);font-size:22px;}
+#setupScreen .sub{color:var(--gray);margin:0 0 20px;font-size:14px;line-height:1.5;}
+.field-row{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+.field-row label{font-weight:700;color:var(--navy);font-size:14px;min-width:150px;}
+.stepper{display:flex;align-items:center;gap:10px;}
+.stepper button{
+  width:34px;height:34px;border-radius:9px;background:var(--blue-50);color:var(--blue-700);
+  font-size:18px;font-weight:800;box-shadow:inset 0 0 0 1px var(--line);
+}
+.stepper button:hover{background:var(--blue-100);}
+.stepper .count{width:34px;text-align:center;font-weight:800;font-size:18px;color:var(--navy);}
+#playerInputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.pinput{display:flex;align-items:center;gap:8px;background:var(--blue-50);border-radius:10px;padding:8px 10px;}
+.swatch{width:26px;height:26px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 2px #fff, 0 0 0 3px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;}
+.pinput input{
+  border:none;background:transparent;outline:none;font-size:14px;font-weight:600;color:var(--ink);width:100%;
+}
+.syllabus{background:var(--blue-50);border-radius:10px;padding:14px 16px;font-size:12.5px;color:var(--navy);line-height:1.7;margin-bottom:18px;}
+.syllabus b{display:block;margin-bottom:4px;font-size:13px;}
+.syllabus span{display:inline-block;background:#fff;border-radius:6px;padding:2px 8px;margin:2px 4px 0 0;box-shadow:inset 0 0 0 1px var(--line);}
+#startBtn{width:100%;padding:14px;border-radius:12px;background:var(--blue-700);color:#fff;font-size:15px;font-weight:800;letter-spacing:.3px;}
+#startBtn:hover{background:var(--navy);}
+
+/* ---------- GAME SCREEN ---------- */
+#gameScreen{display:none;gap:16px;grid-template-columns:minmax(0,1fr) 320px;}
+@media(min-width:901px){#gameScreen{display:grid;}}
+.board-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.board{
+  --n:11;
+  width:min(78vw,640px);
+  aspect-ratio:1/1;
+  display:grid;
+  grid-template-columns:repeat(11,1fr);
+  grid-template-rows:repeat(11,1fr);
+  background:#fff;
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  padding:6px;
+  gap:3px;
+  position:relative;
+}
+.tile{
+  border-radius:6px;
+  background:var(--blue-50);
+  box-shadow:inset 0 0 0 1px var(--line);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:var(--navy);text-align:center;line-height:1.15;
+  position:relative;overflow:hidden;padding:2px;
+}
+.tile .ic{font-size:14px;margin-bottom:1px;}
+.tile.corner{background:linear-gradient(160deg,var(--blue-700),var(--navy));color:#fff;font-size:9.5px;}
+.tile.corner .ic{font-size:18px;}
+.tile.start{background:linear-gradient(160deg,var(--gold),#B9822B);color:#4A2E00;}
+.tile.type-edu{background:#E7F0FF;}
+.tile.type-challenge{background:#FDECEC;}
+.tile.type-bonus{background:#EAF9EF;}
+.tile.type-crisis{background:#FFE8E0;}
+.tile.type-meeting{background:#F3ECFF;}
+.tile.type-media{background:#E6FBFA;}
+.tile.type-internal{background:#FFF6DE;}
+.tile.type-external{background:#E8F2FF;}
+.center-panel{
+  grid-column:2/11;grid-row:2/11;
+  background:linear-gradient(150deg,var(--navy),var(--blue-700));
+  border-radius:12px;color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  padding:14px;text-align:center;
+}
+.center-panel .logo{font-size:clamp(14px,2.4vw,22px);font-weight:800;letter-spacing:1px;}
+.center-panel .tag{font-size:clamp(9px,1.1vw,11.5px);color:var(--blue-100);max-width:80%;}
+.dice-zone{display:flex;align-items:center;gap:16px;margin-top:6px;}
+.dice{
+  width:52px;height:52px;background:#fff;border-radius:12px;color:var(--navy);
+  display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;
+  box-shadow:0 8px 18px rgba(0,0,0,.25);
+}
+.dice.rolling{animation:spin .12s linear infinite;}
+@keyframes spin{
+  0%{transform:rotate(0) scale(1);}
+  50%{transform:rotate(180deg) scale(1.08);}
+  100%{transform:rotate(360deg) scale(1);}
+}
+#rollBtn{padding:12px 20px;border-radius:12px;background:var(--gold);color:#4A2E00;font-weight:800;font-size:14px;}
+#rollBtn:hover{filter:brightness(1.05);}
+.turn-info{font-size:12px;color:var(--blue-100);}
+.turn-info b{color:#fff;}
+.token{
+  position:absolute;width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;
+  box-shadow:0 0 0 2px #fff,0 3px 7px rgba(0,0,0,.4);
+  transition:top .18s ease, left .18s ease;
+  z-index:5;
+}
+
+/* progress bar row under board */
+.progress-row{width:min(78vw,640px);display:flex;flex-direction:column;gap:8px;}
+.pbar-item{display:flex;align-items:center;gap:8px;background:#fff;border-radius:10px;padding:8px 10px;box-shadow:var(--shadow);}
+.pbar-item .dot{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;}
+.pbar-item .name{font-size:12.5px;font-weight:700;color:var(--navy);width:90px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pbar-item .track{flex:1;height:8px;background:var(--blue-50);border-radius:6px;overflow:hidden;}
+.pbar-item .fill{height:100%;border-radius:6px;transition:width .3s;}
+.pbar-item .pos{font-size:11px;color:var(--gray);width:60px;text-align:right;flex-shrink:0;}
+.pbar-item.active{box-shadow:0 0 0 2px var(--gold),var(--shadow);}
+
+/* sidebar */
+.sidebar{display:flex;flex-direction:column;gap:14px;}
+.panel{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;}
+.panel h3{margin:0 0 10px;font-size:14px;color:var(--navy);display:flex;align-items:center;gap:6px;}
+.lb-row{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:8px;font-size:13px;}
+.lb-row:nth-child(odd){background:var(--blue-50);}
+.lb-rank{width:20px;font-weight:800;color:var(--blue-700);text-align:center;flex-shrink:0;}
+.lb-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;}
+.lb-name{flex:1;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-score{font-weight:800;color:var(--navy);}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11.5px;color:var(--gray);}
+.legend div{display:flex;align-items:center;gap:6px;}
+.legend .sq{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+#logPanel{max-height:210px;overflow-y:auto;font-size:12px;color:var(--gray);display:flex;flex-direction:column-reverse;gap:6px;}
+#logPanel .entry{background:var(--blue-50);border-radius:8px;padding:6px 9px;color:var(--navy);}
+.round-badge{background:var(--blue-50);border-radius:8px;padding:8px 10px;font-size:12.5px;color:var(--navy);font-weight:700;display:flex;justify-content:space-between;}
+
+/* ---------- MODAL ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(10,20,40,.55);backdrop-filter:blur(2px);
+  display:none;align-items:center;justify-content:center;z-index:50;padding:16px;
+}
+.overlay.show{display:flex;}
+.modal{
+  background:#fff;border-radius:16px;max-width:560px;width:100%;box-shadow:0 30px 60px rgba(0,0,0,.35);
+  overflow:hidden;animation:pop .18s ease;
+}
+@keyframes pop{from{transform:scale(.92);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-head{padding:16px 20px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.modal-head h4{margin:0;font-size:15px;}
+.modal-head .badge{background:rgba(255,255,255,.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;}
+.timerbar{height:5px;background:rgba(255,255,255,.35);}
+.timerbar .fill{height:100%;background:#fff;width:100%;transition:width 1s linear;}
+.modal-body{padding:20px;}
+.modal-body .scenario{font-size:14.5px;line-height:1.55;color:var(--ink);margin-bottom:14px;}
+.opt{
+  display:block;width:100%;text-align:left;padding:11px 14px;margin-bottom:9px;border-radius:10px;
+  background:var(--blue-50);box-shadow:inset 0 0 0 1px var(--line);font-size:13.5px;color:var(--ink);font-weight:600;
+  transition:.15s;
+}
+.opt:hover:not(:disabled){background:var(--blue-100);}
+.opt.correct{background:#DCFCE7;box-shadow:inset 0 0 0 2px var(--good);color:#14532D;}
+.opt.wrong{background:#FEE2E2;box-shadow:inset 0 0 0 2px var(--bad);color:#7F1D1D;}
+.opt:disabled{cursor:default;}
+.feedback{font-size:13px;border-radius:10px;padding:10px 12px;margin-top:8px;display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:#DCFCE7;color:#14532D;}
+.feedback.bad{background:#FEE2E2;color:#7F1D1D;}
+.modal-foot{padding:14px 20px 20px;display:flex;justify-content:flex-end;}
+#nextBtn{padding:10px 20px;border-radius:10px;background:var(--blue-700);color:#fff;font-weight:800;font-size:13.5px;}
+#nextBtn:hover{background:var(--navy);}
+.flavor-icon{font-size:40px;text-align:center;margin-bottom:6px;}
+.flavor-points{text-align:center;font-size:22px;font-weight:900;margin:6px 0 2px;}
+.flavor-points.good{color:var(--good);}
+.flavor-points.bad{color:var(--bad);}
+
+/* ---------- END SCREEN ---------- */
+#endScreen .card{max-width:560px;margin:40px auto;text-align:center;}
+#endScreen .trophy{font-size:52px;}
+#endScreen h2{color:var(--navy);margin:6px 0 4px;}
+#endScreen .winner{font-size:18px;font-weight:800;color:var(--blue-700);margin-bottom:16px;}
+.final-row{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--blue-50);margin-bottom:8px;}
+.final-row .lb-rank{color:var(--navy);}
+
+@media(max-width:900px){
+  .board{width:min(94vw,520px);}
+  .progress-row{width:min(94vw,520px);}
+  .brand h1{font-size:16px;}
+  header.top{padding:14px 16px;}
+  #playerInputs{grid-template-columns:1fr;}
+  .tile{font-size:8px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <div class="mark">PR</div>
+      <div>
+        <h1>MONOPOLI HUMAS</h1>
+        <p>Corporate Public Relations Monopoly — SMK Manajemen Perkantoran</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn ghost" id="soundToggleBtn">🔊 Suara: Aktif</button>
+      <button class="btn danger" id="resetBtn">↺ Reset Game</button>
+    </div>
+  </header>
+
+  <!-- ===================== SETUP SCREEN ===================== -->
+  <div id="setupScreen">
+    <div class="card">
+      <h2>Siapkan Permainan</h2>
+      <p class="sub">Game papan edukatif untuk mempelajari Pengertian, Tujuan, Fungsi, Peran Humas, Tugas Public Relations Officer, serta Hubungan Internal &amp; Eksternal — sambil menangani skenario krisis media sosial.</p>
+
+      <div class="field-row">
+        <label>Jumlah Pemain</label>
+        <div class="stepper">
+          <button id="decP">−</button>
+          <div class="count" id="playerCount">2</div>
+          <button id="incP">+</button>
+        </div>
+        <span style="font-size:12px;color:var(--gray);">(2–6 pemain)</span>
+      </div>
+
+      <div class="field-row" style="align-items:flex-start;">
+        <label style="margin-top:8px;">Nama Pemain</label>
+        <div id="playerInputs" style="flex:1;"></div>
+      </div>
+
+      <div class="syllabus">
+        <b>📚 Materi yang dipelajari:</b>
+        <span>Pengertian Humas</span><span>Tujuan Humas</span><span>Fungsi Humas</span>
+        <span>Peran Humas</span><span>Tugas PR Officer</span><span>Hubungan Internal</span>
+        <span>Hubungan Eksternal</span><span>Krisis Media Sosial</span>
+      </div>
+
+      <button id="startBtn">🎲 Mulai Permainan</button>
+    </div>
+  </div>
+
+  <!-- ===================== GAME SCREEN ===================== -->
+  <div id="gameScreen">
+    <div class="board-wrap">
+      <div class="board" id="board">
+        <div class="center-panel">
+          <div class="logo">MONOPOLI HUMAS</div>
+          <div class="tag" id="turnTag">Giliran: —</div>
+          <div class="dice-zone">
+            <div class="dice" id="dice">🎲</div>
+            <button id="rollBtn" class="btn">Lempar Dadu</button>
+          </div>
+          <div class="turn-info" id="turnInfo">Tekan tombol untuk memulai giliran</div>
+        </div>
+      </div>
+
+      <div class="progress-row" id="progressRow"></div>
+    </div>
+
+    <div class="sidebar">
+      <div class="panel">
+        <h3>🏆 Leaderboard</h3>
+        <div id="leaderboard"></div>
+      </div>
+
+      <div class="panel">
+        <div class="round-badge"><span>Ronde saat ini</span><span id="roundLabel">1 / 15</span></div>
+        <div style="margin-top:10px;">
+          <button class="btn" style="width:100%;background:var(--blue-50);color:var(--blue-700);" id="endGameBtn">🏁 Akhiri Permainan Sekarang</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>🗺️ Legenda Petak</h3>
+        <div class="legend">
+          <div><span class="sq" style="background:#E7F0FF;"></span>Edu Card</div>
+          <div><span class="sq" style="background:#FDECEC;"></span>Challenge</div>
+          <div><span class="sq" style="background:#EAF9EF;"></span>Bonus</div>
+          <div><span class="sq" style="background:#FFE8E0;"></span>Crisis</div>
+          <div><span class="sq" style="background:#F3ECFF;"></span>Meeting</div>
+          <div><span class="sq" style="background:#E6FBFA;"></span>Media</div>
+          <div><span class="sq" style="background:#FFF6DE;"></span>Internal</div>
+          <div><span class="sq" style="background:#E8F2FF;"></span>External</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>📜 Log Permainan</h3>
+        <div id="logPanel"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== END SCREEN ===================== -->
+  <div id="endScreen" style="display:none;">
+    <div class="card">
+      <div class="trophy">🏆</div>
+      <h2>Permainan Selesai!</h2>
+      <div class="winner" id="winnerText">—</div>
+      <div id="finalList"></div>
+      <button class="btn" style="background:var(--blue-700);color:#fff;margin-top:12px;width:100%;padding:12px;border-radius:10px;font-weight:800;" id="playAgainBtn">Main Lagi</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head" id="modalHead">
+      <h4 id="modalTitle">Edu Card</h4>
+      <span class="badge" id="modalBadge">+10 / -5</span>
+    </div>
+    <div class="timerbar"><div class="fill" id="timerFill"></div></div>
+    <div class="modal-body">
+      <div class="scenario" id="scenarioText"></div>
+      <div id="optionsWrap"></div>
+      <div class="feedback" id="feedbackBox"></div>
+    </div>
+    <div class="modal-foot">
+      <button id="nextBtn" style="display:none;">Lanjut →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ======================================================================
+   DATA: 80 SOAL EDU CARD (kategori: pengertian, tujuan, fungsi, peran,
+   tugas, internal, external)
+   format: [kategori, pertanyaan, [opsi0..3], indexBenar]
+====================================================================== */
+const QUESTIONS = [
+["pengertian","Menurut Frank Jefkins, Humas adalah keseluruhan bentuk komunikasi terencana antara organisasi dengan publiknya, dengan tujuan...",["Mencari keuntungan finansial semata","Mencapai tujuan spesifik berupa saling pengertian","Menutupi kesalahan perusahaan","Mengalahkan kompetitor"],1],
+["pengertian","Istilah 'Public Relations' jika diterjemahkan secara harfiah ke bahasa Indonesia berarti...",["Hubungan Media","Hubungan Masyarakat","Hubungan Investor","Hubungan Karyawan"],1],
+["pengertian","Ciri utama yang membedakan Humas dari sekadar periklanan adalah...",["Humas selalu berbayar","Humas bersifat komunikasi dua arah dan membangun hubungan jangka panjang","Humas hanya untuk perusahaan besar","Humas tidak melibatkan media"],1],
+["pengertian","Humas pada dasarnya merupakan bagian dari fungsi...",["Produksi","Manajemen","Keuangan","Distribusi"],1],
+["pengertian","Menurut IPRA (International Public Relations Association), Humas adalah fungsi manajemen yang bersifat...",["Berkelanjutan dan terencana","Insidental dan spontan","Rahasia dan tertutup","Hanya untuk krisis"],0],
+["pengertian","Salah satu unsur penting dalam definisi Humas adalah 'mutual understanding', yang berarti...",["Organisasi selalu benar","Saling pengertian antara organisasi dan publiknya","Publik harus mengikuti organisasi","Tidak ada komunikasi"],1],
+["pengertian","Humas berbeda dengan pemasaran (marketing) karena Humas lebih berfokus pada...",["Penjualan produk langsung","Membangun citra dan kepercayaan","Menetapkan harga","Distribusi barang"],1],
+["pengertian","'Publik' dalam konteks Humas merujuk pada...",["Hanya pelanggan","Hanya karyawan","Seluruh kelompok berkepentingan, internal maupun eksternal","Hanya pemerintah"],2],
+["pengertian","Humas sering disebut 'jembatan komunikasi' karena berperan...",["Menghubungkan organisasi dengan publiknya","Menghubungkan antar departemen keuangan","Menghubungkan investor dengan bank","Menghubungkan produk dengan gudang"],0],
+["pengertian","Kegiatan Humas yang baik bersifat...",["Berkelanjutan (continuous)","Sekali saja saat ada masalah","Hanya saat peluncuran produk","Hanya menjelang RUPS"],0],
+["pengertian","Menurut Cutlip, Center & Broom, Humas membangun dan mempertahankan hubungan saling menguntungkan antara organisasi dengan...",["Kompetitor","Publik yang menentukan keberhasilan organisasi","Hanya pemegang saham","Hanya media massa"],1],
+["pengertian","Perbedaan mendasar Humas dengan propaganda adalah...",["Humas berdasarkan kejujuran & fakta, propaganda cenderung manipulatif","Humas selalu ilegal","Propaganda lebih etis","Tidak ada perbedaan"],0],
+["tujuan","Tujuan utama Humas adalah membangun dan menjaga...",["Harga saham semata","Citra positif organisasi","Jumlah karyawan","Jumlah cabang"],1],
+["tujuan","Salah satu tujuan Humas dalam menghadapi isu negatif adalah...",["Menghindar dari publik","Mencegah dan mengatasi krisis komunikasi","Memecat karyawan yang mengeluh","Menutup media sosial perusahaan"],1],
+["tujuan","Humas bertujuan menciptakan opini publik yang...",["Menguntungkan organisasi berdasarkan fakta","Menyesatkan publik","Menguntungkan kompetitor","Netral tanpa arah"],0],
+["tujuan","Tujuan internal Humas adalah meningkatkan...",["Harga produk","Loyalitas dan motivasi karyawan","Jumlah utang perusahaan","Jam kerja karyawan"],1],
+["tujuan","Salah satu tujuan Humas eksternal adalah membangun hubungan baik dengan...",["Pesaing bisnis","Media massa dan komunitas","Hanya pemerintah asing","Hanya vendor tunggal"],1],
+["tujuan","Tujuan Humas dalam mendukung pemasaran disebut juga...",["Marketing public relations","Financial relations","Labor relations","Employee branding"],0],
+["tujuan","Humas bertujuan menciptakan saling pengertian (mutual understanding) antara...",["Organisasi dengan dirinya sendiri","Organisasi dengan publiknya","Direktur dengan komisaris saja","Hanya antar-departemen"],1],
+["tujuan","Salah satu tujuan jangka panjang Humas adalah membangun...",["Reputasi dan kepercayaan yang berkelanjutan","Keuntungan instan","Monopoli pasar","Utang jangka pendek"],0],
+["tujuan","Tujuan Humas saat menghadapi krisis media sosial adalah...",["Menghapus semua akun media sosial","Meredam dampak negatif dan memulihkan kepercayaan publik","Menyalahkan pelanggan","Diam selamanya"],1],
+["tujuan","Humas bertujuan menjadi penghubung yang menyampaikan aspirasi publik kepada...",["Manajemen organisasi","Kompetitor","Bank asing","Tidak ada pihak"],0],
+["tujuan","Salah satu tujuan Humas adalah menciptakan iklim kerja kondusif melalui...",["Komunikasi internal yang baik","Pengurangan gaji","Pembatasan informasi","Larangan rapat"],0],
+["fungsi","Menurut Cutlip & Center, fungsi Humas sebagai 'communicator' berarti Humas berfungsi sebagai...",["Juru bicara/penyampai informasi","Akuntan","Pengacara","Satpam"],0],
+["fungsi","Fungsi Humas sebagai 'back up management' berarti Humas...",["Menggantikan seluruh manajemen","Mendukung fungsi manajemen lain agar tujuan organisasi tercapai","Hanya bekerja saat direktur cuti","Mengelola gaji karyawan"],1],
+["fungsi","Fungsi Humas dalam membina hubungan harmonis berlaku untuk publik...",["Internal saja","Eksternal saja","Internal dan eksternal","Tidak ada publik"],2],
+["fungsi","Salah satu fungsi Humas adalah menyelenggarakan komunikasi...",["Satu arah dari organisasi ke publik","Dua arah timbal balik","Tanpa media apapun","Hanya lewat surat resmi"],1],
+["fungsi","Fungsi Humas sebagai 'good image maker' berarti berperan dalam...",["Menciptakan dan menjaga citra positif organisasi","Mendesain logo saja","Menjual saham","Mengatur pajak"],0],
+["fungsi","Fungsi Humas dalam menyebarluaskan informasi bertujuan agar publik...",["Memahami kebijakan dan kegiatan organisasi","Tidak tahu apapun","Hanya mengetahui laporan keuangan","Fokus pada gosip"],0],
+["fungsi","Salah satu fungsi Humas adalah menjadi penengah (mediator) antara...",["Manajemen dan publik saat terjadi kesalahpahaman","Dua kompetitor","Bank dan nasabah lain","Pemerintah asing"],0],
+["fungsi","Fungsi Humas dalam konteks manajemen krisis adalah...",["Mengendalikan informasi dan meredam dampak negatif","Menyembunyikan fakta selamanya","Menyalahkan media","Menutup perusahaan"],0],
+["fungsi","Karena membantu fungsi manajemen mencapai tujuan bersama, Humas disebut fungsi...",["Strategis dan melekat pada manajemen","Tambahan yang tidak penting","Hanya administratif","Hanya seremonial"],0],
+["fungsi","Fungsi Humas menciptakan dukungan dan partisipasi publik terhadap...",["Kebijakan dan kegiatan organisasi","Kompetitor","Partai politik","Tidak ada"],0],
+["fungsi","Salah satu fungsi Humas internal adalah menjaga...",["Hubungan baik dengan karyawan dan manajemen","Hubungan dengan pesaing","Harga saham semata","Jumlah pelanggan"],0],
+["fungsi","Fungsi Humas eksternal salah satunya membangun opini publik yang mendukung...",["Reputasi dan keberlangsungan organisasi","Hanya kepentingan pribadi direktur","Penurunan kualitas produk","Tidak ada tujuan"],0],
+["peran","Menurut Dozier & Broom, peran Humas sebagai 'expert prescriber' berarti Humas berperan sebagai...",["Ahli yang memberi solusi dan diagnosis masalah komunikasi","Tukang ketik surat","Satpam kantor","Kasir"],0],
+["peran","Peran Humas sebagai 'communication facilitator' berarti menjadi...",["Penghubung/fasilitator komunikasi antara organisasi dan publik","Penghalang komunikasi","Pengambil keputusan tunggal","Auditor keuangan"],0],
+["peran","Peran Humas sebagai 'problem solving process facilitator' berarti Humas terlibat dalam...",["Proses pemecahan masalah organisasi secara strategis","Hanya mencetak brosur","Mengurus absensi karyawan","Menjaga gudang"],0],
+["peran","Peran Humas sebagai 'communication technician' berfokus pada...",["Keterampilan teknis seperti menulis, desain, dan produksi media komunikasi","Mengelola investasi","Audit pajak","Rekrutmen karyawan"],0],
+["peran","Dalam krisis viral di media sosial, peran utama Humas adalah sebagai...",["Juru bicara sekaligus problem solver","Penonton pasif","Penyebar rumor","Pihak yang menghindar"],0],
+["peran","Peran Humas dalam membentuk citra perusahaan (corporate image) termasuk peran...",["Back up management","Hanya administratif","Hanya keuangan","Hanya logistik"],0],
+["peran","Peran Humas sebagai komunikator mencakup penyampaian pesan dari...",["Manajemen ke publik dan sebaliknya","Hanya dari publik ke pesaing","Hanya dari pemerintah ke organisasi","Tidak ada arah"],0],
+["peran","Peran strategis Humas dalam pengambilan keputusan organisasi adalah...",["Memberi masukan terkait dampak komunikasi dan reputasi","Menentukan harga jual produk","Mengatur jadwal produksi","Mengelola inventaris"],0],
+["peran","Saat isu negatif viral, peran Humas sebagai problem solving facilitator mengharuskan mereka...",["Berkoordinasi lintas departemen menyelesaikan akar masalah","Hanya menunggu instruksi CEO","Menyalahkan tim IT","Mengabaikan isu"],0],
+["peran","Peran Humas memastikan pesan yang disampaikan organisasi konsisten di...",["Semua kanal komunikasi","Hanya media cetak","Hanya rapat internal","Tidak perlu konsisten"],0],
+["peran","Peran Humas modern kini banyak melibatkan pemantauan dan respons di...",["Media sosial","Hanya surat kabar cetak","Hanya radio","Tidak ada kanal digital"],0],
+["tugas","Salah satu tugas rutin seorang Public Relations Officer (PRO) adalah menulis...",["Siaran pers (press release)","Laporan keuangan tahunan","Kontrak kerja karyawan","Invoice penjualan"],0],
+["tugas","Tugas PRO dalam mengelola media sosial perusahaan disebut...",["Social media management","Financial reporting","Payroll processing","Supply chain"],0],
+["tugas","Tugas PRO menjalin hubungan baik dengan wartawan dan media disebut...",["Media relations","Labor relations","Tax relations","Vendor relations"],0],
+["tugas","Ketika terjadi keluhan pelanggan di media sosial, tugas PRO adalah melakukan...",["Social media listening dan respons cepat","Menghapus akun media sosial","Memblokir pelanggan","Mengabaikan sepenuhnya"],0],
+["tugas","Tugas PRO menyusun program tanggung jawab sosial perusahaan disebut...",["Corporate Social Responsibility (CSR)","Corporate Tax Reporting","Corporate Legal Audit","Corporate Supply Management"],0],
+["tugas","Tugas PRO memantau opini publik terhadap organisasi disebut...",["Media monitoring / social listening","Financial auditing","Inventory control","Payroll scheduling"],0],
+["tugas","Tugas PRO menyelenggarakan konferensi pers atau seminar termasuk dalam...",["Event organizing","Procurement","Legal drafting","Budgeting produksi"],0],
+["tugas","Ketika krisis mulai membesar, tugas PRO menyiapkan pernyataan awal resmi yang disebut...",["Holding statement","Invoice statement","Shareholder ledger","Purchase order"],0],
+["tugas","Tugas PRO mendokumentasikan kegiatan organisasi untuk keperluan publikasi disebut...",["Dokumentasi dan publikasi","Audit internal","Rekonsiliasi bank","Manajemen gudang"],0],
+["tugas","Tugas PRO menangani keluhan pelanggan maupun karyawan agar tidak membesar disebut...",["Complaint handling","Tax filing","Stock opname","Payroll"],0],
+["tugas","Tugas PRO menyusun materi komunikasi krisis termasuk membuat...",["Crisis communication plan","Neraca keuangan","Jadwal produksi","Daftar gaji"],0],
+["tugas","Tugas PRO sehari-hari juga menjaga hubungan baik dengan karyawan melalui...",["Employee engagement dan internal communication","Audit pajak tahunan","Manajemen rantai pasok","Pengadaan barang"],0],
+["internal","Berikut yang termasuk publik internal organisasi adalah...",["Karyawan","Wartawan","Pelanggan","Pemerintah"],0],
+["internal","Hubungan Humas dengan pemegang saham disebut...",["Stockholder relations","Customer relations","Government relations","Community relations"],0],
+["internal","Hubungan Humas dengan serikat pekerja termasuk dalam hubungan...",["Internal","Eksternal","Media","Investor asing"],0],
+["internal","Tujuan hubungan internal Humas dengan karyawan adalah menjaga...",["Moral dan produktivitas kerja","Harga saham","Hubungan dengan pesaing","Opini media asing"],0],
+["internal","Berikut yang BUKAN termasuk publik internal adalah...",["Manajemen","Karyawan","Komunitas sekitar pabrik","Pemegang saham"],2],
+["internal","Kegiatan seperti newsletter internal dan townhall meeting bertujuan membina hubungan dengan...",["Karyawan","Media massa","Pelanggan","Investor asing"],0],
+["internal","Employee relations adalah bagian dari hubungan...",["Internal","Eksternal","Media","Pemerintah"],0],
+["internal","Salah satu bentuk hubungan internal Humas adalah menyampaikan kebijakan baru perusahaan kepada...",["Karyawan","Wartawan","Komunitas","Pemerintah asing"],0],
+["internal","Ketika karyawan mengancam mogok kerja karena isu viral, Humas perlu memperkuat hubungan...",["Internal melalui komunikasi terbuka dengan karyawan","Eksternal dengan investor asing","Dengan kompetitor","Dengan pemerintah luar negeri"],0],
+["internal","Rapat rutin antara manajemen dan karyawan untuk menjaga transparansi disebut...",["Townhall meeting","Press conference","Investor briefing","Customer gathering"],0],
+["internal","Salah satu tujuan hubungan internal adalah menciptakan rasa memiliki (sense of belonging) pada...",["Karyawan terhadap organisasi","Pelanggan terhadap kompetitor","Media terhadap pemerintah","Investor terhadap bank"],0],
+["internal","Bentuk komunikasi internal yang menyampaikan berita perusahaan secara berkala kepada karyawan disebut...",["Buletin/newsletter internal","Siaran pers eksternal","Iklan televisi","Laporan pajak"],0],
+["internal","Salah satu tujuan utama hubungan internal adalah mencegah terjadinya...",["Konflik dan kesalahpahaman antara manajemen dan karyawan","Peningkatan penjualan produk","Ekspansi pasar luar negeri","Kenaikan harga saham"],0],
+["internal","Ketika kebijakan baru menimbulkan keresahan karyawan, media internal yang paling tepat untuk klarifikasi cepat adalah...",["Grup komunikasi resmi/intranet perusahaan","Iklan di televisi nasional","Konferensi pers untuk media luar","Baliho di jalan raya"],0],
+["internal","Kotak saran atau survei kepuasan karyawan merupakan sarana Humas internal untuk...",["Menjaring umpan balik dan aspirasi karyawan","Menjual produk ke karyawan","Mempromosikan perusahaan ke publik luar","Menetapkan harga saham"],0],
+["internal","Salah satu pihak yang termasuk publik internal selain karyawan dan manajemen adalah...",["Dewan komisaris/pemegang saham internal","Wartawan lepas","Pelanggan setia","Komunitas sekitar pabrik"],0],
+["internal","Program orientasi karyawan baru (onboarding) merupakan bagian dari upaya Humas internal untuk...",["Membangun pemahaman budaya kerja sejak awal","Menambah jumlah pelanggan","Menekan biaya produksi","Meningkatkan harga jual"],0],
+["internal","Ketika terjadi rumor PHK di internal, tindakan Humas yang tepat untuk menjaga kepercayaan karyawan adalah...",["Memberi klarifikasi resmi secara terbuka dan tepat waktu","Membiarkan rumor menyebar tanpa tanggapan","Memecat karyawan yang bertanya","Mengalihkan isu ke media eksternal"],0],
+["internal","Kegiatan family gathering atau outing karyawan termasuk strategi Humas internal untuk meningkatkan...",["Kekompakan dan loyalitas tim","Penjualan produk baru","Investasi asing","Hubungan dengan pers"],0],
+["external","Berikut yang termasuk publik eksternal organisasi adalah...",["Pelanggan","Karyawan","Manajemen","Pemegang saham internal"],0],
+["external","Hubungan Humas dengan pers/wartawan disebut...",["Press relations","Employee relations","Labor relations","Stockholder relations"],0],
+["external","Hubungan Humas dengan pemerintah termasuk dalam hubungan...",["Eksternal","Internal","Media internal","Karyawan"],0],
+["external","Tujuan hubungan eksternal dengan komunitas sekitar disebut...",["Community relations","Employee relations","Internal branding","Payroll relations"],0],
+["external","Berikut yang BUKAN termasuk publik eksternal adalah...",["Pelanggan","Pers","Karyawan tetap perusahaan","Pemerintah"],2],
+["external","Hubungan dengan investor yang bukan bagian dari manajemen internal termasuk...",["Investor relations (eksternal)","Employee relations","Internal branding","Payroll relations"],0],
+["external","Ketika terjadi krisis viral, langkah hubungan eksternal Humas adalah berkoordinasi dengan...",["Media massa untuk klarifikasi publik","Hanya karyawan internal","Hanya pemegang saham","Tidak berkoordinasi dengan siapapun"],0],
+["external","Customer relations bertujuan menjaga kepercayaan dan loyalitas...",["Pelanggan","Karyawan internal","Pemegang saham mayoritas","Manajemen puncak"],0],
+["external","Salah satu bentuk hubungan eksternal adalah menjalin kerja sama dengan komunitas melalui program...",["CSR dan kegiatan sosial","Audit internal","Payroll bulanan","Rapat direksi tertutup"],0],
+["external","Ketika media menanyakan klarifikasi atas isu viral, Humas eksternal menyiapkan...",["Siaran pers dan juru bicara resmi","Laporan gaji karyawan","Jadwal shift karyawan","Daftar hadir rapat"],0],
+["external","Hubungan dengan pemasok (supplier) termasuk dalam kategori hubungan...",["Eksternal","Internal","Karyawan","Pemegang saham"],0],
+["external","Kegiatan konferensi pers yang mengundang wartawan dari berbagai media termasuk bentuk hubungan...",["Eksternal (press relations)","Internal (employee relations)","Investor internal","Serikat pekerja"],0],
+["external","Salah satu tujuan hubungan Humas dengan pemerintah (government relations) adalah...",["Menjaga kepatuhan regulasi dan hubungan baik dengan otoritas terkait","Menghindari seluruh kebijakan pemerintah","Menyaingi instansi pemerintah","Mengabaikan perizinan usaha"],0],
+["external","Ketika perusahaan mensponsori kegiatan sosial di masyarakat sekitar, ini adalah bentuk hubungan...",["Eksternal (community relations)","Internal (employee relations)","Hubungan antar-direksi","Hubungan dengan serikat pekerja"],0],
+["external","Publikasi laporan tahunan kepada calon investor termasuk kegiatan hubungan...",["Eksternal (investor relations)","Internal (payroll)","Hubungan dengan karyawan kontrak","Hubungan antar-departemen"],0],
+["external","Menjaga hubungan baik dengan distributor dan pemasok agar rantai pasok lancar termasuk hubungan...",["Eksternal","Internal","Karyawan tetap","Dewan direksi internal"],0],
+["external","Salah satu cara membangun hubungan baik dengan media secara berkelanjutan adalah...",["Rutin memberikan informasi akurat dan menjalin komunikasi terbuka","Menghindari kontak dengan wartawan","Hanya menghubungi media saat krisis","Memberi informasi yang tidak lengkap"],0],
+["external","Ketika organisasi nirlaba lokal mengajukan kerja sama CSR, Humas eksternal sebaiknya...",["Mengevaluasi dan menindaklanjuti secara profesional sesuai nilai perusahaan","Menolak tanpa pertimbangan","Mengabaikan permintaan tersebut","Mendelegasikan tanpa evaluasi"],0],
+["external","Salah satu indikator keberhasilan hubungan eksternal adalah...",["Meningkatnya kepercayaan publik terhadap organisasi","Menurunnya loyalitas karyawan","Meningkatnya konflik dengan pemerintah","Menurunnya kualitas produk"],0]
+];
+
+/* ======================================================================
+   DATA: 30 STUDI KASUS (20 Challenge umum + 10 Media/sosmed)
+   format: [tipe, skenario, [opsi], indexBenar, penjelasan]
+====================================================================== */
+const CASES = [
+["general","Produk unggulan perusahaan ditemukan cacat produksi dan mulai dibicarakan negatif oleh pelanggan. Apa langkah PERTAMA yang tepat dilakukan Humas?",["Menyangkal semua keluhan","Melakukan social media listening dan menyiapkan holding statement","Memecat tim produksi secara terbuka","Menutup akun media sosial"],1,"Langkah awal yang tepat adalah memantau sentimen publik dan menyiapkan pernyataan awal resmi sebelum isu simpang siur berkembang."],
+["general","Seorang karyawan mem-posting keluhan tentang kebijakan lembur yang tidak dibayar, dan postingan itu viral hingga karyawan lain resah. Strategi Humas internal yang tepat?",["Mengancam memecat karyawan yang mengeluh","Mengadakan townhall meeting untuk klarifikasi kebijakan","Mengabaikan keluhan sepenuhnya","Menyalahkan karyawan di media publik"],1,"Townhall meeting membuka ruang klarifikasi langsung dan menjaga kepercayaan karyawan."],
+["general","CEO membuat pernyataan kontroversial di wawancara media yang memicu kemarahan publik. Langkah Humas yang paling tepat?",["Membuat klarifikasi resmi dan permintaan maaf bila diperlukan","Menghindari media selamanya","Menyalahkan wartawan","Diam total tanpa respons"],0,"Klarifikasi jujur dan akuntabel membantu memulihkan kepercayaan publik lebih cepat."],
+["general","Sebuah LSM lingkungan mengkritik perusahaan karena dianggap tidak ramah lingkungan. Strategi hubungan eksternal terbaik?",["Mengabaikan kritik tersebut","Membuka dialog dan menunjukkan komitmen nyata melalui program CSR","Menuntut LSM tersebut","Membayar media agar tidak memberitakan"],1,"Dialog terbuka dan aksi nyata lebih efektif membangun hubungan jangka panjang dengan komunitas."],
+["general","Menjelang peluncuran produk baru, Humas ingin memastikan liputan media positif. Strategi yang tepat?",["Mengundang media dan influencer melalui press conference dan media kit","Tidak mengundang siapapun","Hanya mengandalkan iklan berbayar","Menyembunyikan informasi produk"],0,"Press conference dan media kit memudahkan media meliput secara akurat dan positif."],
+["general","Muncul rumor internal bahwa perusahaan akan PHK massal, karyawan panik. Langkah Humas internal yang tepat?",["Memberikan informasi transparan secepatnya melalui saluran resmi","Membiarkan rumor berkembang","Memecat karyawan yang menyebarkan rumor","Tidak memberikan informasi apapun"],0,"Transparansi cepat mencegah rumor merusak moral karyawan lebih jauh."],
+["general","Media nasional memberitakan isu negatif tentang perusahaan tanpa konfirmasi ke pihak perusahaan. Langkah tepat Humas?",["Menghubungi media untuk memberikan hak jawab dan klarifikasi data","Menuntut media secara langsung tanpa klarifikasi","Diam saja","Menyerang media di media sosial"],0,"Hak jawab yang profesional menjaga hubungan baik jangka panjang dengan media."],
+["general","Perusahaan menerima banyak keluhan pelanggan tentang layanan pengiriman yang lambat. Untuk menjaga hubungan pelanggan, Humas sebaiknya...",["Menyampaikan permintaan maaf dan solusi konkret secara terbuka","Menghapus semua komentar negatif","Menyalahkan jasa ekspedisi tanpa solusi","Mengabaikan keluhan"],0,"Permintaan maaf disertai solusi nyata membangun kembali kepercayaan pelanggan."],
+["general","Sebuah video lama karyawan yang tidak profesional beredar kembali dan viral, mencoreng nama baik perusahaan. Langkah Humas?",["Mengeluarkan pernyataan resmi dan menindaklanjuti secara internal sesuai kebijakan","Memecat karyawan tanpa proses","Menyalahkan netizen","Tidak melakukan apapun"],0,"Pernyataan resmi disertai proses internal yang adil menjaga kredibilitas perusahaan."],
+["general","Investor mulai khawatir setelah muncul berita negatif tentang kondisi keuangan perusahaan. Humas perlu...",["Mengadakan investor briefing dengan data yang transparan","Menyembunyikan laporan keuangan","Mengabaikan investor","Menyalahkan analis keuangan"],0,"Transparansi data kepada investor menjaga kepercayaan dan stabilitas saham."],
+["general","Sebuah komunitas lokal mengeluhkan dampak operasional pabrik terhadap lingkungan sekitar. Strategi hubungan eksternal terbaik?",["Mengadakan dialog dan program tanggung jawab sosial (CSR)","Mengabaikan keluhan","Melarang komunitas berbicara","Memindahkan pabrik tanpa penjelasan"],0,"Dialog dan CSR menunjukkan komitmen nyata perusahaan pada komunitas sekitar."],
+["general","Krisis media sosial mereda setelah 24 jam tanpa respons resmi perusahaan. Apa pelajaran yang bisa diambil?",["Terkadang isu kecil bisa mereda sendiri karena siklus berita cepat, namun tetap perlu dipantau","Diam selalu strategi terbaik","Humas tidak diperlukan","Media sosial tidak berpengaruh"],0,"Tidak semua isu butuh respons besar, tapi pemantauan tetap wajib dilakukan."],
+["general","Tim Humas menerima keluhan berulang dari pelanggan mengenai proses refund. Langkah proaktif yang tepat?",["Berkoordinasi dengan departemen terkait memperbaiki proses, bukan hanya meredam di sosmed","Menghapus keluhan","Menyalahkan pelanggan","Mengabaikan pola keluhan"],0,"Humas efektif menyelesaikan akar masalah lintas departemen, bukan sekadar meredam gejala."],
+["general","Perusahaan ingin membangun citra sebagai tempat kerja yang baik. Strategi Humas internal yang efektif?",["Program penghargaan karyawan dan komunikasi terbuka","Mengurangi hak cuti karyawan","Membatasi informasi kepada karyawan","Menghindari umpan balik karyawan"],0,"Penghargaan dan komunikasi terbuka memperkuat budaya kerja positif."],
+["general","Seorang influencer besar mengunggah ulasan negatif produk yang tidak sepenuhnya akurat. Langkah Humas yang bijak?",["Menghubungi influencer secara profesional untuk klarifikasi data sambil menyiapkan pernyataan publik","Menyerang influencer secara terbuka","Mengancam jalur hukum tanpa komunikasi dulu","Mengabaikan sepenuhnya"],0,"Pendekatan profesional lebih efektif menjaga reputasi dibanding konfrontasi terbuka."],
+["general","Menjelang RUPS, Humas perlu menjaga hubungan baik dengan pemegang saham melalui...",["Laporan kinerja yang transparan dan komunikasi rutin","Menyembunyikan data kinerja","Membatalkan RUPS","Mengabaikan pemegang saham minoritas"],0,"Transparansi laporan kinerja adalah dasar hubungan baik dengan pemegang saham."],
+["general","Setelah krisis viral mereda, langkah lanjutan Humas yang tepat adalah...",["Melakukan evaluasi pasca-krisis dan menyusun langkah pencegahan ke depan","Melupakan kejadian sepenuhnya","Memecat tim Humas","Tidak melakukan apapun"],0,"Evaluasi pasca-krisis penting agar organisasi belajar dan lebih siap ke depannya."],
+["general","Karyawan baru merasa kurang mendapat informasi tentang budaya dan kebijakan perusahaan. Humas internal sebaiknya...",["Menyusun program onboarding dan komunikasi internal yang jelas","Membiarkan karyawan mencari tahu sendiri","Membatasi akses informasi","Tidak peduli"],0,"Onboarding yang baik mempercepat adaptasi dan loyalitas karyawan baru."],
+["general","Sebuah media meminta wawancara eksklusif terkait isu sensitif perusahaan. Humas sebaiknya...",["Menyiapkan juru bicara terlatih dan pesan kunci sebelum wawancara","Menolak semua wawancara","Mengirim staf tanpa persiapan","Membatalkan tanpa alasan"],0,"Persiapan juru bicara dan pesan kunci mencegah kesalahpahaman saat wawancara."],
+["general","Perusahaan ingin mencegah krisis di masa depan. Langkah preventif Humas yang tepat?",["Menyusun crisis communication plan dan pelatihan simulasi krisis","Menunggu krisis terjadi dulu","Mengandalkan keberuntungan","Mengurangi tim Humas"],0,"Perencanaan dan simulasi krisis membuat organisasi lebih siap merespons cepat dan tepat."],
+["media","Sebuah cuitan keluhan pelanggan mendapat ribuan retweet dalam hitungan jam. Tindakan social media listening yang tepat?",["Memantau sentimen dan volume percakapan sebelum merespons","Langsung menghapus cuitan orang lain","Mematikan akun media sosial","Mengabaikan tanpa data"],0,"Social media listening memastikan respons didasarkan pada data, bukan asumsi."],
+["media","Tagar negatif tentang perusahaan mulai trending. Humas perlu mengukur tingkat urgensi menggunakan...",["Social media monitoring / listening tools","Laporan keuangan tahunan","Data penjualan tahun lalu","Survei kepuasan lima tahun lalu"],0,"Tools pemantauan media sosial memberi data real-time tentang skala krisis."],
+["media","Video TikTok yang menyerang perusahaan mendapat jutaan views. Strategi respons yang tepat?",["Menyiapkan pernyataan resmi yang faktual dan empatik, bukan defensif","Membalas dengan nada emosional","Mengancam pembuat video","Diam total tanpa evaluasi"],0,"Pernyataan yang faktual dan empatik lebih efektif meredakan krisis dibanding sikap defensif."],
+["media","Sebuah informasi hoaks tentang produk perusahaan beredar viral. Langkah Humas yang tepat?",["Melakukan klarifikasi berbasis fakta melalui kanal resmi","Membiarkan hoaks beredar","Menyalahkan pembuat hoaks tanpa klarifikasi data","Menghapus semua akun resmi"],0,"Klarifikasi berbasis fakta melalui kanal resmi adalah cara paling kredibel melawan hoaks."],
+["media","Komentar negatif menumpuk di kolom media sosial resmi perusahaan. Humas sebaiknya...",["Merespons dengan nada profesional dan solutif, bukan menghapus semua komentar","Menghapus semua komentar negatif","Menonaktifkan kolom komentar selamanya","Mengabaikan seluruhnya"],0,"Respons profesional dan solutif menunjukkan transparansi dan kepedulian perusahaan."],
+["media","Sebuah screenshot grup WhatsApp karyawan bocor ke publik dan viral. Langkah Humas yang tepat?",["Mengklarifikasi konteks secara jujur dan memperkuat komunikasi internal","Menyangkal keberadaan grup tersebut","Memecat semua anggota grup","Tidak melakukan apapun"],0,"Klarifikasi jujur dan perbaikan komunikasi internal mencegah krisis berulang."],
+["media","Netizen membandingkan respons lambat perusahaan dengan kompetitor yang sigap. Ini menunjukkan pentingnya...",["Kecepatan respons (response time) dalam manajemen krisis media sosial","Mengabaikan kompetitor","Menghapus akun media sosial","Membatasi informasi ke publik"],0,"Kecepatan merespons sangat menentukan persepsi publik saat krisis media sosial."],
+["media","CEO diminta membuat video klarifikasi setelah isu viral berskala nasional. Tujuan utama 'CEO Apology Video' adalah...",["Menunjukkan akuntabilitas pimpinan tertinggi dan memulihkan kepercayaan publik","Menyalahkan bawahan","Menghindari tanggung jawab","Mengalihkan isu ke topik lain"],0,"Kehadiran langsung pimpinan tertinggi menunjukkan keseriusan dan akuntabilitas organisasi."],
+["media","Setelah pernyataan resmi dirilis, publik tetap menganggapnya tidak tulus. Pelajaran yang bisa diambil?",["Pernyataan krisis harus autentik, empatik, dan disertai tindakan nyata","Pernyataan formal saja sudah cukup","Warganet selalu salah menilai","Tidak perlu evaluasi nada pernyataan"],0,"Keaslian nada dan tindakan nyata lebih penting daripada sekadar formalitas pernyataan."],
+["media","Sebuah akun palsu mengatasnamakan perusahaan menyebarkan informasi menyesatkan. Langkah tepat Humas?",["Melaporkan akun tersebut dan mengklarifikasi melalui akun resmi terverifikasi","Membuat akun tandingan untuk menyerang balik","Mengabaikan sepenuhnya","Menutup seluruh akun resmi"],0,"Melaporkan akun palsu dan klarifikasi resmi melindungi kredibilitas merek perusahaan."]
+];
+
+/* Crisis & Bonus flavor events: [teks, poin] */
+const CRISIS_EVENTS = [
+["Kompetitor merilis kampanye menyerang produk Anda!",-10],
+["Server website perusahaan down saat traffic sedang tinggi.",-10],
+["Karyawan senior mengundurkan diri mendadak dan ceritanya viral di LinkedIn.",-10],
+["Bocoran data pelanggan sempat beredar di forum online.",-15],
+["Influencer yang diajak kerja sama membatalkan kontrak mendadak.",-5],
+["Rapat internal penting terlewat karena miskomunikasi.",-5],
+["Keluhan pelanggan menumpuk tanpa respons selama beberapa hari.",-10],
+["Media lokal memberitakan isu tanpa konfirmasi ke perusahaan.",-10],
+["Tim Humas kehabisan anggaran kampanye secara mendadak.",-5],
+["Screenshot keluhan karyawan di grup internal bocor ke publik.",-10]
+];
+const BONUS_EVENTS = [
+["Kampanye CSR mendapat apresiasi dari media nasional!",10],
+["Program 'Employee of the Month' meningkatkan semangat tim.",5],
+["Press release perusahaan diliput positif oleh media besar.",10],
+["Testimoni pelanggan yang puas viral secara organik.",10],
+["Kerja sama dengan komunitas lokal berjalan sukses.",10],
+["Townhall meeting internal berjalan sangat baik, karyawan merasa didengar.",10],
+["Tim Humas berhasil membangun hubungan baik dengan wartawan senior.",5],
+["Video edukasi perusahaan mendapat banyak apresiasi positif.",10],
+["Investor memberi testimoni positif soal transparansi perusahaan.",10],
+["Karyawan lama mendapat penghargaan loyalitas, moral tim meningkat.",5]
+];
+
+/* ======================================================================
+   BOARD: 40 petak
+====================================================================== */
+const TILE_TYPES = [
+"start","edu","internal","bonus","edu","challenge","external","edu","crisis","media",
+"meeting","edu","external","bonus","edu","challenge","internal","edu","crisis","media",
+"bonus","edu","internal","challenge","edu","external","bonus","edu","crisis","media",
+"crisis","edu","external","challenge","edu","internal","bonus","edu","media","challenge"
+];
+const TYPE_META = {
+  start:{icon:"🏁",label:"START"},
+  edu:{icon:"📘",label:"Edu Card"},
+  challenge:{icon:"🧩",label:"Challenge"},
+  bonus:{icon:"⭐",label:"Bonus"},
+  crisis:{icon:"🔥",label:"Crisis"},
+  meeting:{icon:"🗣️",label:"Meeting"},
+  media:{icon:"📱",label:"Media"},
+  internal:{icon:"🤝",label:"Internal"},
+  external:{icon:"🌐",label:"External"}
+};
+const PLAYER_COLORS = ["#DC2626","#16A34A","#2563EB","#D97706","#7C3AED","#DB2777"];
+const PLAYER_ICONS = ["🦁","🐯","🐰","🐼","🦊","🐨"];
+
+/* ======================================================================
+   AUDIO (WebAudio, tanpa file eksternal)
+====================================================================== */
+let audioCtx = null;
+let soundOn = true;
+function ensureAudio(){ if(!audioCtx){ try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } }
+function beep(freq,dur,type,vol,delay){
+  if(!soundOn) return;
+  ensureAudio();
+  if(!audioCtx) return;
+  const t0 = audioCtx.currentTime + (delay||0);
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type||"sine";
+  osc.frequency.setValueAtTime(freq,t0);
+  gain.gain.setValueAtTime(0,t0);
+  gain.gain.linearRampToValueAtTime(vol||0.15,t0+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001,t0+dur);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(t0); osc.stop(t0+dur+0.02);
+}
+function sndDiceTick(){ beep(500+Math.random()*300,0.05,"square",0.08); }
+function sndMoveStep(){ beep(700,0.04,"square",0.06); }
+function sndCorrect(){ beep(660,0.12,"sine",0.15); beep(880,0.16,"sine",0.15,0.12); }
+function sndWrong(){ beep(220,0.25,"sawtooth",0.13); }
+function sndBonus(){ beep(523,0.1,"sine",0.14); beep(659,0.1,"sine",0.14,0.09); beep(784,0.18,"sine",0.14,0.18); }
+function sndCrisis(){ beep(160,0.3,"sawtooth",0.13); }
+function sndRoll(){ beep(900,0.06,"triangle",0.08); }
+
+/* ======================================================================
+   STATE
+====================================================================== */
+let players = [];
+let currentIdx = 0;
+let round = 1;
+const MAX_ROUNDS = 15;
+let rolling = false;
+let modalOpen = false;
+let timerHandle = null;
+let usedQuestions = new Set();
+let usedCases = new Set();
+
+const $ = (sel)=>document.querySelector(sel);
+const $all = (sel)=>document.querySelectorAll(sel);
+
+/* ------------------- SETUP SCREEN LOGIC ------------------- */
+let playerCount = 2;
+function renderPlayerInputs(){
+  const wrap = $("#playerInputs");
+  wrap.innerHTML = "";
+  for(let i=0;i<playerCount;i++){
+    const row = document.createElement("div");
+    row.className = "pinput";
+    row.innerHTML = '<span class="swatch" style="background:'+PLAYER_COLORS[i]+'">'+PLAYER_ICONS[i]+'</span>'+
+      '<input type="text" maxlength="16" placeholder="Nama Pemain '+(i+1)+'" id="pname'+i+'">';
+    wrap.appendChild(row);
+  }
+}
+$("#incP").addEventListener("click",()=>{ if(playerCount<6){ playerCount++; $("#playerCount").textContent=playerCount; renderPlayerInputs(); }});
+$("#decP").addEventListener("click",()=>{ if(playerCount>2){ playerCount--; $("#playerCount").textContent=playerCount; renderPlayerInputs(); }});
+renderPlayerInputs();
+
+$("#startBtn").addEventListener("click",()=>{
+  players = [];
+  for(let i=0;i<playerCount;i++){
+    const val = $("#pname"+i).value.trim();
+    players.push({name: val || ("Pemain "+(i+1)), color: PLAYER_COLORS[i], icon: PLAYER_ICONS[i], score:0, pos:0});
+  }
+  currentIdx = 0; round = 1;
+  $("#setupScreen").style.display = "none";
+  $("#endScreen").style.display = "none";
+  $("#gameScreen").style.display = "grid";
+  buildBoard();
+  renderAll();
+  logMsg("🎮 Permainan dimulai dengan "+players.length+" pemain. Giliran pertama: "+players[0].name+".");
+});
+
+/* ------------------- BUILD BOARD ------------------- */
+function getPos(i){
+  if(i<=9) return {row:11, col:11-i};
+  if(i<=19) return {row:11-(i-10), col:1};
+  if(i<=29) return {row:1, col:1+(i-20)};
+  return {row:1+(i-30), col:11};
+}
+function buildBoard(){
+  const board = $("#board");
+  // remove old tiles (keep center-panel)
+  board.querySelectorAll(".tile").forEach(t=>t.remove());
+  for(let i=0;i<40;i++){
+    const type = TILE_TYPES[i];
+    const meta = TYPE_META[type];
+    const p = getPos(i);
+    const div = document.createElement("div");
+    div.className = "tile type-"+type + (type==="start"||i%10===0? " corner":"");
+    if(type==="start") div.classList.add("start");
+    div.style.gridRow = p.row;
+    div.style.gridColumn = p.col;
+    div.id = "tile-"+i;
+    div.innerHTML = '<div class="ic">'+meta.icon+'</div><div>'+meta.label+'</div>';
+    board.appendChild(div);
+  }
+}
+
+/* ------------------- RENDER ------------------- */
+function renderAll(){
+  renderTokens();
+  renderProgress();
+  renderLeaderboard();
+  renderTurnInfo();
+  $("#roundLabel").textContent = round + " / " + MAX_ROUNDS;
+}
+function renderTokens(){
+  document.querySelectorAll(".token").forEach(t=>t.remove());
+  const board = $("#board");
+  const boardRect = board.getBoundingClientRect();
+  players.forEach((pl,idx)=>{
+    const tileEl = document.getElementById("tile-"+pl.pos);
+    if(!tileEl) return;
+    const tr = tileEl.getBoundingClientRect();
+    const tok = document.createElement("div");
+    tok.className = "token";
+    tok.style.background = pl.color;
+    tok.textContent = pl.icon;
+    tok.title = pl.name;
+    const offsetX = (idx%3)*8 - 8;
+    const offsetY = Math.floor(idx/3)*8 - 4;
+    tok.style.left = (tr.left - boardRect.left + tr.width/2 - 12 + offsetX) + "px";
+    tok.style.top = (tr.top - boardRect.top + tr.height/2 - 12 + offsetY) + "px";
+    board.appendChild(tok);
+  });
+}
+function renderProgress(){
+  const wrap = $("#progressRow");
+  wrap.innerHTML = "";
+  players.forEach((pl,idx)=>{
+    const pct = Math.round((pl.pos/39)*100);
+    const row = document.createElement("div");
+    row.className = "pbar-item"+(idx===currentIdx?" active":"");
+    row.innerHTML =
+      '<span class="dot" style="background:'+pl.color+'">'+pl.icon+'</span>'+
+      '<span class="name">'+escapeHtml(pl.name)+'</span>'+
+      '<span class="track"><span class="fill" style="width:'+pct+'%;background:'+pl.color+'"></span></span>'+
+      '<span class="pos">Skor: '+pl.score+'</span>';
+    wrap.appendChild(row);
+  });
+}
+function renderLeaderboard(){
+  const wrap = $("#leaderboard");
+  const sorted = players.map((p,i)=>({...p,idx:i})).sort((a,b)=>b.score-a.score);
+  wrap.innerHTML = "";
+  sorted.forEach((p,rank)=>{
+    const row = document.createElement("div");
+    row.className = "lb-row";
+    row.innerHTML =
+      '<span class="lb-rank">#'+(rank+1)+'</span>'+
+      '<span class="lb-dot" style="background:'+p.color+'">'+p.icon+'</span>'+
+      '<span class="lb-name">'+escapeHtml(p.name)+'</span>'+
+      '<span class="lb-score">'+p.score+'</span>';
+    wrap.appendChild(row);
+  });
+}
+function renderTurnInfo(){
+  const pl = players[currentIdx];
+  $("#turnTag").textContent = "Giliran: "+pl.name;
+  $("#turnInfo").innerHTML = "Skor saat ini: <b>"+pl.score+"</b> • Petak: "+pl.pos;
+}
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function logMsg(text){
+  const panel = $("#logPanel");
+  const div = document.createElement("div");
+  div.className = "entry";
+  div.textContent = text;
+  panel.appendChild(div);
+  panel.scrollTop = panel.scrollHeight;
+}
+
+/* ------------------- DICE / TURN FLOW ------------------- */
+$("#rollBtn").addEventListener("click", rollDice);
+function rollDice(){
+  if(rolling || modalOpen) return;
+  ensureAudio();
+  rolling = true;
+  $("#rollBtn").disabled = true;
+  const dice = $("#dice");
+  dice.classList.add("rolling");
+  let ticks = 0;
+  const spin = setInterval(()=>{
+    dice.textContent = String(1+Math.floor(Math.random()*6));
+    sndDiceTick();
+    ticks++;
+    if(ticks>8){
+      clearInterval(spin);
+      const finalVal = 1+Math.floor(Math.random()*6);
+      dice.textContent = finalVal;
+      dice.classList.remove("rolling");
+      sndRoll();
+      setTimeout(()=>movePlayer(finalVal),300);
+    }
+  },90);
+}
+function movePlayer(steps){
+  const pl = players[currentIdx];
+  let stepsLeft = steps;
+  const mover = setInterval(()=>{
+    pl.pos = (pl.pos+1)%40;
+    sndMoveStep();
+    renderTokens();
+    renderProgress();
+    stepsLeft--;
+    if(stepsLeft<=0){
+      clearInterval(mover);
+      rolling = false;
+      resolveTile(pl);
+    }
+  },220);
+}
+function resolveTile(pl){
+  const type = TILE_TYPES[pl.pos];
+  if(type==="start"){
+    logMsg("🏁 "+pl.name+" kembali ke titik START.");
+    renderTurnInfo();
+    endTurn();
+    return;
+  }
+  if(type==="bonus"){
+    const ev = BONUS_EVENTS[Math.floor(Math.random()*BONUS_EVENTS.length)];
+    openFlavorModal("⭐ Bonus", ev[0], ev[1], pl);
+    return;
+  }
+  if(type==="crisis"){
+    const ev = CRISIS_EVENTS[Math.floor(Math.random()*CRISIS_EVENTS.length)];
+    openFlavorModal("🔥 Crisis", ev[0], ev[1], pl);
+    return;
+  }
+  if(type==="edu" || type==="meeting" || type==="internal" || type==="external"){
+    let pool;
+    if(type==="internal") pool = QUESTIONS.filter(q=>q[0]==="internal");
+    else if(type==="external") pool = QUESTIONS.filter(q=>q[0]==="external");
+    else pool = QUESTIONS;
+    const q = pickUnused(pool, usedQuestions, QUESTIONS.length);
+    const timeLimit = type==="meeting" ? 10 : 20;
+    const title = type==="meeting" ? "🗣️ Meeting: Jawab Cepat" : (type==="internal"?"🤝 Internal: Identifikasi":(type==="external"?"🌐 External: Identifikasi":"📘 Edu Card"));
+    openQuestionModal(title, q, timeLimit, 10, pl);
+    return;
+  }
+  if(type==="challenge" || type==="media"){
+    const pool = type==="media" ? CASES.filter(c=>c[0]==="media") : CASES.filter(c=>c[0]==="general");
+    const c = pickUnusedCase(pool);
+    const title = type==="media" ? "📱 Media: Analisis Kasus Sosmed" : "🧩 Challenge: Studi Kasus Humas";
+    openCaseModal(title, c, 25, pl);
+    return;
+  }
+}
+function pickUnused(pool, usedSet, totalLen){
+  if(usedSet.size >= totalLen) usedSet.clear();
+  let tries=0, item;
+  do{ item = pool[Math.floor(Math.random()*pool.length)]; tries++; }
+  while(usedSet.has(item[1]) && tries<25);
+  usedSet.add(item[1]);
+  return item;
+}
+function pickUnusedCase(pool){
+  if(usedCases.size >= CASES.length) usedCases.clear();
+  let tries=0, item;
+  do{ item = pool[Math.floor(Math.random()*pool.length)]; tries++; }
+  while(usedCases.has(item[1]) && tries<25);
+  usedCases.add(item[1]);
+  return item;
+}
+
+/* ------------------- MODALS ------------------- */
+const overlay = $("#overlay");
+const modalHead = $("#modalHead");
+const modalTitle = $("#modalTitle");
+const modalBadge = $("#modalBadge");
+const timerFill = $("#timerFill");
+const scenarioText = $("#scenarioText");
+const optionsWrap = $("#optionsWrap");
+const feedbackBox = $("#feedbackBox");
+const nextBtn = $("#nextBtn");
+
+function headColor(kind){
+  const map = {edu:"#1D4ED8",challenge:"#C0272D",bonus:"#15803D",crisis:"#C0272D",meeting:"#7C3AED",media:"#0E7490",internal:"#B45309",external:"#1D4ED8"};
+  return map[kind]||"#1D4ED8";
+}
+function clearTimer(){ if(timerHandle){ clearInterval(timerHandle); timerHandle=null; } }
+
+function openQuestionModal(title, qData, seconds, correctPts, pl){
+  modalOpen = true;
+  overlay.classList.add("show");
+  modalHead.style.background = headColor(title.includes("Meeting")?"meeting":title.includes("Internal")?"internal":title.includes("External")?"external":"edu");
+  modalTitle.textContent = title;
+  modalBadge.textContent = "+"+correctPts+" / -5";
+  scenarioText.textContent = qData[1];
+  feedbackBox.className = "feedback";
+  feedbackBox.textContent = "";
+  nextBtn.style.display = "none";
+  optionsWrap.innerHTML = "";
+  const opts = qData[2];
+  const correctIdx = qData[3];
+  let answered = false;
+  opts.forEach((opt,i)=>{
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.textContent = String.fromCharCode(65+i)+". "+opt;
+    b.addEventListener("click",()=>{
+      if(answered) return;
+      answered = true;
+      clearTimer();
+      $all(".opt").forEach(o=>o.disabled=true);
+      if(i===correctIdx){
+        b.classList.add("correct");
+        applyScore(pl, correctPts);
+        sndCorrect();
+        feedbackBox.className = "feedback show ok";
+        feedbackBox.textContent = "✅ Benar! "+pl.name+" mendapat +"+correctPts+" poin.";
+        logMsg("✅ "+pl.name+" menjawab benar Edu/Meeting (+"+correctPts+")");
+      }else{
+        b.classList.add("wrong");
+        $all(".opt")[correctIdx].classList.add("correct");
+        applyScore(pl, -5);
+        sndWrong();
+        feedbackBox.className = "feedback show bad";
+        feedbackBox.textContent = "❌ Kurang tepat. Jawaban benar: "+opts[correctIdx]+". "+pl.name+" -5 poin.";
+        logMsg("❌ "+pl.name+" menjawab salah Edu/Meeting (-5)");
+      }
+      nextBtn.style.display = "inline-block";
+    });
+    optionsWrap.appendChild(b);
+  });
+  startTimer(seconds, ()=>{
+    if(answered) return;
+    answered = true;
+    $all(".opt").forEach(o=>o.disabled=true);
+    $all(".opt")[correctIdx].classList.add("correct");
+    applyScore(pl, -5);
+    sndWrong();
+    feedbackBox.className = "feedback show bad";
+    feedbackBox.textContent = "⏰ Waktu habis! Jawaban benar: "+opts[correctIdx]+". "+pl.name+" -5 poin.";
+    logMsg("⏰ Waktu habis untuk "+pl.name+" (-5)");
+    nextBtn.style.display = "inline-block";
+  });
+}
+
+function openCaseModal(title, cData, seconds, pl){
+  modalOpen = true;
+  overlay.classList.add("show");
+  modalHead.style.background = headColor(cData[0]==="media"?"media":"challenge");
+  modalTitle.textContent = title;
+  modalBadge.textContent = "+20 / -5";
+  scenarioText.textContent = cData[1];
+  feedbackBox.className = "feedback";
+  feedbackBox.textContent = "";
+  nextBtn.style.display = "none";
+  optionsWrap.innerHTML = "";
+  const opts = cData[2];
+  const correctIdx = cData[3];
+  const explain = cData[4];
+  let answered = false;
+  opts.forEach((opt,i)=>{
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.textContent = String.fromCharCode(65+i)+". "+opt;
+    b.addEventListener("click",()=>{
+      if(answered) return;
+      answered = true;
+      clearTimer();
+      $all(".opt").forEach(o=>o.disabled=true);
+      if(i===correctIdx){
+        b.classList.add("correct");
+        applyScore(pl, 20);
+        sndCorrect();
+        feedbackBox.className = "feedback show ok";
+        feedbackBox.textContent = "✅ Tepat! "+explain+" ("+pl.name+" +20 poin)";
+        logMsg("✅ "+pl.name+" berhasil menyelesaikan studi kasus (+20)");
+      }else{
+        b.classList.add("wrong");
+        $all(".opt")[correctIdx].classList.add("correct");
+        applyScore(pl, -5);
+        sndWrong();
+        feedbackBox.className = "feedback show bad";
+        feedbackBox.textContent = "❌ Belum tepat. "+explain+" ("+pl.name+" -5 poin)";
+        logMsg("❌ "+pl.name+" kurang tepat menjawab studi kasus (-5)");
+      }
+      nextBtn.style.display = "inline-block";
+    });
+    optionsWrap.appendChild(b);
+  });
+  startTimer(seconds, ()=>{
+    if(answered) return;
+    answered = true;
+    $all(".opt").forEach(o=>o.disabled=true);
+    $all(".opt")[correctIdx].classList.add("correct");
+    applyScore(pl, -5);
+    sndWrong();
+    feedbackBox.className = "feedback show bad";
+    feedbackBox.textContent = "⏰ Waktu habis! "+explain+" ("+pl.name+" -5 poin)";
+    logMsg("⏰ Waktu habis untuk studi kasus "+pl.name+" (-5)");
+    nextBtn.style.display = "inline-block";
+  });
+}
+
+function openFlavorModal(title, text, points, pl){
+  modalOpen = true;
+  overlay.classList.add("show");
+  modalHead.style.background = headColor(points>=0?"bonus":"crisis");
+  modalTitle.textContent = title;
+  modalBadge.textContent = (points>=0?"+":"")+points+" poin";
+  timerFill.style.transition = "none";
+  timerFill.style.width = "100%";
+  scenarioText.innerHTML = '<div class="flavor-icon">'+(points>=0?"⭐":"🔥")+'</div>'+text+
+    '<div class="flavor-points '+(points>=0?"good":"bad")+'">'+(points>=0?"+":"")+points+' poin</div>';
+  optionsWrap.innerHTML = "";
+  feedbackBox.className = "feedback";
+  feedbackBox.textContent = "";
+  applyScore(pl, points);
+  if(points>=0){ sndBonus(); logMsg("⭐ "+pl.name+" mendapat bonus: "+text+" ("+"+"+points+")"); }
+  else { sndCrisis(); logMsg("🔥 "+pl.name+" terkena krisis: "+text+" ("+points+")"); }
+  nextBtn.style.display = "inline-block";
+}
+
+function startTimer(seconds, onTimeout){
+  clearTimer();
+  let t = seconds;
+  timerFill.style.transition = "none";
+  timerFill.style.width = "100%";
+  requestAnimationFrame(()=>{
+    timerFill.style.transition = "width "+seconds+"s linear";
+    timerFill.style.width = "0%";
+  });
+  timerHandle = setInterval(()=>{
+    t--;
+    if(t<=0){ clearTimer(); onTimeout(); }
+  },1000);
+}
+function applyScore(pl, pts){
+  pl.score += pts;
+  renderProgress();
+  renderLeaderboard();
+  renderTurnInfo();
+}
+nextBtn.addEventListener("click", closeModalAndAdvance);
+function closeModalAndAdvance(){
+  clearTimer();
+  overlay.classList.remove("show");
+  modalOpen = false;
+  endTurn();
+}
+function endTurn(){
+  currentIdx = (currentIdx+1) % players.length;
+  if(currentIdx===0){
+    round++;
+    if(round>MAX_ROUNDS){ showEndScreen(); return; }
+  }
+  renderAll();
+  $("#rollBtn").disabled = false;
+}
+
+/* ------------------- END / RESET ------------------- */
+$("#endGameBtn").addEventListener("click", showEndScreen);
+function showEndScreen(){
+  $("#gameScreen").style.display = "none";
+  $("#endScreen").style.display = "block";
+  const sorted = [...players].sort((a,b)=>b.score-a.score);
+  $("#winnerText").textContent = "🎉 "+sorted[0].name+" menang dengan skor "+sorted[0].score+" poin!";
+  const list = $("#finalList");
+  list.innerHTML = "";
+  sorted.forEach((p,i)=>{
+    const row = document.createElement("div");
+    row.className = "final-row";
+    row.innerHTML = '<span class="lb-rank">#'+(i+1)+'</span><span class="lb-dot" style="background:'+p.color+'">'+p.icon+'</span><span class="lb-name">'+escapeHtml(p.name)+'</span><span class="lb-score">'+p.score+' poin</span>';
+    list.appendChild(row);
+  });
+  logMsg("🏁 Permainan selesai. Pemenang: "+sorted[0].name+".");
+}
+$("#playAgainBtn").addEventListener("click", fullReset);
+$("#resetBtn").addEventListener("click", ()=>{
+  if(confirm("Yakin ingin mereset permainan? Semua progres akan hilang.")) fullReset();
+});
+function fullReset(){
+  players = []; currentIdx = 0; round = 1; usedQuestions.clear(); usedCases.clear();
+  $("#logPanel").innerHTML = "";
+  $("#gameScreen").style.display = "none";
+  $("#endScreen").style.display = "none";
+  $("#setupScreen").style.display = "block";
+  playerCount = 2;
+  $("#playerCount").textContent = 2;
+  renderPlayerInputs();
+}
+
+/* ------------------- SOUND TOGGLE ------------------- */
+$("#soundToggleBtn").addEventListener("click",()=>{
+  soundOn = !soundOn;
+  $("#soundToggleBtn").textContent = soundOn ? "🔊 Suara: Aktif" : "🔇 Suara: Nonaktif";
+});
+
+/* Reposition tokens on resize */
+window.addEventListener("resize", ()=>{ if(players.length) renderTokens(); });
+
+})();
+</script>
+</body>
+</html>
