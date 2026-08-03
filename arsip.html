@@ -3,63 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAVE THE OFFICE: Digital Document Rescue (Full Version) Manajemen Perkantoran SMK Pawiyatan by Lilis Rahayu</title>
+    <title>SAVE THE OFFICE: Multi-Division Rescue</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #0f172a;
-            --accent: #06b6d4;
+            --primary: #2563eb; --primary-dark: #1d4ed8;
+            --secondary: #0f172a; --accent: #06b6d4;
             --bg-dark: #090d16;
             --surface-card: rgba(30, 41, 59, 0.75);
             --surface-border: rgba(255, 255, 255, 0.12);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; user-select: none; }
 
         body {
             background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 1rem;
-            overflow-x: hidden;
+            background-image: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
+            color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 1rem;
         }
 
         #app-container {
-            width: 100%;
-            max-width: 1100px;
-            height: 800px;
-            background: var(--surface-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--surface-border);
-            border-radius: 24px;
+            width: 100%; max-width: 1100px; height: 800px;
+            background: var(--surface-card); backdrop-filter: blur(16px);
+            border: 1px solid var(--surface-border); border-radius: 24px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
+            display: flex; flex-direction: column; position: relative; overflow: hidden;
         }
 
         header.hud {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            background: rgba(15, 23, 42, 0.85);
-            border-bottom: 1px solid var(--surface-border);
+            display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem;
+            background: rgba(15, 23, 42, 0.85); border-bottom: 1px solid var(--surface-border);
         }
 
         .hud-profile { display: flex; align-items: center; gap: 1rem; }
@@ -67,99 +42,61 @@
         .hud-stats { display: flex; gap: 1.2rem; align-items: center; }
         .stat-box { background: rgba(255,255,255,0.05); padding: 0.5rem 0.9rem; border-radius: 12px; border: 1px solid var(--surface-border); font-size: 0.85rem; }
         .stat-box span { font-weight: 700; color: var(--accent); }
-
         .progress-bar-container { width: 140px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
         .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--success)); transition: width 0.3s; }
 
         .screen { display: none; width: 100%; height: calc(100% - 75px); padding: 1.8rem; flex-direction: column; overflow-y: auto; }
         .screen.active { display: flex; animation: fadeIn 0.3s ease-in-out; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            font-size: 0.95rem;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
-        }
+        .btn { background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 600; border-radius: 12px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
         .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .btn:active { transform: translateY(0); }
-        .btn-success { background: var(--success); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); }
-        .btn-warning { background: var(--warning); color: #000; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4); }
+        .btn-success { background: var(--success); }
+        .btn-warning { background: var(--warning); color: #000; }
 
-        /* Welcome Screen */
-        .welcome-box { margin: auto; text-align: center; max-width: 580px; }
-        .welcome-box h1 { font-size: 2.3rem; font-weight: 800; margin-bottom: 0.4rem; background: linear-gradient(to right, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .welcome-box p { color: var(--text-muted); margin-bottom: 1.2rem; line-height: 1.5; font-size: 0.95rem; }
-        .input-group { margin-bottom: 1.2rem; }
-        .input-group input { width: 100%; padding: 0.9rem; border-radius: 12px; border: 1px solid var(--surface-border); background: rgba(15, 23, 42, 0.7); color: white; font-size: 1rem; outline: none; text-align: center; }
-
-        /* Game Grids & Shared Mechanics */
+        /* Welcome UI Custom */
+        .welcome-box { margin: auto; text-align: center; max-width: 650px; }
+        .welcome-box h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.4rem; background: linear-gradient(to right, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; text-align: left;}
+        .input-group input, .input-group select { width: 100%; padding: 0.9rem; border-radius: 12px; border: 1px solid var(--surface-border); background: rgba(15, 23, 42, 0.7); color: white; font-size: 1rem; outline: none; }
+        
         .game-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1.2rem; height: 100%; }
         .drag-source { background: rgba(15, 23, 42, 0.6); border-radius: 16px; padding: 1rem; border: 1px solid var(--surface-border); display: flex; flex-direction: column; gap: 0.7rem; overflow-y: auto; }
         .drop-targets { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem; }
-        
-        .doc-card { background: rgba(30, 41, 59, 0.9); padding: 0.9rem; border-radius: 12px; border: 1px solid var(--surface-border); cursor: grab; font-size: 0.88rem; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; transition: transform 0.2s, background 0.2s; }
-        .doc-card:active { cursor: grabbing; transform: scale(0.97); }
-        .drop-zone { background: rgba(15, 23, 42, 0.35); border: 2px dashed var(--surface-border); border-radius: 16px; padding: 0.9rem; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 0.5rem; transition: all 0.2s; }
+        .doc-card { background: rgba(30, 41, 59, 0.9); padding: 0.9rem; border-radius: 12px; border: 1px solid var(--surface-border); cursor: grab; font-size: 0.88rem; font-weight: 600; display: flex; justify-content: space-between; transition: transform 0.2s; }
+        .drop-zone { background: rgba(15, 23, 42, 0.35); border: 2px dashed var(--surface-border); border-radius: 16px; padding: 0.9rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
         .drop-zone.hover { border-color: var(--accent); background: rgba(6, 182, 212, 0.12); }
-        .drop-zone h4 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .drop-zone h4 { font-size: 0.85rem; color: var(--text-muted); }
 
-        /* Level Specific Visuals */
         .priority-item { background: rgba(30, 41, 59, 0.8); border: 1px solid var(--surface-border); padding: 0.9rem; border-radius: 12px; margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .priority-badge { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 700; }
         .badge-wet { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
         .badge-normal { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); }
 
         .scanner-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 1.2rem; }
-        .scanner-bed { width: 360px; height: 230px; background: #1e293b; border: 4px solid #334155; border-radius: 16px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .scanner-bed { width: 360px; height: 230px; background: #1e293b; border: 4px solid #334155; border-radius: 16px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1rem;}
         .scan-laser { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--accent); box-shadow: 0 0 15px var(--accent); display: none; }
         .scan-laser.scanning { display: block; animation: scanAnim 1.8s infinite alternate ease-in-out; }
         @keyframes scanAnim { 0% { top: 0%; } 100% { top: 98%; } }
 
-        .cloud-dashboard { background: rgba(15, 23, 42, 0.7); border: 1px solid var(--surface-border); border-radius: 16px; padding: 1.5rem; width: 100%; height: 100%; display: flex; flex-direction: column; gap: 1.2rem; }
-        .cloud-storage-bar { height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; }
-        .cloud-storage-fill { height: 100%; width: 45%; background: var(--accent); }
-
-        .search-box-container { display: flex; gap: 0.8rem; margin-bottom: 1.2rem; }
-        .search-input { flex: 1; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--surface-border); background: rgba(15,23,42,0.8); color: white; outline: none; }
-
         .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; height: 100%; }
         .report-card { background: rgba(15, 23, 42, 0.6); padding: 1.4rem; border-radius: 16px; border: 1px solid var(--surface-border); }
         .badge-tag { display: inline-block; padding: 0.3rem 0.7rem; background: rgba(245, 158, 11, 0.2); color: var(--warning); border-radius: 20px; font-size: 0.8rem; font-weight: 700; margin: 0.3rem 0.3rem 0 0; }
-
         .shake { animation: shake 0.4s ease-in-out; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
-
         select { padding: 0.6rem 1rem; border-radius: 8px; background: #1e293b; color: white; border: 1px solid var(--surface-border); outline: none; }
-
-        @media (max-width: 768px) {
-            #app-container { height: 100vh; border-radius: 0; border: none; }
-            .game-grid, .drop-targets, .dashboard-grid { grid-template-columns: 1fr; }
-            header.hud { flex-direction: column; gap: 0.5rem; }
-        }
     </style>
 </head>
 <body>
-
     <div id="app-container">
-        <!-- HUD Header -->
+        <!-- HUD -->
         <header class="hud">
             <div class="hud-profile">
-                <div class="avatar" id="hud-avatar">DRO</div>
+                <div class="avatar">DRO</div>
                 <div>
-                    <div style="font-weight: 700; font-size: 0.95rem;" id="hud-name">Digital Rescue Officer</div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);" id="hud-level-title">Misi 1 dari 7</div>
+                    <div style="font-weight: 700; font-size: 0.95rem;" id="hud-name">Player Name</div>
+                    <div style="font-size: 0.75rem; color: var(--accent); font-weight: bold;" id="hud-group">Divisi -</div>
                 </div>
             </div>
             <div class="hud-stats">
@@ -167,588 +104,366 @@
                 <div class="stat-box">⭐ <span id="hud-score">0</span> XP</div>
                 <div class="stat-box">❤️ <span id="hud-lives">3</span></div>
                 <div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px;">Total Progress</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="hud-progress"></div>
-                    </div>
+                    <div class="progress-bar-container"><div class="progress-bar-fill" id="hud-progress"></div></div>
                 </div>
             </div>
         </header>
 
-        <!-- SCREEN 1: Welcome Screen -->
+        <!-- SCREEN 1: Welcome -->
         <div id="screen-welcome" class="screen active">
             <div class="welcome-box">
-                <div style="font-size: 3.2rem; margin-bottom: 0.8rem;">🌊📂</div>
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🏢📂</div>
                 <h1>SAVE THE OFFICE</h1>
-                <p style="color: var(--accent); font-weight: 600; margin-bottom: 0.5rem;">Digital Document Rescue (CAMPAIGN HASIL BELAJAR)</p>
-                <p>Gedung Arsip Sekolah mengalami kebanjiran! Jalankan <strong>7 Misi Beruntun</strong> untuk mengidentifikasi, memindai, memberi nama SOP, mengorganisir folder, mengunggah ke Cloud, dan menemukan kembali dokumen penting sebelum hancur total!</p>
+                <p style="color: var(--accent); font-weight: 600; margin-bottom: 1.5rem;">Multi-Division Rescue System</p>
                 
                 <div class="input-group">
-                    <input type="text" id="input-player-name" placeholder="Masukkan Nama & Kelas Siswa..." autocomplete="off">
+                    <div>
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Nama Tim / Siswa</label>
+                        <input type="text" id="input-player" placeholder="Contoh: Tim Alpha / Budi" autocomplete="off">
+                    </div>
+                    <div>
+                        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Pilih Kelompok (Divisi Kasus)</label>
+                        <select id="input-group">
+                            <option value="1">Kelompok 1 - Divisi Kepegawaian (HR)</option>
+                            <option value="2">Kelompok 2 - Divisi Keuangan</option>
+                            <option value="3">Kelompok 3 - Divisi Kesiswaan</option>
+                            <option value="4">Kelompok 4 - Divisi Kurikulum</option>
+                            <option value="5">Kelompok 5 - Divisi Humas</option>
+                            <option value="6">Kelompok 6 - Divisi Sarpras</option>
+                            <option value="7">Kelompok 7 - Divisi Pimpinan (Kepsek)</option>
+                        </select>
+                    </div>
                 </div>
-                <button class="btn btn-success" style="width: 100%; font-size: 1.05rem;" onclick="gameEngine.startGame()">Mulai 7 Misi Penyelamatan 🚀</button>
+                <button class="btn btn-success" style="width: 100%; font-size: 1.05rem;" onclick="gameEngine.startGame()">Mulai Misi Penyelamatan Divisi 🚀</button>
             </div>
         </div>
 
-        <!-- SCREEN 2: Dynamic Game Canvas (Levels 1 to 7) -->
+        <!-- SCREEN 2: Game -->
         <div id="screen-game" class="screen">
             <div id="level-canvas" style="height: 100%;"></div>
         </div>
 
-        <!-- SCREEN 3: Teacher Dashboard & Result -->
+        <!-- SCREEN 3: Dashboard -->
         <div id="screen-dashboard" class="screen">
-            <h2 style="margin-bottom: 1rem; font-size: 1.4rem; text-align: center;">📊 Dashboard Evaluasi Pembelajaran Siswa</h2>
+            <h2 style="margin-bottom: 1rem; font-size: 1.4rem; text-align: center;">📊 Dashboard Evaluasi Divisi</h2>
             <div class="dashboard-grid">
                 <div class="report-card">
-                    <h3 style="color: var(--accent); margin-bottom: 0.8rem;">Profil & Capaian Misi</h3>
-                    <p><strong>Nama Siswa:</strong> <span id="rep-name">-</span></p>
+                    <h3 style="color: var(--accent); margin-bottom: 0.8rem;">Profil Kelompok</h3>
+                    <p><strong>Nama:</strong> <span id="rep-name">-</span></p>
+                    <p style="margin-top:0.4rem;"><strong>Divisi:</strong> <span id="rep-div">-</span></p>
                     <p style="margin-top:0.4rem;"><strong>Skor Akhir:</strong> <span id="rep-score" style="color:var(--success); font-weight:bold;">0</span> XP</p>
-                    <p style="margin-top:0.4rem;"><strong>Sisa Waktu Penyelamatan:</strong> <span id="rep-time">0</span> Detik</p>
-                    <p style="margin-top:0.4rem;"><strong>Kelulusan Misi:</strong> <span id="rep-status" style="color:var(--success);">Berhasil</span></p>
-                    <div id="rep-badges" style="margin-top: 1rem;">
-                        <!-- Badges injected here -->
-                    </div>
+                    <p style="margin-top:0.4rem;"><strong>Kelulusan Misi:</strong> <span id="rep-status">Berhasil</span></p>
+                    <div id="rep-badges" style="margin-top: 1rem;"></div>
                 </div>
                 <div class="report-card">
-                    <h3 style="color: var(--accent); margin-bottom: 0.8rem;">Rekomendasi Instruksional Guru</h3>
+                    <h3 style="color: var(--accent); margin-bottom: 0.8rem;">Catatan Instruksional</h3>
                     <p id="rep-feedback" style="line-height: 1.6; color: var(--text-muted); font-size:0.9rem;"></p>
-                    <button class="btn" style="margin-top: 1.5rem; width: 100%;" onclick="location.reload()">Mainkan Ulang 7 Misi 🔄</button>
+                    <button class="btn" style="margin-top: 1.5rem; width: 100%;" onclick="location.reload()">Selesai & Ganti Kelompok 🔄</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        /**
-         * Web Audio API Synthesizer (Efek Suara Ringan)
-         */
+        // Web Audio API Synth (Sfx)
         const AudioEngine = {
-            ctx: null,
-            init() {
-                if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-            },
+            ctx: null, init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
             play(type) {
-                this.init();
-                if (this.ctx.state === 'suspended') this.ctx.resume();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
+                this.init(); if (this.ctx.state === 'suspended') this.ctx.resume();
+                const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+                osc.connect(gain); gain.connect(this.ctx.destination);
                 const now = this.ctx.currentTime;
-
-                if (type === 'success') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(587.33, now);
-                    osc.frequency.setValueAtTime(880, now + 0.1);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                    osc.start(now);
-                    osc.stop(now + 0.3);
-                } else if (type === 'error') {
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(150, now);
-                    osc.frequency.setValueAtTime(100, now + 0.1);
-                    gain.gain.setValueAtTime(0.3, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                    osc.start(now);
-                    osc.stop(now + 0.3);
-                } else if (type === 'scan') {
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(300, now);
-                    osc.frequency.linearRampToValueAtTime(600, now + 1.2);
-                    gain.gain.setValueAtTime(0.1, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
-                    osc.start(now);
-                    osc.stop(now + 1.2);
-                }
+                if (type === 'success') { osc.type = 'sine'; osc.frequency.setValueAtTime(587.33, now); osc.frequency.setValueAtTime(880, now+0.1); gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now+0.3); osc.start(now); osc.stop(now+0.3); }
+                else if (type === 'error') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now+0.3); osc.start(now); osc.stop(now+0.3); }
+                else if (type === 'scan') { osc.type = 'triangle'; osc.frequency.setValueAtTime(300, now); osc.frequency.linearRampToValueAtTime(600, now+1.2); gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now+1.2); osc.start(now); osc.stop(now+1.2); }
             }
         };
 
-        /**
-         * Game Engine Execution
-         */
+        // Database Studi Kasus 7 Kelompok (Dynamic Mission Data)
+        const missionDatabase = {
+            1: {
+                divName: "Kepegawaian (HR)",
+                l1: { 
+                    docs: [{id:'d1', n:'SK Pengangkatan', c:'Kepegawaian'}, {id:'d2', n:'Formulir Cuti', c:'Formulir'}, {id:'d3', n:'Surat Tugas', c:'Surat'}], 
+                    cats: ['Kepegawaian', 'Formulir', 'Surat'] 
+                },
+                l2: { items: [{n:'Buku Panduan HR', u:false, r:'Bisa dicetak ulang'}, {n:'Daftar Hadir Manual (Basah)', u:true, r:'Bukti fisik vital absensi'}, {n:'Draft Evaluasi', u:false, r:'Hanya draft'}] },
+                l3: { docText: 'Daftar Hadir Manual' },
+                l4: { blocks: ['2026-08-01', '_', 'Absensi', '_', 'Guru.pdf'], sop: '2026-08-01_Absensi_Guru.pdf' },
+                l5: { files: [{id:'f1', n:'2026-08-01_Absensi_Guru.pdf', f:'Presensi'}], cats: ['Rekrutmen', 'Presensi', 'Pensiun'] },
+                l7: { target: '2026-08-01_Absensi_Guru.pdf', searchHint: 'Cari berkas Absensi Guru' }
+            },
+            2: {
+                divName: "Keuangan (Finance)",
+                l1: { 
+                    docs: [{id:'d1', n:'Laporan BOS', c:'Laporan'}, {id:'d2', n:'Slip Gaji', c:'Keuangan'}, {id:'d3', n:'Form Reimburse', c:'Formulir'}], 
+                    cats: ['Laporan', 'Keuangan', 'Formulir'] 
+                },
+                l2: { items: [{n:'Laporan Pajak Tahunan (Basah)', u:true, r:'Dokumen audit sangat penting!'}, {n:'Brosur Bank', u:false, r:'Tidak penting'}, {n:'Nota Fotokopi', u:false, r:'Nominal kecil'}] },
+                l3: { docText: 'Laporan Pajak Tahunan' },
+                l4: { blocks: ['2026-12-31', '_', 'LaporanPajak', '_', 'Sekolah.pdf'], sop: '2026-12-31_LaporanPajak_Sekolah.pdf' },
+                l5: { files: [{id:'f1', n:'2026-12-31_LaporanPajak_Sekolah.pdf', f:'Pajak'}], cats: ['Pajak', 'Penggajian', 'BOS'] },
+                l7: { target: '2026-12-31_LaporanPajak_Sekolah.pdf', searchHint: 'Cari Laporan Pajak Tahunan' }
+            },
+            3: {
+                divName: "Kesiswaan",
+                l1: { 
+                    docs: [{id:'d1', n:'Form Pendaftaran', c:'Formulir'}, {id:'d2', n:'Buku Induk', c:'Arsip Vital'}, {id:'d3', n:'Surat Panggilan Ortu', c:'Surat'}], 
+                    cats: ['Formulir', 'Arsip Vital', 'Surat'] 
+                },
+                l2: { items: [{n:'Daftar Piket', u:false, r:'Mudah diganti'}, {n:'Ijazah Lulusan (Basah)', u:true, r:'Dokumen negara yang tidak tergantikan!'}, {n:'Jadwal Eskul', u:false, r:'Ada di grup WA'}] },
+                l3: { docText: 'Ijazah Lulusan' },
+                l4: { blocks: ['2026-05-10', '_', 'Ijazah', '_', 'AngkatanX.pdf'], sop: '2026-05-10_Ijazah_AngkatanX.pdf' },
+                l5: { files: [{id:'f1', n:'2026-05-10_Ijazah_AngkatanX.pdf', f:'Kelulusan'}], cats: ['Ekstrakurikuler', 'Kelulusan', 'Bimbingan'] },
+                l7: { target: '2026-05-10_Ijazah_AngkatanX.pdf', searchHint: 'Cari Ijazah Angkatan X' }
+            },
+            4: {
+                divName: "Kurikulum",
+                l1: { 
+                    docs: [{id:'d1', n:'RPP Guru', c:'Modul'}, {id:'d2', n:'Jadwal Pelajaran', c:'Jadwal'}, {id:'d3', n:'Silabus Nasional', c:'Pedoman'}], 
+                    cats: ['Modul', 'Jadwal', 'Pedoman'] 
+                },
+                l2: { items: [{n:'Master Soal Ujian (Basah)', u:true, r:'Rahasia negara/sekolah, harus segera diamankan'}, {n:'Kalender Akademik', u:false, r:'Ada softcopy'}, {n:'Daftar Buku', u:false, r:'Bisa diminta ke perpus'}] },
+                l3: { docText: 'Master Soal Ujian Akhir' },
+                l4: { blocks: ['2026-11-20', '_', 'MasterSoal', '_', 'UAS.pdf'], sop: '2026-11-20_MasterSoal_UAS.pdf' },
+                l5: { files: [{id:'f1', n:'2026-11-20_MasterSoal_UAS.pdf', f:'Evaluasi'}], cats: ['Evaluasi', 'Perangkat Ajar', 'Kalender'] },
+                l7: { target: '2026-11-20_MasterSoal_UAS.pdf', searchHint: 'Cari Master Soal UAS' }
+            },
+            5: {
+                divName: "Humas (PR)",
+                l1: { 
+                    docs: [{id:'d1', n:'MoU Industri', c:'Perjanjian'}, {id:'d2', n:'Brosur PPDB', c:'Publikasi'}, {id:'d3', n:'Surat Undangan DUDI', c:'Surat'}], 
+                    cats: ['Perjanjian', 'Publikasi', 'Surat'] 
+                },
+                l2: { items: [{n:'Buku Tamu', u:false, r:'Data historis biasa'}, {n:'Dokumen MoU Perusahaan (Basah)', u:true, r:'Berdampak hukum & kerjasama'}, {n:'Draft Press Release', u:false, r:'Ada di laptop'}] },
+                l3: { docText: 'Dokumen MoU Perusahaan' },
+                l4: { blocks: ['2026-02-15', '_', 'MoU', '_', 'PT_MajuJaya.pdf'], sop: '2026-02-15_MoU_PT_MajuJaya.pdf' },
+                l5: { files: [{id:'f1', n:'2026-02-15_MoU_PT_MajuJaya.pdf', f:'Kemitraan'}], cats: ['Kemitraan', 'Dokumentasi', 'Publikasi'] },
+                l7: { target: '2026-02-15_MoU_PT_MajuJaya.pdf', searchHint: 'Cari MoU PT Maju Jaya' }
+            },
+            6: {
+                divName: "Sarana Prasarana",
+                l1: { 
+                    docs: [{id:'d1', n:'Daftar Inventaris', c:'Laporan'}, {id:'d2', n:'Form Peminjaman Alat', c:'Formulir'}, {id:'d3', n:'Buku Garansi', c:'Legal'}], 
+                    cats: ['Laporan', 'Formulir', 'Legal'] 
+                },
+                l2: { items: [{n:'Sertifikat Tanah Sekolah (Basah)', u:true, r:'Aset legal tertinggi instansi!'}, {n:'Manual Book Proyektor', u:false, r:'Bisa dicari di internet'}, {n:'Jadwal Kebersihan', u:false, r:'Biasa saja'}] },
+                l3: { docText: 'Sertifikat Tanah Asli' },
+                l4: { blocks: ['2026-01-01', '_', 'Sertifikat', '_', 'AsetTanah.pdf'], sop: '2026-01-01_Sertifikat_AsetTanah.pdf' },
+                l5: { files: [{id:'f1', n:'2026-01-01_Sertifikat_AsetTanah.pdf', f:'Legalitas Aset'}], cats: ['Maintenance', 'Legalitas Aset', 'Pengadaan'] },
+                l7: { target: '2026-01-01_Sertifikat_AsetTanah.pdf', searchHint: 'Cari Sertifikat Aset Tanah' }
+            },
+            7: {
+                divName: "Pimpinan (Kepsek)",
+                l1: { 
+                    docs: [{id:'d1', n:'Visi Misi', c:'Pedoman'}, {id:'d2', n:'Notulen Rapat Pleno', c:'Notulen'}, {id:'d3', n:'SK Kepsek', c:'Kepegawaian'}], 
+                    cats: ['Pedoman', 'Notulen', 'Kepegawaian'] 
+                },
+                l2: { items: [{n:'SK Pendirian Yayasan (Basah)', u:true, r:'Dokumen historis dan hukum absolut'}, {n:'Majalah Sekolah', u:false, r:'Ada arsip digital di web'}, {n:'Kumpulan Pidato', u:false, r:'Teks pidato biasa'}] },
+                l3: { docText: 'SK Pendirian Yayasan' },
+                l4: { blocks: ['1990-08-17', '_', 'SKPendirian', '_', 'Sekolah.pdf'], sop: '1990-08-17_SKPendirian_Sekolah.pdf' },
+                l5: { files: [{id:'f1', n:'1990-08-17_SKPendirian_Sekolah.pdf', f:'Dokumen Yayasan'}], cats: ['Rapat Strategis', 'Dokumen Yayasan', 'Regulasi'] },
+                l7: { target: '1990-08-17_SKPendirian_Sekolah.pdf', searchHint: 'Cari SK Pendirian' }
+            }
+        };
+
         const gameEngine = {
-            playerName: "Siswa SMK",
-            score: 0,
-            lives: 3,
-            timeLeft: 240, // Total waktu untuk 7 level
-            currentLevel: 1,
-            timerInterval: null,
+            playerName: "", groupId: 1, myData: null,
+            score: 0, lives: 3, timeLeft: 200, currentLevel: 1, timerInterval: null,
             assembledName: "",
 
             startGame() {
-                const input = document.getElementById('input-player-name').value;
-                if (input.trim()) this.playerName = input;
-                document.getElementById('hud-name').innerText = this.playerName;
-                this.switchScreen('screen-game');
-                this.startTimer();
-                this.loadLevel(1);
-            },
+                const name = document.getElementById('input-player').value;
+                if (!name.trim()) return alert("Masukkan Nama Tim/Siswa!");
+                this.playerName = name;
+                this.groupId = document.getElementById('input-group').value;
+                this.myData = missionDatabase[this.groupId];
 
-            switchScreen(id) {
+                document.getElementById('hud-name').innerText = this.playerName;
+                document.getElementById('hud-group').innerText = `Divisi: ${this.myData.divName}`;
+                
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                document.getElementById(id).classList.add('active');
+                document.getElementById('screen-game').classList.add('active');
+                
+                this.startTimer(); this.loadLevel(1);
             },
 
             startTimer() {
                 this.timerInterval = setInterval(() => {
-                    this.timeLeft--;
-                    document.getElementById('hud-timer').innerText = this.timeLeft;
-                    if (this.timeLeft <= 0) {
-                        this.endGame(false, "Waktu Penyelamatan 7 Misi Habis!");
-                    }
+                    this.timeLeft--; document.getElementById('hud-timer').innerText = this.timeLeft;
+                    if (this.timeLeft <= 0) this.endGame(false, "Waktu Penyelamatan Habis!");
                 }, 1000);
             },
 
-            addScore(pts) {
-                this.score += pts;
-                document.getElementById('hud-score').innerText = this.score;
-                AudioEngine.play('success');
-            },
-
+            addScore(pts) { this.score += pts; document.getElementById('hud-score').innerText = this.score; AudioEngine.play('success'); },
             deductLife() {
-                this.lives--;
-                document.getElementById('hud-lives').innerText = this.lives;
-                AudioEngine.play('error');
-                const container = document.getElementById('app-container');
-                container.classList.add('shake');
-                setTimeout(() => container.classList.remove('shake'), 400);
-
-                if (this.lives <= 0) {
-                    this.endGame(false, "Kehabisan kesempatan! Dokumen rusak terkena banjir.");
-                }
-            },
-
-            updateProgress() {
-                const percent = (this.currentLevel / 7) * 100;
-                document.getElementById('hud-progress').style.width = `${percent}%`;
+                this.lives--; document.getElementById('hud-lives').innerText = this.lives; AudioEngine.play('error');
+                document.getElementById('app-container').classList.add('shake');
+                setTimeout(() => document.getElementById('app-container').classList.remove('shake'), 400);
+                if (this.lives <= 0) this.endGame(false, "Kehabisan nyawa! Berkas rusak.");
             },
 
             loadLevel(lvl) {
                 this.currentLevel = lvl;
-                this.updateProgress();
-                const canvas = document.getElementById('level-canvas');
-                canvas.innerHTML = '';
-
-                switch (lvl) {
-                    case 1: this.renderLevel1(canvas); break;
-                    case 2: this.renderLevel2(canvas); break;
-                    case 3: this.renderLevel3(canvas); break;
-                    case 4: this.renderLevel4(canvas); break;
-                    case 5: this.renderLevel5(canvas); break;
-                    case 6: this.renderLevel6(canvas); break;
-                    case 7: this.renderLevel7(canvas); break;
-                    default: this.endGame(true, "Seluruh 7 Misi Berhasil Diselesaikan dengan Sempurna!");
-                }
+                document.getElementById('hud-progress').style.width = `${(lvl/7)*100}%`;
+                const cv = document.getElementById('level-canvas'); cv.innerHTML = '';
+                
+                if(lvl===1) this.renderL1(cv); else if(lvl===2) this.renderL2(cv);
+                else if(lvl===3) this.renderL3(cv); else if(lvl===4) this.renderL4(cv);
+                else if(lvl===5) this.renderL5(cv); else if(lvl===6) this.renderL6(cv);
+                else if(lvl===7) this.renderL7(cv); else this.endGame(true, "");
             },
 
-            /* -------------------------------------------------------------
-               LEVEL 1: KENALI DOKUMEN (Drag & Drop Category)
-            ------------------------------------------------------------- */
-            renderLevel1(container) {
-                document.getElementById('hud-level-title').innerText = "Misi 1/7: Kenali Jenis Dokumen";
-                container.innerHTML = `
-                    <div style="text-align: center; margin-bottom: 0.8rem;">
-                        <h3>Misi 1: Kelompokkan Berkas Fisik ke Kategori Administrasi</h3>
-                    </div>
-                    <div class="game-grid">
-                        <div class="drag-source" id="l1-source"></div>
-                        <div class="drop-targets" id="l1-targets"></div>
-                    </div>
-                `;
-
-                const docs = [
-                    { id: 'd1', name: '✉️ Surat Undangan Komite', category: 'Surat' },
-                    { id: 'd2', name: '📋 Formulir Cuti Pegawai', category: 'Formulir' },
-                    { id: 'd3', name: '📊 Laporan Keuangan 2026', category: 'Laporan' },
-                    { id: 'd4', name: '📝 Notulen Rapat Kelulusan', category: 'Notulen' }
-                ];
-                const categories = ['Surat', 'Formulir', 'Laporan', 'Notulen'];
-
-                const source = document.getElementById('l1-source');
-                const targets = document.getElementById('l1-targets');
-
-                docs.forEach(d => {
-                    const el = document.createElement('div');
-                    el.className = 'doc-card';
-                    el.draggable = true;
-                    el.innerText = d.name;
-                    el.id = d.id;
-                    el.dataset.cat = d.category;
-                    el.addEventListener('dragstart', (e) => e.dataTransfer.setData('text', d.id));
-                    source.appendChild(el);
+            renderL1(cv) {
+                cv.innerHTML = `<h3 style="text-align:center; margin-bottom:1rem;">Misi 1: Kategorisasi Dokumen ${this.myData.divName}</h3><div class="game-grid"><div class="drag-source" id="s1"></div><div class="drop-targets" id="t1"></div></div>`;
+                const data = this.myData.l1;
+                data.docs.forEach(d => {
+                    const el = document.createElement('div'); el.className='doc-card'; el.draggable=true; el.innerText=d.n; el.dataset.c=d.c;
+                    el.ondragstart = e => e.dataTransfer.setData('text', d.n);
+                    document.getElementById('s1').appendChild(el);
                 });
-
-                categories.forEach(cat => {
-                    const zone = document.createElement('div');
-                    zone.className = 'drop-zone';
-                    zone.innerHTML = `<h4>📂 ${cat}</h4>`;
-                    zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('hover'); });
-                    zone.addEventListener('dragleave', () => zone.classList.remove('hover'));
-                    zone.addEventListener('drop', (e) => {
-                        e.preventDefault();
-                        zone.classList.remove('hover');
-                        const docId = e.dataTransfer.getData('text');
-                        const docEl = document.getElementById(docId);
-                        if (docEl.dataset.cat === cat) {
-                            zone.appendChild(docEl);
-                            docEl.draggable = false;
-                            docEl.style.borderColor = 'var(--success)';
-                            gameEngine.addScore(20);
-                            if (source.querySelectorAll('.doc-card').length === 0) {
-                                setTimeout(() => gameEngine.loadLevel(2), 800);
-                            }
-                        } else {
-                            gameEngine.deductLife();
-                        }
-                    });
-                    targets.appendChild(zone);
-                });
-            },
-
-            /* -------------------------------------------------------------
-               LEVEL 2: PRIORITAS DIGITALISASI (Sorting Rescue Urgency)
-            ------------------------------------------------------------- */
-            renderLevel2(container) {
-                document.getElementById('hud-level-title').innerText = "Misi 2/7: Prioritas Digitalisasi Darurat";
-                container.innerHTML = `
-                    <div style="text-align: center; max-width: 650px; margin: 0 auto;">
-                        <h3>Misi 2: Selamatkan Dokumen Berdasarkan Risiko Kerusakan</h3>
-                        <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.3rem;">Pilih dokumen yang <strong>PALING TERANCAM (Basah & Sangat Important)</strong> terlebih dahulu untuk dipindai!</p>
-                        
-                        <div id="priority-list" style="margin-top: 1.5rem;"></div>
-                    </div>
-                `;
-
-                const items = [
-                    { id: 'p1', title: '🪪 SK Pengangkatan Guru (Terguyur Air & Sangat Important)', urgent: true, reason: 'Dokumen kepegawaian bernilai hukum tinggi yang hampir hancur basah!' },
-                    { id: 'p2', title: '📄 Brosur Pendaftaran Sekolah (Masih Kering)', urgent: false, reason: 'Brosur bersifat publik dan mudah dicetak ulang.' },
-                    { id: 'p3', title: '📄 Draft Catatan Corat-Coret (Arsip Biasa)', urgent: false, reason: 'Bukan dokumen vital organisasi.' }
-                ];
-
-                const list = document.getElementById('priority-list');
-                items.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'priority-item';
-                    card.innerHTML = `
-                        <div>
-                            <div style="font-weight:600;">${item.title}</div>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">${item.reason}</div>
-                        </div>
-                        <span class="priority-badge ${item.urgent ? 'badge-wet' : 'badge-normal'}">${item.urgent ? 'BAHAYA BASAH' : 'AMAN'}</span>
-                    `;
-                    card.onclick = () => {
-                        if (item.urgent) {
-                            gameEngine.addScore(30);
-                            alert("Correct! Dokumen basah & vital harus didigitalisasi dalam kurun waktu emas sebelum tinta meluntur.");
-                            gameEngine.loadLevel(3);
-                        } else {
-                            alert("Salah! Dokumen ini masih aman / tidak vital. Utamakan yang basah & berisiko tinggi hancur!");
-                            gameEngine.deductLife();
-                        }
+                data.cats.forEach(c => {
+                    const z = document.createElement('div'); z.className='drop-zone'; z.innerHTML=`<h4>📁 ${c}</h4>`;
+                    z.ondragover = e => { e.preventDefault(); z.classList.add('hover'); };
+                    z.ondragleave = () => z.classList.remove('hover');
+                    z.ondrop = e => {
+                        e.preventDefault(); z.classList.remove('hover');
+                        const docName = e.dataTransfer.getData('text');
+                        const draggedEl = Array.from(document.getElementById('s1').children).find(el => el.innerText === docName);
+                        if(draggedEl && draggedEl.dataset.c === c) {
+                            z.appendChild(draggedEl); draggedEl.draggable=false; draggedEl.style.borderColor='var(--success)'; this.addScore(20);
+                            if(document.getElementById('s1').children.length===0) setTimeout(()=>this.loadLevel(2), 800);
+                        } else this.deductLife();
                     };
-                    list.appendChild(card);
+                    document.getElementById('t1').appendChild(z);
                 });
             },
 
-            /* -------------------------------------------------------------
-               LEVEL 3: VIRTUAL SCANNER SIMULATION
-            ------------------------------------------------------------- */
-            renderLevel3(container) {
-                document.getElementById('hud-level-title').innerText = "Misi 3/7: Virtual Scanner Simulation";
-                container.innerHTML = `
-                    <div class="scanner-container">
-                        <h3>Misi 3: Pindai Dokumen Fisik Menggunakan Scanner Desk</h3>
-                        <div class="scanner-bed">
-                            <div id="scanned-doc-preview" style="font-size: 1rem; color: var(--text-muted);">📄 [ Dokumen SK Pengangkatan di Atas Kaca Scanner ]</div>
-                            <div class="scan-laser" id="laser"></div>
-                        </div>
-                        <div class="scanner-controls">
-                            <select id="scan-format">
-                                <option value="jpg">Format: JPG</option>
-                                <option value="pdf" selected>Format: PDF (Standar SOP)</option>
-                            </select>
-                            <select id="scan-dpi">
-                                <option value="72">Resolusi: 72 DPI</option>
-                                <option value="300" selected>Resolusi: 300 DPI (SOP Arsip)</option>
-                            </select>
-                            <button class="btn btn-success" onclick="gameEngine.runScanner()">Scan Dokumen 🖨️</button>
-                        </div>
-                    </div>
-                `;
+            renderL2(cv) {
+                cv.innerHTML = `<div style="text-align:center; max-width:600px; margin:auto;"><h3>Misi 2: Prioritas Darurat ${this.myData.divName}</h3><p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">Pilih dokumen yang paling rentan rusak / vital!</p><div id="p-list"></div></div>`;
+                this.myData.l2.items.forEach(i => {
+                    const el = document.createElement('div'); el.className='priority-item';
+                    el.innerHTML = `<div><div style="font-weight:600">${i.n}</div><div style="font-size:0.8rem;color:var(--text-muted)">${i.r}</div></div><span class="priority-badge ${i.u?'badge-wet':'badge-normal'}">${i.u?'URGENT':'AMAN'}</span>`;
+                    el.onclick = () => { if(i.u) { this.addScore(30); this.loadLevel(3); } else { alert("Salah prioritas!"); this.deductLife(); } };
+                    document.getElementById('p-list').appendChild(el);
+                });
             },
 
-            runScanner() {
-                const format = document.getElementById('scan-format').value;
-                const dpi = document.getElementById('scan-dpi').value;
-                const laser = document.getElementById('laser');
-                const preview = document.getElementById('scanned-doc-preview');
-
-                if (format !== 'pdf' || dpi !== '300') {
-                    alert("⚠️ Pengaturan Salah! SOP Arsip Sekolah memerlukan Format PDF dan Resolusi 300 DPI.");
-                    this.deductLife();
-                    return;
-                }
-
-                laser.classList.add('scanning');
-                AudioEngine.play('scan');
-                preview.innerText = "⏳ Memindai Resolusi Tinggi 300 DPI...";
-
-                setTimeout(() => {
-                    laser.classList.remove('scanning');
-                    preview.innerHTML = "✅ <span style='color:var(--success)'>Pemindaian Berhasil: Temp_Scan_001.pdf</span>";
-                    this.addScore(30);
-                    setTimeout(() => this.loadLevel(4), 1000);
-                }, 1800);
+            renderL3(cv) {
+                cv.innerHTML = `<div class="scanner-container"><h3>Misi 3: Scan Berkas (${this.myData.divName})</h3>
+                    <div class="scanner-bed"><div id="scan-txt" style="color:var(--text-muted);">📄 [ ${this.myData.l3.docText} ]</div><div class="scan-laser" id="laser"></div></div>
+                    <div><select id="sf"><option value="jpg">JPG</option><option value="pdf" selected>PDF (SOP)</option></select>
+                    <select id="sd"><option value="72">72 DPI</option><option value="300" selected>300 DPI (SOP)</option></select>
+                    <button class="btn btn-success" onclick="gameEngine.doScan()">Scan Resolusi Tinggi 🖨️</button></div></div>`;
+            },
+            doScan() {
+                if(document.getElementById('sf').value!=='pdf' || document.getElementById('sd').value!=='300') return this.deductLife();
+                document.getElementById('laser').classList.add('scanning'); AudioEngine.play('scan');
+                document.getElementById('scan-txt').innerText = "⏳ Memindai...";
+                setTimeout(() => { this.addScore(30); this.loadLevel(4); }, 1500);
             },
 
-            /* -------------------------------------------------------------
-               LEVEL 4: FILE NAMING CHALLENGE (SOP Format)
-            ------------------------------------------------------------- */
-            renderLevel4(container) {
-                document.getElementById('hud-level-title').innerText = "Misi 4/7: Penamaan File Standar SOP";
+            renderL4(cv) {
                 this.assembledName = "";
-                container.innerHTML = `
-                    <div style="text-align:center; max-width:620px; margin:0 auto;">
-                        <h3>Misi 4: Susun Potongan Nama File Sesuai SOP Perkantoran</h3>
-                        <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.3rem; margin-bottom:1.5rem;">SOP: <code>YYYY-MM-DD_JenisDokumen_NamaKegiatan.pdf</code></p>
-                        
-                        <div id="naming-target" style="min-height: 55px; background: rgba(15,23,42,0.8); border: 2px dashed var(--accent); border-radius: 12px; display:flex; align-items:center; justify-content:center; gap:0.4rem; padding:0.5rem; margin-bottom:1.5rem;">
-                            <span style="color:var(--text-muted);">Klik blok kata di bawah berurutan...</span>
-                        </div>
-
-                        <div id="naming-blocks" style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center;">
-                            <button class="btn" onclick="gameEngine.pickBlock(this, '2026-08-03')">2026-08-03</button>
-                            <button class="btn" onclick="gameEngine.pickBlock(this, '_')">_</button>
-                            <button class="btn" onclick="gameEngine.pickBlock(this, 'SKPengangkatan')">SKPengangkatan</button>
-                            <button class="btn" onclick="gameEngine.pickBlock(this, '_')">_</button>
-                            <button class="btn" onclick="gameEngine.pickBlock(this, 'GuruGTT.pdf')">GuruGTT.pdf</button>
-                        </div>
-
-                        <div style="margin-top:2rem;">
-                            <button class="btn btn-success" onclick="gameEngine.validateFilename()">Konfirmasi Penamaan File ✔️</button>
-                        </div>
-                    </div>
-                `;
+                cv.innerHTML = `<div style="text-align:center; max-width:600px; margin:auto;"><h3>Misi 4: Standar Penamaan File SOP</h3><p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">SOP: <code>YYYY-MM-DD_Jenis_Nama.pdf</code></p>
+                    <div id="n-tgt" style="min-height:55px; background:rgba(15,23,42,0.8); border:2px dashed var(--accent); border-radius:12px; display:flex; align-items:center; justify-content:center; gap:0.4rem; padding:0.5rem; margin-bottom:1rem;"></div>
+                    <div id="n-src" style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center;"></div>
+                    <button class="btn btn-success" style="margin-top:1rem;" onclick="gameEngine.cekNama()">Verifikasi Nama ✔️</button></div>`;
+                
+                // Acak urutan tombol
+                const blocks = [...this.myData.l4.blocks].sort(() => Math.random() - 0.5);
+                blocks.forEach(b => {
+                    const btn = document.createElement('button'); btn.className='btn'; btn.innerText=b;
+                    btn.onclick = () => { this.assembledName+=b; btn.style.display='none'; document.getElementById('n-tgt').innerText = this.assembledName; };
+                    document.getElementById('n-src').appendChild(btn);
+                });
+            },
+            cekNama() {
+                if(this.assembledName === this.myData.l4.sop) { this.addScore(40); this.loadLevel(5); }
+                else { alert(`Format Salah! Seharusnya:\n${this.myData.l4.sop}`); this.deductLife(); this.renderL4(document.getElementById('level-canvas')); }
             },
 
-            pickBlock(btn, text) {
-                const target = document.getElementById('naming-target');
-                if (this.assembledName === "") target.innerHTML = "";
-                this.assembledName += text;
-                const tag = document.createElement('span');
-                tag.style.background = "var(--primary)";
-                tag.style.padding = "0.3rem 0.7rem";
-                tag.style.borderRadius = "6px";
-                tag.innerText = text;
-                target.appendChild(tag);
-                btn.style.visibility = 'hidden';
+            renderL5(cv) {
+                cv.innerHTML = `<h3 style="text-align:center; margin-bottom:1rem;">Misi 5: Penyusunan Folder Digital</h3><div class="game-grid"><div class="drag-source" id="s5"></div><div class="drop-targets" id="t5"></div></div>`;
+                const data = this.myData.l5;
+                data.files.forEach(f => {
+                    const el = document.createElement('div'); el.className='doc-card'; el.draggable=true; el.innerText=f.n; el.dataset.f=f.f;
+                    el.ondragstart = e => e.dataTransfer.setData('text', f.n);
+                    document.getElementById('s5').appendChild(el);
+                });
+                data.cats.forEach(c => {
+                    const z = document.createElement('div'); z.className='drop-zone'; z.innerHTML=`<h4>📁 ${c}</h4>`;
+                    z.ondragover = e => { e.preventDefault(); z.classList.add('hover'); };
+                    z.ondragleave = () => z.classList.remove('hover');
+                    z.ondrop = e => {
+                        e.preventDefault(); z.classList.remove('hover');
+                        const docName = e.dataTransfer.getData('text');
+                        const draggedEl = Array.from(document.getElementById('s5').children).find(el => el.innerText === docName);
+                        if(draggedEl && draggedEl.dataset.f === c) {
+                            z.appendChild(draggedEl); draggedEl.draggable=false; draggedEl.style.borderColor='var(--success)'; this.addScore(30);
+                            if(document.getElementById('s5').children.length===0) setTimeout(()=>this.loadLevel(6), 800);
+                        } else this.deductLife();
+                    };
+                    document.getElementById('t5').appendChild(z);
+                });
             },
 
-            validateFilename() {
-                const SOP = "2026-08-03_SKPengangkatan_GuruGTT.pdf";
-                if (this.assembledName === SOP) {
-                    this.addScore(40);
-                    alert("Sesuai SOP! Nama file terstruktur memudahkan pengindeksan digital.");
-                    this.loadLevel(5);
-                } else {
-                    alert(`Nama File Salah!\nInput: "${this.assembledName}"\nHarus Sesuai Format: YYYY-MM-DD_JenisDokumen_NamaKegiatan.pdf`);
-                    this.deductLife();
-                    this.renderLevel4(document.getElementById('level-canvas'));
-                }
+            renderL6(cv) {
+                cv.innerHTML = `<div style="text-align:center; max-width:600px; margin:auto;"><h3>Misi 6: Cloud Sync & Backup</h3><p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">Atur sinkronisasi otomatis untuk departemen <strong>${this.myData.divName}</strong></p>
+                    <div style="background:rgba(255,255,255,0.05); padding:1.5rem; border-radius:12px; text-align:left;">
+                        <label style="display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem;"><input type="checkbox" id="c1" style="width:18px;height:18px;"> Aktifkan Auto-Sync Cloud</label>
+                        <label style="display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem;"><input type="checkbox" id="c2" style="width:18px;height:18px;"> Aktifkan Enkripsi Data Sensitif</label>
+                        <button class="btn btn-success" style="width:100%;" onclick="gameEngine.doCloud()">Unggah Aman ☁️</button>
+                    </div></div>`;
+            },
+            doCloud() {
+                if(document.getElementById('c1').checked && document.getElementById('c2').checked) { this.addScore(20); this.loadLevel(7); }
+                else { alert("Aktifkan seluruh protokol keamanan (Auto-Sync & Enkripsi)!"); this.deductLife(); }
             },
 
-            /* -------------------------------------------------------------
-               LEVEL 5: DIGITAL FILING (Folder Structuring)
-            ------------------------------------------------------------- */
-            renderLevel5(container) {
-                document.getElementById('hud-level-title').innerText = "Misi 5/7: Digital Filing Structure";
-                container.innerHTML = `
-                    <div style="text-align:center; margin-bottom:0.8rem;">
-                        <h3>Misi 5: Pindahkan File Digital ke Direktori Folder yang Tepat</h3>
-                    </div>
-                    <div class="game-grid">
-                        <div class="drag-source" id="l5-source"></div>
-                        <div class="drop-targets" id="l5-targets"></div>
-                    </div>
-                `;
-
-                const files = [
-                    { id: 'f1', name: '📄 2026-08-03_SKPengangkatan_GuruGTT.pdf', folder: 'Kepegawaian' },
-                    { id: 'f2', name: '📄 2026-08-01_Laporan_Keuangan.pdf', folder: 'Keuangan' }
-                ];
-                const folders = ['Kepegawaian', 'Keuangan', 'Humas', 'Surat Masuk'];
-
-                const source = document.getElementById('l5-source');
-                const targets = document.getElementById('l5-targets');
-
+            renderL7(cv) {
+                cv.innerHTML = `<div style="height:100%; display:flex; flex-direction:column;">
+                    <div style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); padding:0.8rem; border-radius:12px; margin-bottom:1rem; text-align:center;">
+                    🚨 <strong>PANGGILAN DARURAT KEPSEK:</strong> ${this.myData.l7.searchHint}</div>
+                    <input type="text" id="sq" placeholder="Ketik nama file..." style="width:100%; padding:0.8rem; border-radius:12px; background:rgba(15,23,42,0.8); color:white; border:1px solid var(--surface-border); outline:none; margin-bottom:1rem;" onkeyup="gameEngine.doSearch()">
+                    <div id="sr" style="display:flex; flex-direction:column; gap:0.6rem;"></div></div>`;
+                this.doSearch();
+            },
+            doSearch() {
+                const q = document.getElementById('sq')?.value.toLowerCase() || '';
+                const rs = document.getElementById('sr'); rs.innerHTML = '';
+                // Mix target with random dummies
+                const files = [this.myData.l7.target, '2026-01-01_LaporanBiasa.pdf', 'Draft_Kosong.pdf', 'Jadwal_Revisi2.pdf'];
                 files.forEach(f => {
-                    const el = document.createElement('div');
-                    el.className = 'doc-card';
-                    el.draggable = true;
-                    el.innerText = f.name;
-                    el.id = f.id;
-                    el.dataset.folder = f.folder;
-                    el.addEventListener('dragstart', (e) => e.dataTransfer.setData('text', f.id));
-                    source.appendChild(el);
-                });
-
-                folders.forEach(fold => {
-                    const zone = document.createElement('div');
-                    zone.className = 'drop-zone';
-                    zone.innerHTML = `<h4>📁 Direct /${fold}</h4>`;
-                    zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('hover'); });
-                    zone.addEventListener('dragleave', () => zone.classList.remove('hover'));
-                    zone.addEventListener('drop', (e) => {
-                        e.preventDefault();
-                        zone.classList.remove('hover');
-                        const docId = e.dataTransfer.getData('text');
-                        const docEl = document.getElementById(docId);
-                        if (docEl.dataset.folder === fold) {
-                            zone.appendChild(docEl);
-                            docEl.draggable = false;
-                            docEl.style.borderColor = 'var(--success)';
-                            gameEngine.addScore(30);
-                            if (source.querySelectorAll('.doc-card').length === 0) {
-                                setTimeout(() => gameEngine.loadLevel(6), 800);
-                            }
-                        } else {
-                            alert(`Folder Salah! ${docEl.innerText} adalah dokumen administrasi ${docEl.dataset.folder}.`);
-                            gameEngine.deductLife();
-                        }
-                    });
-                    targets.appendChild(zone);
-                });
-            },
-
-            /* -------------------------------------------------------------
-               LEVEL 6: CLOUD UPLOAD & BACKUP MISSION
-            ------------------------------------------------------------- */
-            renderLevel6(container) {
-                document.getElementById('hud-level-title').innerText = "Misi 6/7: Cloud Storage Upload & Sync";
-                container.innerHTML = `
-                    <div class="cloud-dashboard">
-                        <h3>Misi 6: Amankan Berkas ke Cloud Storage Sekolah</h3>
-                        <p style="color:var(--text-muted); font-size:0.88rem;">Pilih direktori Penyimpanan Cloud dan aktifkan <strong>Auto-Backup Synchronize</strong> untuk mencegah kehilang data lokal.</p>
-                        
-                        <div style="background:rgba(255,255,255,0.05); padding:1rem; border-radius:12px; border:1px solid var(--surface-border);">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.9rem;">
-                                <span>Kapasitas Drive Sekolah</span>
-                                <span style="color:var(--accent);">45 GB / 100 GB Digunakan</span>
-                            </div>
-                            <div class="cloud-storage-bar"><div class="cloud-storage-fill"></div></div>
-                        </div>
-
-                        <div style="display:flex; flex-direction:column; gap:0.8rem; margin-top:0.5rem;">
-                            <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer;">
-                                <input type="checkbox" id="chk-backup" style="width:18px; height:18px;"> Aktifkan Otomatis Backup Sinkronisasi Real-Time
-                            </label>
-                            <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer;">
-                                <input type="checkbox" id="chk-encrypt" style="width:18px; height:18px;"> Enkripsi Berkas Sensitif (SOP Keamanan Data)
-                            </label>
-                        </div>
-
-                        <button class="btn btn-success" style="margin-top:auto;" onclick="gameEngine.runCloudUpload()">Unggah Ke Cloud Safe-Server ☁️</button>
-                    </div>
-                `;
-            },
-
-            runCloudUpload() {
-                const backup = document.getElementById('chk-backup').checked;
-                const encrypt = document.getElementById('chk-encrypt').checked;
-
-                if (!backup || !encrypt) {
-                    alert("⚠️ Keamanan Rendah! Anda wajib mengaktifkan Otomatis Backup dan Enkripsi sesuai SOP Keamanan Cloud.");
-                    this.deductLife();
-                    return;
-                }
-
-                this.addScore(40);
-                alert("Berhasil! Arsip terenkripsi dan tersinkronisasi otomatis di Cloud Storage.");
-                this.loadLevel(7);
-            },
-
-            /* -------------------------------------------------------------
-               LEVEL 7: FIND THE FILE (Speed Search Boss Challenge)
-            ------------------------------------------------------------- */
-            renderLevel7(container) {
-                document.getElementById('hud-level-title').innerText = "Misi 7/7: Speed Retrieval (Pencarian Cepat)";
-                container.innerHTML = `
-                    <div style="height:100%; display:flex; flex-direction:column;">
-                        <div style="background:rgba(239, 68, 68, 0.15); border:1px solid rgba(239, 68, 68, 0.4); padding:0.8rem; border-radius:12px; margin-bottom:1rem; text-align:center;">
-                            🚨 <strong>PERINTAH DARURAT KEPALA SEKOLAH:</strong> "Cari dan temukan berkas <code>SKPengangkatan</code> sekarang!"
-                        </div>
-
-                        <div class="search-box-container">
-                            <input type="text" class="search-input" id="search-query" placeholder="Ketik kata kunci pencarian nama file..." onkeyup="gameEngine.filterSearch()">
-                        </div>
-
-                        <div id="file-results" style="display:flex; flex-direction:column; gap:0.6rem; overflow-y:auto;"></div>
-                    </div>
-                `;
-
-                this.allDigitalFiles = [
-                    { name: '2026-08-01_Formulir_CutiPegawai.pdf', target: false },
-                    { name: '2026-08-03_SKPengangkatan_GuruGTT.pdf', target: true },
-                    { name: '2026-07-20_Notulen_RapatKelulusan.pdf', target: false },
-                    { name: '2026-08-02_Laporan_Keuangan.pdf', target: false }
-                ];
-                this.filterSearch();
-            },
-
-            filterSearch() {
-                const query = document.getElementById('search-query')?.value.toLowerCase() || '';
-                const resultsContainer = document.getElementById('file-results');
-                resultsContainer.innerHTML = '';
-
-                this.allDigitalFiles.forEach(f => {
-                    if (f.name.toLowerCase().includes(query)) {
-                        const item = document.createElement('div');
-                        item.className = 'doc-card';
-                        item.innerHTML = `<span>📄 ${f.name}</span> <button class="btn btn-warning" style="padding:0.3rem 0.7rem; font-size:0.78rem;">Pilih Berkas</button>`;
-                        item.onclick = () => {
-                            if (f.target) {
-                                gameEngine.addScore(50);
-                                gameEngine.loadLevel(8); // Finish Game!
-                            } else {
-                                alert("Salah Berkas! Kepala Sekolah meminta SK Pengangkatan Guru.");
-                                gameEngine.deductLife();
-                            }
+                    if(f.toLowerCase().includes(q)) {
+                        const el = document.createElement('div'); el.className='doc-card';
+                        el.innerHTML = `<span>📄 ${f}</span> <button class="btn btn-warning" style="padding:0.3rem 0.7rem; font-size:0.75rem;">Buka</button>`;
+                        el.onclick = () => {
+                            if(f === this.myData.l7.target) { this.addScore(50); this.loadLevel(8); }
+                            else { alert("Salah berkas!"); this.deductLife(); }
                         };
-                        resultsContainer.appendChild(item);
+                        rs.appendChild(el);
                     }
                 });
             },
 
-            /* -------------------------------------------------------------
-               END GAME DASHBOARD
-            ------------------------------------------------------------- */
             endGame(isSuccess, reason) {
                 clearInterval(this.timerInterval);
-                this.switchScreen('screen-dashboard');
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('screen-dashboard').classList.add('active');
 
                 document.getElementById('rep-name').innerText = this.playerName;
+                document.getElementById('rep-div').innerText = this.myData.divName;
                 document.getElementById('rep-score').innerText = this.score;
-                document.getElementById('rep-time').innerText = this.timeLeft > 0 ? this.timeLeft : 0;
-                document.getElementById('rep-status').innerText = isSuccess ? "Tuntas 7 Level Penyelamatan! 🎉" : "Misi Terhenti ❌";
+                document.getElementById('rep-status').innerText = isSuccess ? "Misi Divisi Tuntas! 🎉" : "Misi Terhenti ❌";
                 document.getElementById('rep-status').style.color = isSuccess ? "var(--success)" : "var(--danger)";
 
                 const badges = document.getElementById('rep-badges');
-                badges.innerHTML = '';
-                
-                if (isSuccess && this.score >= 200) {
-                    badges.innerHTML += `<span class="badge-tag">🏆 Office Rescue Hero</span>`;
-                    badges.innerHTML += `<span class="badge-tag">⚡ Fast Retrieval Specialist</span>`;
-                    badges.innerHTML += `<span class="badge-tag">☁️ Cloud Archival Master</span>`;
-                } else {
-                    badges.innerHTML += `<span class="badge-tag">⭐ Digital Beginner</span>`;
-                }
+                badges.innerHTML = isSuccess ? `<span class="badge-tag">🏆 Master of ${this.myData.divName}</span><span class="badge-tag">⚡ Fast Rescuer</span>` : `<span class="badge-tag">⭐ Staff Magang</span>`;
 
-                const feedback = isSuccess
-                    ? "Luar Biasa! Siswa secara tuntas menguasai 7 Indikator Kompetensi Digitalisasi Dokumen: Identifikasi, Prioritas Darurat, Teknik Pemindaian 300 DPI PDF, Penamaan File SOP, Pengarsipan Folder, Keamanan Cloud Storage, dan Pencarian Berkas Cepat."
-                    : `Siswa belum menyelesaikan seluruh alur simulasi digitalisasi. Catatan Evaluasi Guru: ${reason}`;
-                
-                document.getElementById('rep-feedback').innerText = feedback;
+                document.getElementById('rep-feedback').innerText = isSuccess 
+                    ? `Kerja luar biasa! Tim ${this.playerName} telah berhasil menyelamatkan arsip spesifik divisi ${this.myData.divName} sesuai dengan SOP Keamanan Data Perkantoran.`
+                    : `Evaluasi: Tim ${this.playerName} dari divisi ${this.myData.divName} membutuhkan simulasi ulang. Catatan: ${reason}`;
             }
         };
     </script>
