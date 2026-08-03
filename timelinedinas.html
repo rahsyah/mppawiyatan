@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Trip Quest: Can You Depart on Time?</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #475569;
+            --bg-color: #f1f5f9;
+            --surface: #ffffff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden; /* Prevent scrolling in game */
+        }
+
+        /* --- Screens --- */
+        .screen {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* --- Start & End Screen --- */
+        .modal-screen {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 50;
+        }
+
+        .modal-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 600px;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #60a5fa; }
+        p { margin-bottom: 2rem; line-height: 1.6; color: #cbd5e1; }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .btn:hover { background: var(--primary-hover); transform: scale(1.05); }
+
+        /* --- Game Dashboard --- */
+        #game-screen {
+            display: flex;
+            flex-direction: row;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid #e2e8f0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-card {
+            background: var(--bg-color);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .timer-box {
+            background: #fee2e2;
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid #fca5a5;
+        }
+
+        .mission-steps { list-style: none; }
+        .mission-steps li {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: var(--secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        .mission-steps li.active { background: #dbeafe; color: var(--primary); border-left: 4px solid var(--primary); }
+        .mission-steps li.done { background: #d1fae5; color: var(--success); text-decoration: line-through; }
+
+        /* Main Workspace */
+        main {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .workspace-area { display: flex; gap: 2rem; flex: 1; }
+        .panel {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            flex: 1;
+        }
+        .panel h3 { margin-bottom: 1rem; color: var(--secondary); border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
+
+        /* --- Drag and Drop Mechanics --- */
+        .draggable {
+            background: var(--bg-color);
+            border: 2px solid #cbd5e1;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.2s;
+            font-weight: 500;
+        }
+        .draggable:active { cursor: grabbing; transform: scale(0.98); }
+
+        .dropzone {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            min-height: 80px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+        .dropzone.drag-over { background: #eff6ff; border-color: var(--primary); }
+        
+        /* Specific Dropzone fixes */
+        .dropzone .draggable { margin: 0; width: 100%; border: none; background: transparent; }
+
+        .task-container { display: none; height: 100%; flex-direction: column; }
+        .task-container.active { display: flex; }
+
+        .submit-btn { margin-top: 2rem; align-self: flex-end; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen modal-screen">
+        <div class="modal-card">
+            <h1>Business Trip Quest:</h1>
+            <h2 style="margin-bottom: 1rem; color: #93c5fd;">Can You Depart on Time?</h2>
+            <p>Bapak Budi, Guru Produktif SMK, ditugaskan menghadiri Simposium Nasional besok pagi! Sebagai staf tata usaha, Anda harus menyiapkan dokumen, jadwal, dan anggarannya sebelum jam kantor berakhir.</p>
+            <p><strong>Misi Anda:</strong> Selesaikan 3 tugas administrasi sebelum waktu habis (3 Menit).</p>
+            <button class="btn" onclick="startGame()">Mulai Bekerja</button>
+        </div>
+    </div>
+
+    <!-- Main Game Dashboard -->
+    <div id="game-screen" class="screen hidden">
+        <!-- Sidebar -->
+        <aside>
+            <div class="profile-card">
+                <div style="font-size: 3rem; margin-bottom: 10px;">👨‍🏫</div>
+                <h3 style="color: var(--text-main);">Bapak Budi</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Tujuan: Simposium Jakarta</p>
+            </div>
+            
+            <div class="timer-box" id="timerDisplay">03:00</div>
+
+            <ul class="mission-steps">
+                <li id="nav-task1" class="active">📝 1. Surat Tugas</li>
+                <li id="nav-task2">🗓️ 2. Susun Itinerary</li>
+                <li id="nav-task3">💰 3. Alokasi Anggaran</li>
+            </ul>
+        </aside>
+
+        <!-- Main Area -->
+        <main>
+            <!-- TASK 1: Document Assembly -->
+            <div id="task1" class="task-container active">
+                <div class="task-header">
+                    <h2>Task 1: Perakitan Surat Tugas</h2>
+                    <p style="color: var(--text-muted);">Tarik komponen surat ke kerangka yang tepat.</p>
+                </div>
+                <div class="workspace-area">
+                    <div class="panel">
+                        <h3>Draft Komponen</h3>
+                        <div class="draggable" draggable="true" id="doc-ttd" ondragstart="drag(event)">Tanda Tangan Kepala Sekolah</div>
+                        <div class="draggable" draggable="true" id="doc-isi" ondragstart="drag(event)">Isi: Menugaskan Sdr. Budi ke Jakarta...</div>
+                        <div class="draggable" draggable="true" id="doc-kop" ondragstart="drag(event)">Kop Surat: SMK Negeri 1 Nusantara</div>
+                    </div>
+                    <div class="panel">
+                        <h3>Lembar Kerja Surat Tugas</h3>
+                        <div class="dropzone" id="zone-kop" data-expected="doc-kop" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Letakkan Kop Surat Disini]</div>
+                        <div class="dropzone" id="zone-isi" data-expected="doc-isi" style="min-height: 150px;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Letakkan Isi Surat Disini]</div>
+                        <div class="dropzone" id="zone-ttd" data-expected="doc-ttd" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Letakkan Tanda Tangan Disini]</div>
+                    </div>
+                </div>
+                <button class="btn submit-btn" onclick="validateTask1()">Verifikasi Surat</button>
+            </div>
+
+            <!-- TASK 2: Timeline Puzzle -->
+            <div id="task2" class="task-container">
+                <div class="task-header">
+                    <h2>Task 2: Jadwal Perjalanan (Itinerary)</h2>
+                    <p style="color: var(--text-muted);">Susun jadwal Bapak Budi secara kronologis.</p>
+                </div>
+                <div class="workspace-area">
+                    <div class="panel">
+                        <h3>Daftar Kegiatan (Acak)</h3>
+                        <div class="draggable" draggable="true" id="time-seminar" ondragstart="drag(event)">Hari 2 - Hadir di Simposium Nasional</div>
+                        <div class="draggable" draggable="true" id="time-pulang" ondragstart="drag(event)">Hari 3 - Penerbangan Kembali & Laporan</div>
+                        <div class="draggable" draggable="true" id="time-berangkat" ondragstart="drag(event)">Hari 1 - Penerbangan ke Jakarta & Check-in Hotel</div>
+                    </div>
+                    <div class="panel">
+                        <h3>Timeline Keberangkatan</h3>
+                        <div class="dropzone" id="zone-time1" data-expected="time-berangkat" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Urutan Ke-1]</div>
+                        <div class="dropzone" id="zone-time2" data-expected="time-seminar" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Urutan Ke-2]</div>
+                        <div class="dropzone" id="zone-time3" data-expected="time-pulang" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Urutan Ke-3]</div>
+                    </div>
+                </div>
+                <button class="btn submit-btn" onclick="validateTask2()">Kunci Jadwal</button>
+            </div>
+
+            <!-- TASK 3: Budget Allocation -->
+            <div id="task3" class="task-container">
+                <div class="task-header">
+                    <h2>Task 3: Alokasi SPPD</h2>
+                    <p style="color: var(--text-muted);">Cocokkan kuitansi ke pos anggaran yang tepat (SPPD).</p>
+                </div>
+                <div class="workspace-area">
+                    <div class="panel">
+                        <h3>Nota / Kuitansi</h3>
+                        <div class="draggable" draggable="true" id="budget-hotel" ondragstart="drag(event)">Kuitansi: Rp 1.500.000 (Menginap 2 Malam)</div>
+                        <div class="draggable" draggable="true" id="budget-harian" ondragstart="drag(event)">Uang Saku: Rp 900.000 (3 Hari x 300k)</div>
+                        <div class="draggable" draggable="true" id="budget-pesawat" ondragstart="drag(event)">E-Ticket: Rp 2.400.000 (PP JKT)</div>
+                    </div>
+                    <div class="panel">
+                        <h3>Tabel Pos Anggaran</h3>
+                        <p style="margin-bottom:10px; font-weight:bold;">Biaya Transportasi</p>
+                        <div class="dropzone" id="zone-b1" data-expected="budget-pesawat" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Nota Transportasi]</div>
+                        
+                        <p style="margin-bottom:10px; font-weight:bold;">Biaya Akomodasi</p>
+                        <div class="dropzone" id="zone-b2" data-expected="budget-hotel" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Nota Akomodasi]</div>
+                        
+                        <p style="margin-bottom:10px; font-weight:bold;">Uang Harian (Per Diem)</p>
+                        <div class="dropzone" id="zone-b3" data-expected="budget-harian" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Uang Saku]</div>
+                    </div>
+                </div>
+                <button class="btn submit-btn" onclick="validateTask3()">Cetak SPPD & Selesai!</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- End Screen -->
+    <div id="end-screen" class="screen modal-screen hidden">
+        <div class="modal-card">
+            <h1 id="end-title">Mission Accomplished! ✈️</h1>
+            <p id="end-msg">Luar biasa! Dokumen, jadwal, dan SPPD Bapak Budi telah siap. Pesawat tidak akan menunggu, dan Anda berhasil tepat waktu.</p>
+            <p style="font-size: 1.2rem; color: #a7f3d0; margin-bottom: 2rem;">Sisa Waktu: <span id="time-score">--:--</span></p>
+            <button class="btn" onclick="location.reload()">Main Lagi</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* --- Game State --- */
+    let timeLeft = 180; // 3 Minutes
+    let timerInterval;
+    let gameActive = false;
+
+    /* --- Core Navigation --- */
+    function startGame() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        gameActive = true;
+        
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            if(timeLeft <= 0) gameOver();
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        let s = (timeLeft % 60).toString().padStart(2, '0');
+        document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+    }
+
+    function switchTask(fromId, toId, navFromId, navToId) {
+        document.getElementById(fromId).classList.remove('active');
+        document.getElementById(toId).classList.add('active');
+        
+        document.getElementById(navFromId).classList.remove('active');
+        document.getElementById(navFromId).classList.add('done');
+        document.getElementById(navToId).classList.add('active');
+    }
+
+    /* --- Drag and Drop Logic --- */
+    function allowDrop(ev) {
+        ev.preventDefault();
+        ev.currentTarget.classList.add('drag-over');
+    }
+
+    function leaveDrop(ev) {
+        ev.currentTarget.classList.remove('drag-over');
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        ev.currentTarget.classList.remove('drag-over');
+        let data = ev.dataTransfer.getData("text");
+        let draggedElement = document.getElementById(data);
+        
+        // Prevent nesting elements inside other draggables
+        if (ev.currentTarget.classList.contains('dropzone')) {
+            // Jika dropzone sudah ada isinya, kembalikan isi lama ke luar (swap)
+            if (ev.currentTarget.children.length > 0) {
+                let existingChild = ev.currentTarget.children[0];
+                draggedElement.parentNode.appendChild(existingChild);
+            }
+            ev.currentTarget.appendChild(draggedElement);
+        }
+    }
+
+    /* --- Task Validators --- */
+    function validateTask(zonesArray) {
+        let isValid = true;
+        zonesArray.forEach(zoneId => {
+            const zone = document.getElementById(zoneId);
+            const expectedId = zone.getAttribute('data-expected');
+            const child = zone.children[0];
+            
+            if (!child || child.id !== expectedId) {
+                isValid = false;
+                zone.style.borderColor = 'var(--danger)';
+                setTimeout(() => zone.style.borderColor = '#cbd5e1', 1000);
+            } else {
+                zone.style.borderColor = 'var(--success)';
+            }
+        });
+        return isValid;
+    }
+
+    function validateTask1() {
+        if (validateTask(['zone-kop', 'zone-isi', 'zone-ttd'])) {
+            alert('Surat Tugas Terverifikasi! Lanjut ke Itinerary.');
+            switchTask('task1', 'task2', 'nav-task1', 'nav-task2');
+        } else {
+            alert('Struktur Surat Tugas masih salah. Perhatikan urutan standar (Kop - Isi - TTD).');
+        }
+    }
+
+    function validateTask2() {
+        if (validateTask(['zone-time1', 'zone-time2', 'zone-time3'])) {
+            alert('Jadwal Terkunci! Lanjut ke Anggaran.');
+            switchTask('task2', 'task3', 'nav-task2', 'nav-task3');
+        } else {
+            alert('Urutan kronologis salah. Kapan Bapak Budi harus berangkat dan pulang?');
+        }
+    }
+
+    function validateTask3() {
+        if (validateTask(['zone-b1', 'zone-b2', 'zone-b3'])) {
+            gameWin();
+        } else {
+            alert('Alokasi pos anggaran tidak sesuai dengan jenis kuitansi!');
+        }
+    }
+
+    /* --- End Game Scenarios --- */
+    function gameOver() {
+        clearInterval(timerInterval);
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('end-screen').classList.remove('hidden');
+        
+        document.getElementById('end-title').innerText = "Waktu Habis! ❌";
+        document.getElementById('end-title').style.color = "var(--danger)";
+        document.getElementById('end-msg').innerText = "Bapak Budi ketinggalan pesawat karena administrasi belum selesai. Coba lagi!";
+        document.getElementById('time-score').innerText = "00:00";
+    }
+
+    function gameWin() {
+        clearInterval(timerInterval);
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('end-screen').classList.remove('hidden');
+        
+        let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        let s = (timeLeft % 60).toString().padStart(2, '0');
+        document.getElementById('time-score').innerText = `${m}:${s}`;
+    }
+</script>
+</body>
+</html>
