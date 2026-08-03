@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Archive Detective v3.5 - Corporate Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --os-bg: #09090b; --panel-bg: rgba(24, 24, 27, 0.9);
+            --window-bg: #18181b; --window-border: #3f3f46;
+            --primary: #8b5cf6; --primary-hover: #7c3aed;
+            --accent: #06b6d4; --success: #10b981; --warning: #f59e0b; --danger: #f43f5e;
+            --text-main: #f4f4f5; --text-muted: #a1a1aa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        
+        body { 
+            height: 100vh; overflow: hidden; background-color: var(--os-bg);
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
+            color: var(--text-main); display: flex; flex-direction: column;
+        }
+
+        /* Login Screen */
+        #login-screen {
+            position: absolute; inset: 0; z-index: 1000; background: var(--os-bg);
+            display: flex; justify-content: center; align-items: center; transition: 0.5s;
+        }
+        .login-box {
+            background: var(--panel-bg); padding: 3rem; border-radius: 16px;
+            border: 1px solid var(--window-border); text-align: center; width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+        }
+        .login-box input {
+            width: 100%; padding: 1rem; margin: 1.5rem 0; border-radius: 8px;
+            background: #09090b; border: 1px solid var(--window-border); color: white; outline: none;
+        }
+        .btn {
+            width: 100%; padding: 0.9rem; border-radius: 8px; border: none; font-weight: 600; font-size: 0.95rem;
+            background: var(--primary); color: white; cursor: pointer; transition: 0.2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        
+        /* Company Profile Badge Top Right */
+        .company-card {
+            background: rgba(139, 92, 246, 0.1); border: 1px solid var(--primary);
+            padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.8rem; display: flex;
+            align-items: center; gap: 0.8rem;
+        }
+
+        /* Desktop */
+        #desktop { flex: 1; position: relative; padding: 1.5rem; display: none; }
+        .desktop-icon {
+            width: 100px; height: 100px; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 0.6rem; cursor: pointer; border-radius: 12px; transition: 0.2s;
+        }
+        .desktop-icon:hover { background: rgba(255,255,255,0.08); }
+        .icon-img { font-size: 2.8rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+        .icon-text { font-size: 0.8rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.8); text-align: center;}
+
+        /* Windows */
+        .window {
+            position: absolute; background: var(--window-bg); border: 1px solid var(--window-border);
+            border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); display: none;
+            flex-direction: column; overflow: hidden; transform: scale(0.95); opacity: 0; transition: 0.2s;
+        }
+        .window.active { display: flex; transform: scale(1); opacity: 1; }
+        .window-header { background: #09090b; padding: 0.8rem 1rem; display: flex; justify-content: space-between; align-items: center; cursor: move; border-bottom: 1px solid var(--window-border); }
+        .win-close { background: var(--danger); width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer;}
+        .window-content { flex: 1; padding: 1.5rem; overflow-y: auto; }
+
+        /* Game Elements */
+        .sop-text { line-height: 1.6; font-size: 0.9rem; }
+        .sop-text h3 { color: var(--primary); margin: 1.2rem 0 0.5rem 0; border-bottom: 1px solid var(--window-border); padding-bottom: 0.4rem;}
+        .sop-box { background: rgba(139, 92, 246, 0.1); border-left: 4px solid var(--primary); padding: 0.8rem; margin: 0.8rem 0; border-radius: 0 6px 6px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+
+        .file-item { 
+            background: #27272a; border: 1px solid #3f3f46; padding: 0.8rem; margin-bottom: 0.6rem; 
+            border-radius: 8px; cursor: grab; font-size: 0.82rem; transition: 0.2s;
+        }
+        .file-item:hover { border-color: var(--primary); }
+        .file-item:active { cursor: grabbing; transform: scale(0.98); }
+        .file-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 0.3rem; color: var(--accent); }
+        .file-title { font-size: 0.85rem; color: var(--text-main); margin-top: 0.2rem; }
+
+        .drop-zone { border: 2px dashed var(--window-border); border-radius: 10px; padding: 1rem; min-height: 160px; transition: 0.3s; background: rgba(0,0,0,0.2); }
+        .drop-zone.hover { border-color: var(--primary); background: rgba(139, 92, 246, 0.1); }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .folder-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .folder { background: #18181b; border: 1px solid #3f3f46; border-top: 12px solid var(--primary); border-radius: 8px; padding: 1rem; text-align: center; }
+
+        .terminal { background: #000; color: #10b981; font-family: 'JetBrains Mono', monospace; padding: 1.5rem; border-radius: 8px; font-size: 0.88rem; }
+        .term-input { background: transparent; border: none; border-bottom: 2px solid #10b981; color: #10b981; font-family: 'JetBrains Mono', monospace; font-size: 1rem; outline: none; text-transform: uppercase; width: 120px; }
+
+        #taskbar { height: 55px; background: #09090b; border-top: 1px solid var(--window-border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; z-index: 100; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Login -->
+    <div id="login-screen">
+        <div class="login-box">
+            <div style="font-size: 3rem; margin-bottom: 0.5rem;">🕵️‍♂️📁</div>
+            <h1 style="font-size: 1.8rem; color: var(--text-main);">Archive OS <span style="color: var(--primary)">v3.5</span></h1>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem;">Simulasi Kearsipan Administrasi Perkantoran</p>
+            <input type="text" id="player-name" placeholder="Masukkan Nama Arsiparis..." autocomplete="off">
+            <button class="btn" onclick="game.start()">Masuk ke Sistem</button>
+        </div>
+    </div>
+
+    <!-- Desktop -->
+    <div id="desktop">
+        <div class="desktop-icon" onclick="win.open('win-mail')">
+            <div class="icon-img">📩</div><div class="icon-text">Surat Masuk (1)</div>
+        </div>
+        <div class="desktop-icon" onclick="win.open('win-sop')">
+            <div class="icon-img">📕</div><div class="icon-text">Buku SOP</div>
+        </div>
+        <div class="desktop-icon" onclick="win.open('win-system')">
+            <div class="icon-img">🗄️</div><div class="icon-text">Sistem Arsip</div>
+        </div>
+    </div>
+
+    <!-- Mail Window -->
+    <div class="window" id="win-mail" style="left: 40px; top: 30px; width: 620px; height: 520px;">
+        <div class="window-header"><div>📩 Mail Client - Instruksi Kerja</div><button class="win-close" onclick="win.close('win-mail')"></button></div>
+        <div class="window-content">
+            <div style="background: rgba(244, 63, 94, 0.1); border-left: 4px solid var(--danger); padding: 1rem; margin-bottom: 1.2rem; border-radius: 0 8px 8px 0;">
+                <strong>DARI:</strong> Direktur Utama<br><strong>SUBJEK:</strong> URGENT - Penataan Ulang Arsip & Audit Perusahaan!
+            </div>
+            <p>Halo Arsiparis <span id="disp-name" style="font-weight:bold; color:var(--primary);"></span>,</p><br>
+            <p>Selamat bergabung di kantor kita: <strong>PT ARCHIVE NUSA DIGITAL</strong>. Server arsip kita baru saja mengalami *glitch*, menyebabkan dokumen tercampur aduk.</p><br>
+            
+            <div style="background: rgba(139, 92, 246, 0.1); padding: 0.8rem; border-radius: 8px; border: 1px solid var(--primary); margin-bottom: 1rem; font-size: 0.85rem;">
+                <strong>💡 INGAT KARTU IDENTITAS KITA:</strong><br>
+                Perusahaan Kita: <u>PT ARCHIVE NUSA DIGITAL</u><br>
+                • Jika Pengirim = Pihak Luar & Penerima = KITA &rarr; <strong>Surat Masuk</strong><br>
+                • Jika Pengirim = KITA & Penerima = Pihak Luar &rarr; <strong>Surat Keluar</strong>
+            </div>
+
+            <p>Tugas Anda di aplikasi <strong>Sistem Arsip</strong>:</p>
+            <ol style="margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.8; font-size: 0.88rem;">
+                <li><strong>Tahap 1 (Agenda):</strong> Pisahkan tumpukan surat menjadi Surat Masuk & Surat Keluar.</li>
+                <li><strong>Tahap 2 (Klasifikasi Subjek):</strong> Kelompokkan surat ke folder Keuangan, Kepegawaian, Kerjasama, atau Umum.</li>
+                <li><strong>Tahap 3 (Lab Indexing):</strong> Uji pemahaman aturan indexing nama instansi & orang.</li>
+                <li><strong>Tahap 4 (Dekripsi Brankas):</strong> Masukkan Kode Indeks untuk mengambil dokumen MoU PT. Global Sentosa (2026) dan SK Mutasi Ahmad Zaelani (2026).</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- SOP Window -->
+    <div class="window" id="win-sop" style="left: 680px; top: 30px; width: 480px; height: 580px;">
+        <div class="window-header"><div>📕 Buku Panduan SOP Kearsipan</div><button class="win-close" onclick="win.close('win-sop')"></button></div>
+        <div class="window-content sop-text">
+            <h3>Bab I: Identifikasi Arus Surat</h3>
+            <p><strong>Perusahaan Kita:</strong> PT ARCHIVE NUSA DIGITAL</p>
+            <p>• <strong>Surat Masuk:</strong> Ditulis oleh instansi lain/luar yang dikirimkan KEPADA perusahaan kita.</p>
+            <p>• <strong>Surat Keluar:</strong> Ditulis DARI perusahaan kita yang dikirimkan KEPADA instansi lain/luar.</p>
+
+            <h3>Bab II: Sistem Subjek</h3>
+            <ul style="margin-left:1.2rem;">
+                <li><strong>Keuangan:</strong> Invoice, Tagihan, Bukti Pembayaran.</li>
+                <li><strong>Kepegawaian:</strong> SK Mutasi, Permohonan Cuti, Surat Lamaran.</li>
+                <li><strong>Kerjasama:</strong> MoU, Kontrak Bisnis, Perjanjian.</li>
+                <li><strong>Umum:</strong> Surat Penawaran Umum, Undangan Event.</li>
+            </ul>
+
+            <h3>Bab III: Indeks Instansi (Badan Hukum)</h3>
+            <div class="sop-box">
+                Abaikan PT, CV, UD.<br>
+                Ambil 2 huruf pertama dari nama utama instansi.<br>
+                <strong>Format:</strong> [2 HURUF]-[TAHUN]<br>
+                <strong>Contoh:</strong> PT. Global Sentosa (2026) &rarr; Kode: <strong>GL-2026</strong>
+            </div>
+
+            <h3>Bab IV: Indeks Nama Orang (Kepegawaian)</h3>
+            <div class="sop-box">
+                Gunakan Nama Belakang (Kata Terakhir) sebagai kata utama.<br>
+                Ambil 3 huruf pertama nama belakang tersebut.<br>
+                <strong>Format:</strong> [3 HURUF]-[TAHUN]<br>
+                <strong>Contoh:</strong> Ahmad Zaelani (2026) &rarr; Kode: <strong>ZAE-2026</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive System Window -->
+    <div class="window" id="win-system" style="left: 80px; top: 70px; width: 880px; height: 600px;">
+        <div class="window-header"><div>🗄️ Sistem Arsip Terpadu</div><button class="win-close" onclick="win.close('win-system')"></button></div>
+        <div class="window-content" style="display: flex; flex-direction: column;">
+            
+            <!-- Phase Navigation -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.2rem; border-bottom: 1px solid var(--window-border); padding-bottom: 0.8rem; font-size: 0.85rem;">
+                <div id="nav-1" style="color: var(--primary); font-weight: bold;">1. Registrasi Agenda</div>
+                <div id="nav-2" style="color: var(--text-muted);">2. Klasifikasi Subjek</div>
+                <div id="nav-3" style="color: var(--text-muted);">3. Uji Indexing</div>
+                <div id="nav-4" style="color: var(--text-muted);">4. Dekripsi Brankas</div>
+            </div>
+
+            <!-- Phase 1: Agenda -->
+            <div id="phase-1" class="grid-2" style="flex:1;">
+                <div>
+                    <h4 style="margin-bottom: 0.8rem; font-size:0.9rem;">Tumpukan Surat (Unsorted)</h4>
+                    <div id="p1-source" style="height: 380px; overflow-y: auto; padding-right: 8px;"></div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="drop-zone" data-type="masuk" id="dz-masuk">
+                        <h4 style="color: var(--success); margin-bottom: 0.5rem; font-size:0.9rem;">📥 Tray SURAT MASUK</h4>
+                        <p style="font-size:0.75rem; color:var(--text-muted);">Drop surat yang ditujukan KEPADA PT ARCHIVE NUSA DIGITAL di sini</p>
+                    </div>
+                    <div class="drop-zone" data-type="keluar" id="dz-keluar">
+                        <h4 style="color: var(--warning); margin-bottom: 0.5rem; font-size:0.9rem;">📤 Tray SURAT KELUAR</h4>
+                        <p style="font-size:0.75rem; color:var(--text-muted);">Drop surat yang dibuat DARI PT ARCHIVE NUSA DIGITAL di sini</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2: Subject Folders -->
+            <div id="phase-2" class="hidden grid-2" style="flex:1;">
+                <div>
+                    <h4 style="margin-bottom: 0.8rem; font-size:0.9rem;">Surat Teregistrasi</h4>
+                    <div id="p2-source" style="height: 380px; overflow-y: auto; padding-right: 8px;"></div>
+                </div>
+                <div class="folder-grid">
+                    <div class="folder drop-zone-p2" data-sub="keuangan">💰 KEUANGAN<br><small><span class="fc">0</span> file</small></div>
+                    <div class="folder drop-zone-p2" data-sub="kepegawaian">👥 KEPEGAWAIAN<br><small><span class="fc">0</span> file</small></div>
+                    <div class="folder drop-zone-p2" data-sub="kerjasama">🤝 KERJASAMA<br><small><span class="fc">0</span> file</small></div>
+                    <div class="folder drop-zone-p2" data-sub="umum">📋 UMUM<br><small><span class="fc">0</span> file</small></div>
+                </div>
+            </div>
+
+            <!-- Phase 3: Indexing Lab Quiz -->
+            <div id="phase-3" class="hidden" style="flex:1;">
+                <h4 style="margin-bottom: 0.5rem; color:var(--accent);">Modul Uji Pemahaman Indexing</h4>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Selesaikan latihan mengindeks ini sebelum mengakses Brankas Kunci Terminal.</p>
+
+                <div style="background: rgba(0,0,0,0.3); padding:1.5rem; border-radius:10px; border:1px solid var(--window-border); display:flex; flex-direction:column; gap:1.2rem;">
+                    <div>
+                        <label style="font-size:0.85rem; font-weight:bold; color:var(--text-main);">Q1: Bagaimanakah penulisan Indeks Nama Instansi untuk "PT. Nusantara Jaya"?</label>
+                        <select id="q1-ans" style="width:100%; padding:0.6rem; margin-top:0.4rem; background:#09090b; border:1px solid #3f3f46; color:#fff; border-radius:6px;">
+                            <option value="wrong">PT. Nusantara Jaya</option>
+                            <option value="right">Nusantara Jaya, PT</option>
+                            <option value="wrong2">Jaya Nusantara, PT</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="font-size:0.85rem; font-weight:bold; color:var(--text-main);">Q2: Apakah kata utama (unit pertama) dalam mengindeks nama orang "Budi Hermanto"?</label>
+                        <select id="q2-ans" style="width:100%; padding:0.6rem; margin-top:0.4rem; background:#09090b; border:1px solid #3f3f46; color:#fff; border-radius:6px;">
+                            <option value="wrong">Budi</option>
+                            <option value="right">Hermanto</option>
+                        </select>
+                    </div>
+
+                    <button class="btn" style="align-self:flex-start;" onclick="game.verifyIndexingQuiz()">Verifikasi Hasil Indexing</button>
+                    <div id="quiz-feedback" style="font-size:0.85rem; font-weight:bold;"></div>
+                </div>
+            </div>
+
+            <!-- Phase 4: Vault Decryption -->
+            <div id="phase-4" class="hidden terminal" style="flex:1;">
+                <div>> ARCHIVE OS SECURE VAULT v3.5</div>
+                <div>> METADATA RESTORED. STANDBY FOR FINAL DECRYPTION.</div>
+                <br>
+                <div id="task-1">
+                    <div style="color: var(--warning);">> MISI 1: Cari MoU PT. Global Sentosa (2026)</div>
+                    <div>> MASUKKAN KODE INDEKS INSTANSI: <input type="text" id="inp-1" class="term-input" maxlength="7"> <button class="btn" style="width:auto; padding:0.2rem 1rem; background:var(--primary);" onclick="game.checkCode(1)">PROSES</button></div>
+                    <div id="err-1" style="color: var(--danger); margin-top: 5px;"></div>
+                </div>
+                <div id="task-2" class="hidden" style="margin-top: 1.5rem;">
+                    <div style="color: var(--success);">> [DOKUMEN 1 TERAMBIL]</div>
+                    <div style="color: var(--warning); margin-top: 1rem;">> MISI 2: Cari SK Mutasi Ahmad Zaelani (2026)</div>
+                    <div>> MASUKKAN KODE INDEKS PEGAWAI: <input type="text" id="inp-2" class="term-input" maxlength="8"> <button class="btn" style="width:auto; padding:0.2rem 1rem; background:var(--primary);" onclick="game.checkCode(2)">PROSES</button></div>
+                    <div id="err-2" style="color: var(--danger); margin-top: 5px;"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div id="taskbar">
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <div style="font-weight: bold; color: var(--primary);">Archive OS v3.5</div>
+            <div class="company-card">
+                <span>🏢 Perusahaan Anda: <strong>PT ARCHIVE NUSA DIGITAL</strong></span>
+            </div>
+        </div>
+        <div id="clock" style="font-family: monospace; color: var(--accent);"></div>
+    </div>
+
+    <script>
+        const sfx = {
+            ctx: new (window.AudioContext || window.webkitAudioContext)(),
+            play(type) {
+                if(this.ctx.state === 'suspended') this.ctx.resume();
+                const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+                o.connect(g); g.connect(this.ctx.destination);
+                if(type==='ok'){ o.type='sine'; o.frequency.setValueAtTime(523,this.ctx.currentTime); o.frequency.setValueAtTime(659,this.ctx.currentTime+0.1); g.gain.setValueAtTime(0.08,this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.3); o.start(); o.stop(this.ctx.currentTime+0.3); }
+                if(type==='err'){ o.type='sawtooth'; o.frequency.setValueAtTime(180,this.ctx.currentTime); g.gain.setValueAtTime(0.08,this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.3); o.start(); o.stop(this.ctx.currentTime+0.3); }
+            }
+        };
+
+        const win = {
+            z: 10,
+            open(id) { 
+                const e = document.getElementById(id); 
+                e.classList.add('active'); e.style.zIndex = ++this.z; 
+                sfx.play('ok');
+            },
+            close(id) { document.getElementById(id).classList.remove('active'); }
+        };
+
+        // Window Dragging Logic
+        document.querySelectorAll('.window').forEach(w => {
+            const h = w.querySelector('.window-header');
+            let drag = false, x, y, l, t;
+            w.onmousedown = () => w.style.zIndex = ++win.z;
+            h.onmousedown = e => { if(e.target.classList.contains('win-close')) return; drag = true; x = e.clientX; y = e.clientY; l = w.offsetLeft; t = w.offsetTop; };
+            document.onmousemove = e => { if(!drag) return; w.style.left = l + (e.clientX - x) + 'px'; w.style.top = t + (e.clientY - y) + 'px'; };
+            document.onmouseup = () => drag = false;
+        });
+
+        // Clock
+        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID'), 1000);
+
+        // Database Dokumen Lengkap dengan Kop Surat Pengirim & Penerima
+        const documents = [
+            { id: 'd1', from: 'PT. Maju Sentosa', to: 'PT ARCHIVE NUSA DIGITAL', name: 'Penawaran Genset Kantor', type: 'masuk', sub: 'umum' },
+            { id: 'd2', from: 'PT ARCHIVE NUSA DIGITAL', to: 'PT. Maju Sentosa', name: 'Surat Balasan Penawaran Genset', type: 'keluar', sub: 'umum' },
+            { id: 'd3', from: 'PT. Cloud Host Indonesia', to: 'PT ARCHIVE NUSA DIGITAL', name: 'Invoice Tagihan Cloud Server', type: 'masuk', sub: 'keuangan' },
+            { id: 'd4', from: 'PT ARCHIVE NUSA DIGITAL', to: 'PT. Cloud Host Indonesia', name: 'Bukti Transfer Pembayaran Cloud', type: 'keluar', sub: 'keuangan' },
+            { id: 'd5', from: 'Internal HRD', to: 'Direksi AND', name: 'SK Cuti Melahirkan - Sisca', type: 'masuk', sub: 'kepegawaian' },
+            { id: 'd6', from: 'PT. Global Sentosa', to: 'PT ARCHIVE NUSA DIGITAL', name: 'Draft MoU Kerjasama Bisnis 2026', type: 'masuk', sub: 'kerjasama' }
+        ];
+
+        const game = {
+            p1Total: 6, p1Done: 0,
+            p2Total: 6, p2Done: 0,
+
+            start() {
+                const name = document.getElementById('player-name').value;
+                if(!name) return alert("Masukkan nama Anda terlebih dahulu!");
+                document.getElementById('disp-name').innerText = name;
+                document.getElementById('login-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('desktop').style.display = 'flex';
+                    win.open('win-mail');
+                    this.initPhase1();
+                }, 500);
+            },
+
+            initPhase1() {
+                const src = document.getElementById('p1-source');
+                documents.forEach(d => {
+                    const el = document.createElement('div');
+                    el.className = 'file-item'; el.draggable = true; el.id = d.id;
+                    el.innerHTML = `
+                        <div class="file-header">
+                            <span>DARI: ${d.from}</span>
+                        </div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">KEPADA: ${d.to}</div>
+                        <div class="file-title">📄 ${d.name}</div>
+                    `;
+                    
+                    el.ondragstart = e => {
+                        e.dataTransfer.setData('type', d.type);
+                        e.dataTransfer.setData('id', d.id);
+                    };
+                    src.appendChild(el);
+                });
+
+                document.querySelectorAll('.drop-zone').forEach(dz => {
+                    dz.ondragover = e => { e.preventDefault(); dz.classList.add('hover'); };
+                    dz.ondragleave = () => dz.classList.remove('hover');
+                    dz.ondrop = e => {
+                        e.preventDefault(); dz.classList.remove('hover');
+                        const type = e.dataTransfer.getData('type');
+                        const id = e.dataTransfer.getData('id');
+                        
+                        if(dz.dataset.type === type) {
+                            const el = document.getElementById(id);
+                            dz.appendChild(el); el.draggable = false;
+                            el.style.background = 'rgba(16, 185, 129, 0.15)';
+                            el.style.borderColor = 'var(--success)';
+                            sfx.play('ok');
+                            this.p1Done++;
+                            if(this.p1Done === this.p1Total) setTimeout(() => this.gotoPhase2(), 800);
+                        } else {
+                            sfx.play('err');
+                            dz.style.borderColor = 'var(--danger)';
+                            setTimeout(() => dz.style.borderColor = '', 500);
+                        }
+                    };
+                });
+            },
+
+            gotoPhase2() {
+                document.getElementById('phase-1').classList.add('hidden');
+                document.getElementById('phase-2').classList.remove('hidden');
+                document.getElementById('nav-1').style.color = 'var(--text-muted)';
+                document.getElementById('nav-1').style.fontWeight = 'normal';
+                document.getElementById('nav-2').style.color = 'var(--primary)';
+                document.getElementById('nav-2').style.fontWeight = 'bold';
+                sfx.play('ok');
+
+                const src = document.getElementById('p2-source');
+                documents.forEach(d => {
+                    const el = document.getElementById(d.id);
+                    el.style.background = '#27272a';
+                    el.draggable = true;
+                    src.appendChild(el);
+                    
+                    el.ondragstart = e => {
+                        e.dataTransfer.setData('sub', d.sub);
+                        e.dataTransfer.setData('id', d.id);
+                    };
+                });
+
+                document.querySelectorAll('.drop-zone-p2').forEach(dz => {
+                    dz.ondragover = e => { e.preventDefault(); dz.classList.add('hover'); };
+                    dz.ondragleave = () => dz.classList.remove('hover');
+                    dz.ondrop = e => {
+                        e.preventDefault(); dz.classList.remove('hover');
+                        if(dz.dataset.sub === e.dataTransfer.getData('sub')) {
+                            const el = document.getElementById(e.dataTransfer.getData('id'));
+                            el.style.display = 'none';
+                            sfx.play('ok');
+                            let cnt = dz.querySelector('.fc');
+                            cnt.innerText = parseInt(cnt.innerText) + 1;
+                            this.p2Done++;
+                            if(this.p2Done === this.p2Total) setTimeout(() => this.gotoPhase3(), 800);
+                        } else {
+                            sfx.play('err');
+                        }
+                    };
+                });
+            },
+
+            gotoPhase3() {
+                document.getElementById('phase-2').classList.add('hidden');
+                document.getElementById('phase-3').classList.remove('hidden');
+                document.getElementById('nav-2').style.color = 'var(--text-muted)';
+                document.getElementById('nav-2').style.fontWeight = 'normal';
+                document.getElementById('nav-3').style.color = 'var(--primary)';
+                document.getElementById('nav-3').style.fontWeight = 'bold';
+                sfx.play('ok');
+            },
+
+            verifyIndexingQuiz() {
+                const q1 = document.getElementById('q1-ans').value;
+                const q2 = document.getElementById('q2-ans').value;
+                const fb = document.getElementById('quiz-feedback');
+
+                if(q1 === 'right' && q2 === 'right') {
+                    sfx.play('ok');
+                    fb.style.color = 'var(--success)';
+                    fb.innerText = "✓ TEPAT! Anda memahami kaidah Indeks Badan Hukum dan Nama Orang.";
+                    setTimeout(() => this.gotoPhase4(), 1200);
+                } else {
+                    sfx.play('err');
+                    fb.style.color = 'var(--danger)';
+                    fb.innerText = "✗ Jawaban belum tepat. Ingat: Nama Badan Hukum dibalik PT-nya, Nama Orang diambil Nama Belakangnya!";
+                }
+            },
+
+            gotoPhase4() {
+                document.getElementById('phase-3').classList.add('hidden');
+                document.getElementById('phase-4').classList.remove('hidden');
+                document.getElementById('nav-3').style.color = 'var(--text-muted)';
+                document.getElementById('nav-3').style.fontWeight = 'normal';
+                document.getElementById('nav-4').style.color = 'var(--primary)';
+                document.getElementById('nav-4').style.fontWeight = 'bold';
+                document.getElementById('inp-1').focus();
+                sfx.play('ok');
+            },
+
+            checkCode(taskNum) {
+                const val = document.getElementById('inp-' + taskNum).value.toUpperCase().trim();
+                const err = document.getElementById('err-' + taskNum);
+                
+                if(taskNum === 1) {
+                    // PT. Global Sentosa (2026) -> GL-2026
+                    if(val === 'GL-2026') {
+                        sfx.play('ok');
+                        err.innerText = "";
+                        document.getElementById('task-1').style.opacity = '0.5';
+                        document.getElementById('task-2').classList.remove('hidden');
+                        document.getElementById('inp-2').focus();
+                    } else {
+                        sfx.play('err');
+                        err.innerText = "AKSES DITOLAK: Kode Salah. (Rumus: 2 Huruf Nama Utama PT - Tahun). Contoh: GL-2026";
+                    }
+                } else if (taskNum === 2) {
+                    // Ahmad Zaelani (2026) -> ZAE-2026
+                    if(val === 'ZAE-2026') {
+                        sfx.play('ok');
+                        this.gameWin();
+                    } else {
+                        sfx.play('err');
+                        err.innerText = "AKSES DITOLAK: Kode Salah. (Rumus: 3 Huruf Nama Belakang Pegawai - Tahun). Contoh: ZAE-2026";
+                    }
+                }
+            },
+
+            gameWin() {
+                document.body.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center; padding:2rem;">
+                        <div style="font-size:5rem; margin-bottom:1rem;">🏆</div>
+                        <h1 style="color:var(--success); font-size: 2.2rem; margin-bottom:0.8rem;">AUDIT KEARSIPAN SELESAI!</h1>
+                        <p style="max-width:580px; color:var(--text-muted); line-height:1.7; font-size:1rem;">
+                            Luar biasa! Anda berhasil mengidentifikasi arus <strong>Surat Masuk & Keluar</strong> untuk PT ARCHIVE NUSA DIGITAL, mengelompokkannya berdasar <strong>Subjek</strong>, serta memecahkan brankas arsip dengan <strong>Kaidah Indexing Resmi</strong>.
+                        </p>
+                        <button class="btn" style="margin-top:2rem; width:220px;" onclick="location.reload()">Main Lagi</button>
+                    </div>
+                `;
+            }
+        };
+    </script>
+</body>
+</html>
