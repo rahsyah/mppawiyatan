@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAVE THE OFFICE: Digital Document Rescue</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #0f172a;
+            --accent: #06b6d4;
+            --bg-dark: #090d16;
+            --surface-card: rgba(30, 41, 59, 0.7);
+            --surface-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; user-select: none; }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            overflow-x: hidden;
+        }
+
+        /* App Container */
+        #app-container {
+            width: 100%;
+            max-width: 1100px;
+            height: 780px;
+            background: var(--surface-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--surface-border);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* HUD Header */
+        header.hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .hud-profile { display: flex; align-items: center; gap: 1rem; }
+        .avatar { width: 42px; height: 42px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .hud-stats { display: flex; gap: 1.5rem; align-items: center; }
+        .stat-box { background: rgba(255,255,255,0.05); padding: 0.5rem 1rem; border-radius: 12px; border: 1px solid var(--surface-border); font-size: 0.9rem; }
+        .stat-box span { font-weight: 700; color: var(--accent); }
+
+        .progress-bar-container { width: 150px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; width: 0%; background: var(--success); transition: width 0.3s; }
+
+        /* Screen Wrapper */
+        .screen { display: none; width: 100%; height: calc(100% - 75px); padding: 2rem; flex-direction: column; }
+        .screen.active { display: flex; animation: fadeIn 0.4s ease-in-out; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* UI Elements */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+        }
+        .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn:active { transform: translateY(0); }
+        .btn-success { background: var(--success); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); }
+
+        /* Welcome Screen */
+        .welcome-box { margin: auto; text-align: center; max-width: 550px; }
+        .welcome-box h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(to right, #60a5fa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .welcome-box p { color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group input { width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid var(--surface-border); background: rgba(15, 23, 42, 0.6); color: white; font-size: 1rem; outline: none; text-align: center; }
+
+        /* Level 1: Drag & Drop */
+        .game-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; height: 100%; }
+        .drag-source { background: rgba(15, 23, 42, 0.5); border-radius: 16px; padding: 1rem; border: 1px solid var(--surface-border); display: flex; flex-direction: column; gap: 0.8rem; overflow-y: auto; }
+        .drop-targets { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        
+        .doc-card { background: rgba(30, 41, 59, 0.9); padding: 1rem; border-radius: 12px; border: 1px solid var(--surface-border); cursor: grab; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; transition: transform 0.2s, background 0.2s; }
+        .doc-card:active { cursor: grabbing; transform: scale(0.98); }
+        .drop-zone { background: rgba(15, 23, 42, 0.3); border: 2px dashed var(--surface-border); border-radius: 16px; padding: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 0.5rem; transition: border-color 0.2s, background 0.2s; }
+        .drop-zone.hover { border-color: var(--accent); background: rgba(6, 182, 212, 0.1); }
+        .drop-zone h4 { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+
+        /* Level 3: Scanner UI */
+        .scanner-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 1.5rem; }
+        .scanner-bed { width: 380px; height: 260px; background: #1e293b; border: 4px solid #334155; border-radius: 16px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .scan-laser { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--accent); box-shadow: 0 0 15px var(--accent); display: none; }
+        .scan-laser.scanning { display: block; animation: scanAnim 2s infinite alternate ease-in-out; }
+
+        @keyframes scanAnim { 0% { top: 0%; } 100% { top: 98%; } }
+
+        .scanner-controls { display: flex; gap: 1rem; align-items: center; }
+        select { padding: 0.6rem 1rem; border-radius: 8px; background: #1e293b; color: white; border: 1px solid var(--surface-border); outline: none; }
+
+        /* Dashboard Teacher */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; height: 100%; }
+        .report-card { background: rgba(15, 23, 42, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--surface-border); }
+        .badge-tag { display: inline-block; padding: 0.3rem 0.8rem; background: rgba(245, 158, 11, 0.2); color: var(--warning); border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem; }
+
+        /* Micro-animations */
+        .shake { animation: shake 0.4s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            #app-container { height: 100vh; border-radius: 0; border: none; }
+            .game-grid, .drop-targets, .dashboard-grid { grid-template-columns: 1fr; }
+            header.hud { flex-direction: column; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <!-- HUD Header -->
+        <header class="hud">
+            <div class="hud-profile">
+                <div class="avatar" id="hud-avatar">DRO</div>
+                <div>
+                    <div style="font-weight: 700; font-size: 0.95rem;" id="hud-name">Digital Rescue Officer</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);" id="hud-level-title">Level 1: Identifikasi Dokumen</div>
+                </div>
+            </div>
+            <div class="hud-stats">
+                <div class="stat-box">⏱️ <span id="hud-timer">60</span>s</div>
+                <div class="stat-box">⭐ <span id="hud-score">0</span> XP</div>
+                <div class="stat-box">❤️ <span id="hud-lives">3</span></div>
+                <div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px;">Progress</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="hud-progress"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- SCREEN 1: Welcome Screen -->
+        <div id="screen-welcome" class="screen active">
+            <div class="welcome-box">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🌊📄</div>
+                <h1>SAVE THE OFFICE</h1>
+                <p style="color: var(--accent); font-weight: 600; margin-bottom: 0.5rem;">Digital Document Rescue</p>
+                <p>Banjir bandang mengancam arsip administrasi sekolah! Tugas Anda sebagai <strong>Digital Rescue Officer</strong> adalah menyelamatkan seluruh dokumen melalui simulasi digitalisasi sebelum waktu habis.</p>
+                
+                <div class="input-group">
+                    <input type="text" id="input-player-name" placeholder="Masukkan Nama & Kelas Siswa..." autocomplete="off">
+                </div>
+                <button class="btn btn-success" style="width: 100%;" onclick="gameEngine.startGame()">Mulai Misi Penyelamatan 🚀</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: Dynamic Game Canvas (Level 1 to 7) -->
+        <div id="screen-game" class="screen">
+            <div id="level-canvas" style="height: 100%;"></div>
+        </div>
+
+        <!-- SCREEN 3: Teacher Dashboard & Result -->
+        <div id="screen-dashboard" class="screen">
+            <h2 style="margin-bottom: 1rem; font-size: 1.5rem; text-align: center;">📊 Laporan Evaluasi Hasil Belajar</h2>
+            <div class="dashboard-grid">
+                <div class="report-card">
+                    <h3 style="color: var(--accent); margin-bottom: 1rem;">Profil & Capaian</h3>
+                    <p><strong>Nama Siswa:</strong> <span id="rep-name">-</span></p>
+                    <p style="margin-top:0.5rem;"><strong>Skor Akhir:</strong> <span id="rep-score" style="color:var(--success); font-weight:bold;">0</span> XP</p>
+                    <p style="margin-top:0.5rem;"><strong>Sisa Waktu:</strong> <span id="rep-time">0</span> Detik</p>
+                    <p style="margin-top:0.5rem;"><strong>Status Misi:</strong> <span id="rep-status" style="color:var(--success);">Berhasil</span></p>
+                    <div id="rep-badges" style="margin-top: 1rem;">
+                        <!-- Badges injected here -->
+                    </div>
+                </div>
+                <div class="report-card">
+                    <h3 style="color: var(--accent); margin-bottom: 1rem;">Rekomendasi Instruksional</h3>
+                    <p id="rep-feedback" style="line-height: 1.6; color: var(--text-muted);"></p>
+                    <button class="btn" style="margin-top: 2rem; width: 100%;" onclick="location.reload()">Mainkan Ulang Game 🔄</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Web Audio API Synthesizer (Sfx Tanpa File Eksternal)
+         */
+        const AudioEngine = {
+            ctx: null,
+            init() {
+                if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            },
+            play(type) {
+                this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                const now = this.ctx.currentTime;
+                if (type === 'success') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, now); // D5
+                    osc.frequency.setValueAtTime(880, now + 0.1); // A5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.setValueAtTime(100, now + 0.1);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'scan') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.linearRampToValueAtTime(600, now + 1.5);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
+                    osc.start(now);
+                    osc.stop(now + 1.5);
+                }
+            }
+        };
+
+        /**
+         * Game State & Logic Engine
+         */
+        const gameEngine = {
+            playerName: "Siswa SMK",
+            score: 0,
+            lives: 3,
+            timeLeft: 120,
+            currentLevel: 1,
+            timerInterval: null,
+            completedLevels: 0,
+
+            // Master Data Game
+            level1Data: [
+                { id: 'd1', name: '✉️ Surat Undangan Komite', category: 'Surat' },
+                { id: 'd2', name: '📋 Formulir Cuti Pegawai', category: 'Formulir' },
+                { id: 'd3', name: '📊 Laporan Realisasi Keuangan', category: 'Laporan' },
+                { id: 'd4', name: '📝 Notulen Rapat Kurikulum', category: 'Notulen' },
+                { id: 'd5', name: '🪪 SK Pengangkatan Guru', category: 'Kepegawaian' }
+            ],
+
+            startGame() {
+                const nameInput = document.getElementById('input-player-name').value;
+                if (nameInput.trim()) this.playerName = nameInput;
+                
+                document.getElementById('hud-name').innerText = this.playerName;
+                this.switchScreen('screen-game');
+                this.startTimer();
+                this.loadLevel(1);
+            },
+
+            switchScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(screenId).classList.add('active');
+            },
+
+            startTimer() {
+                this.timerInterval = setInterval(() => {
+                    this.timeLeft--;
+                    document.getElementById('hud-timer').innerText = this.timeLeft;
+                    if (this.timeLeft <= 0) {
+                        this.endGame(false, "Waktu Penyelamatan Habis!");
+                    }
+                }, 1000);
+            },
+
+            addScore(pts) {
+                this.score += pts;
+                document.getElementById('hud-score').innerText = this.score;
+                AudioEngine.play('success');
+            },
+
+            deductLife() {
+                this.lives--;
+                document.getElementById('hud-lives').innerText = this.lives;
+                AudioEngine.play('error');
+                
+                const container = document.getElementById('app-container');
+                container.classList.add('shake');
+                setTimeout(() => container.classList.remove('shake'), 400);
+
+                if (this.lives <= 0) {
+                    this.endGame(false, "Bencana banjir merusak arsip sebelum sempat didigitalisasi!");
+                }
+            },
+
+            updateProgress(percent) {
+                document.getElementById('hud-progress').style.width = `${percent}%`;
+            },
+
+            loadLevel(lvl) {
+                this.currentLevel = lvl;
+                const canvas = document.getElementById('level-canvas');
+                canvas.innerHTML = '';
+
+                if (lvl === 1) {
+                    document.getElementById('hud-level-title').innerText = "Level 1: Kenali Dokumen";
+                    this.renderLevel1(canvas);
+                } else if (lvl === 2) {
+                    document.getElementById('hud-level-title').innerText = "Level 3: Virtual Scanner";
+                    this.renderLevel3(canvas);
+                } else if (lvl === 3) {
+                    document.getElementById('hud-level-title').innerText = "Level 4: Format Penamaan File SOP";
+                    this.renderLevel4(canvas);
+                } else {
+                    this.endGame(true, "Seluruh Misi Berhasil Diselesaikan!");
+                }
+            },
+
+            /* --- LEVEL 1: DRAG AND DROP CATEGORIZATION --- */
+            renderLevel1(container) {
+                container.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 1rem;">
+                        <h3>Seret Dokumen ke Kategori Berkas yang Tepat</h3>
+                    </div>
+                    <div class="game-grid">
+                        <div class="drag-source" id="source-box"></div>
+                        <div class="drop-targets" id="target-box"></div>
+                    </div>
+                `;
+
+                const sourceBox = document.getElementById('source-box');
+                const targetBox = document.getElementById('target-box');
+
+                // Render Documents
+                this.level1Data.forEach(doc => {
+                    const el = document.createElement('div');
+                    el.className = 'doc-card';
+                    el.draggable = true;
+                    el.innerText = doc.name;
+                    el.id = doc.id;
+                    el.dataset.category = doc.category;
+
+                    el.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', doc.id);
+                    });
+                    sourceBox.appendChild(el);
+                });
+
+                // Render Category Targets
+                const categories = ['Surat', 'Formulir', 'Laporan', 'Notulen', 'Kepegawaian'];
+                categories.forEach(cat => {
+                    const zone = document.createElement('div');
+                    zone.className = 'drop-zone';
+                    zone.dataset.category = cat;
+                    zone.innerHTML = `<h4>📂 ${cat}</h4>`;
+
+                    zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('hover'); });
+                    zone.addEventListener('dragleave', () => zone.classList.remove('hover'));
+                    zone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        zone.classList.remove('hover');
+                        const docId = e.dataTransfer.getData('text/plain');
+                        const docEl = document.getElementById(docId);
+
+                        if (docEl.dataset.category === cat) {
+                            zone.appendChild(docEl);
+                            docEl.draggable = false;
+                            docEl.style.borderColor = 'var(--success)';
+                            docEl.style.background = 'rgba(16, 185, 129, 0.2)';
+                            gameEngine.addScore(20);
+                            
+                            // Check completed count
+                            const remaining = sourceBox.querySelectorAll('.doc-card').length;
+                            gameEngine.updateProgress(((5 - remaining) / 5) * 100);
+                            if (remaining === 0) {
+                                setTimeout(() => gameEngine.loadLevel(2), 1000);
+                            }
+                        } else {
+                            gameEngine.deductLife();
+                        }
+                    });
+                    targetBox.appendChild(zone);
+                });
+            },
+
+            /* --- LEVEL 3: VIRTUAL SCANNER --- */
+            renderLevel3(container) {
+                container.innerHTML = `
+                    <div class="scanner-container">
+                        <h3>Simulasi Pemindaian (Scan) Dokumen Fisik</h3>
+                        <div class="scanner-bed">
+                            <div id="scanned-doc-preview" style="font-size: 1.1rem; color: var(--text-muted);">[ Meja Scanner Kosong ]</div>
+                            <div class="scan-laser" id="laser"></div>
+                        </div>
+                        <div class="scanner-controls">
+                            <select id="scan-format">
+                                <option value="pdf">Format: PDF (Standar SOP)</option>
+                                <option value="jpg">Format: JPG</option>
+                            </select>
+                            <select id="scan-dpi">
+                                <option value="300">Resolusi: 300 DPI (SOP)</option>
+                                <option value="72">Resolusi: 72 DPI</option>
+                            </select>
+                            <button class="btn btn-success" onclick="gameEngine.runScanner()">Mulai Pindai 🖨️</button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            runScanner() {
+                const format = document.getElementById('scan-format').value;
+                const dpi = document.getElementById('scan-dpi').value;
+                const laser = document.getElementById('laser');
+                const preview = document.getElementById('scanned-doc-preview');
+
+                if (format !== 'pdf' || dpi !== '300') {
+                    alert("⚠️ Pengaturan Salah! SOP Kantor mengharuskan Format PDF dan Resolusi 300 DPI untuk arsip digital.");
+                    this.deductLife();
+                    return;
+                }
+
+                laser.classList.add('scanning');
+                AudioEngine.play('scan');
+                preview.innerText = "⏳ Memindai Dokumen...";
+
+                setTimeout(() => {
+                    laser.classList.remove('scanning');
+                    preview.innerHTML = "✅ <span style='color:var(--success)'>Laporan_PKL_2026.pdf Ready!</span>";
+                    this.addScore(50);
+                    this.updateProgress(100);
+                    setTimeout(() => this.loadLevel(3), 1200);
+                }, 2000);
+            },
+
+            /* --- LEVEL 4: FILE NAMING CHALLENGE --- */
+            renderLevel4(container) {
+                container.innerHTML = `
+                    <div style="text-align:center; max-width:600px; margin:0 auto;">
+                        <h3 style="margin-bottom:0.5rem;">Susun Nama File Sesuai SOP Office</h3>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.5rem;">Aturan SOP: <code>YYYY-MM-DD_JenisDokumen_NamaKegiatan.pdf</code></p>
+                        
+                        <div id="naming-target" style="min-height: 60px; background: rgba(15,23,42,0.8); border: 2px dashed var(--accent); border-radius: 12px; display:flex; align-items:center; justify-content:center; gap:0.5rem; padding:0.5rem; margin-bottom:1.5rem;">
+                            <span style="color:var(--text-muted);">Klik blok kata di bawah secara berurutan</span>
+                        </div>
+
+                        <div id="naming-blocks" style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center;">
+                            <button class="btn" onclick="gameEngine.pickBlock(this, '2026-08-03')">2026-08-03</button>
+                            <button class="btn" onclick="gameEngine.pickBlock(this, '_')">_</button>
+                            <button class="btn" onclick="gameEngine.pickBlock(this, 'SuratUndangan')">SuratUndangan</button>
+                            <button class="btn" onclick="gameEngine.pickBlock(this, '_')">_</button>
+                            <button class="btn" onclick="gameEngine.pickBlock(this, 'RapatKomite.pdf')">RapatKomite.pdf</button>
+                        </div>
+
+                        <div style="margin-top:2rem;">
+                            <button class="btn btn-success" onclick="gameEngine.validateFilename()">Verifikasi Nama File ✔️</button>
+                        </div>
+                    </div>
+                `;
+                this.assembledName = "";
+            },
+
+            assembledName: "",
+            pickBlock(btn, text) {
+                const target = document.getElementById('naming-target');
+                if (this.assembledName === "") target.innerHTML = "";
+                
+                this.assembledName += text;
+                const tag = document.createElement('span');
+                tag.style.background = "var(--primary)";
+                tag.style.padding = "0.4rem 0.8rem";
+                tag.style.borderRadius = "6px";
+                tag.innerText = text;
+                target.appendChild(tag);
+                btn.style.visibility = 'hidden';
+            },
+
+            validateFilename() {
+                const correctPattern = "2026-08-03_SuratUndangan_RapatKomite.pdf";
+                if (this.assembledName === correctPattern) {
+                    this.addScore(50);
+                    setTimeout(() => this.loadLevel(4), 1000);
+                } else {
+                    alert(`⚠️ Nama File Salah: "${this.assembledName}"\nHarus Sesuai SOP: YYYY-MM-DD_JenisDokumen_NamaKegiatan.pdf`);
+                    this.deductLife();
+                    this.renderLevel4(document.getElementById('level-canvas'));
+                }
+            },
+
+            /* --- END GAME & DASHBOARD --- */
+            endGame(isSuccess, reason) {
+                clearInterval(this.timerInterval);
+                this.switchScreen('screen-dashboard');
+
+                document.getElementById('rep-name').innerText = this.playerName;
+                document.getElementById('rep-score').innerText = this.score;
+                document.getElementById('rep-time').innerText = this.timeLeft > 0 ? this.timeLeft : 0;
+                document.getElementById('rep-status').innerText = isSuccess ? "Misi Penyelamatan Berhasil 🎉" : "Misi Gagal ❌";
+                document.getElementById('rep-status').style.color = isSuccess ? "var(--success)" : "var(--danger)";
+
+                const badgesContainer = document.getElementById('rep-badges');
+                badgesContainer.innerHTML = '';
+                
+                if (this.score >= 100) {
+                    badgesContainer.innerHTML += `<span class="badge-tag">🏆 Digital Archivist Pro</span>`;
+                    badgesContainer.innerHTML += `<span class="badge-tag">⚡ Fast Scanner Master</span>`;
+                } else {
+                    badgesContainer.innerHTML += `<span class="badge-tag">⭐ Digital Beginner</span>`;
+                }
+
+                const feedback = isSuccess
+                    ? "Sangat Baik! Siswa telah menguasai kompetensi identifikasi jenis dokumen perkantoran, simulasi pemindaian presisi tinggi (300 DPI PDF), serta standarisasi SOP penamaan berkas digital."
+                    : `Siswa membutuhkan pendampingan ulang pada modul digitalisasi arsip. Catatan Evaluasi: ${reason}`;
+                
+                document.getElementById('rep-feedback').innerText = feedback;
+
+                // Save to LocalStorage for Local Leaderboard
+                const report = {
+                    name: this.playerName,
+                    score: this.score,
+                    date: new Date().toLocaleDateString()
+                };
+                localStorage.setItem('SAVE_THE_OFFICE_LAST_RESULT', JSON.stringify(report));
+            }
+        };
+    </script>
+</body>
+</html>
