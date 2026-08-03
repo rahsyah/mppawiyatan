@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive OS v3.0 - Corporate Sabotage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --os-bg: #09090b; --panel-bg: rgba(24, 24, 27, 0.9);
+            --window-bg: #18181b; --window-border: #3f3f46;
+            --primary: #8b5cf6; --primary-hover: #7c3aed;
+            --accent: #f43f5e; --success: #10b981; --warning: #f59e0b;
+            --text-main: #f4f4f5; --text-muted: #a1a1aa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        
+        body { 
+            height: 100vh; overflow: hidden; background-color: var(--os-bg);
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text-main); display: flex; flex-direction: column;
+        }
+
+        /* Login Screen */
+        #login-screen {
+            position: absolute; inset: 0; z-index: 1000; background: var(--os-bg);
+            display: flex; justify-content: center; align-items: center; transition: 0.5s;
+        }
+        .login-box {
+            background: var(--panel-bg); padding: 3rem; border-radius: 12px;
+            border: 1px solid var(--window-border); text-align: center; width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
+        }
+        .login-box input {
+            width: 100%; padding: 1rem; margin: 1.5rem 0; border-radius: 8px;
+            background: #09090b; border: 1px solid var(--window-border); color: white; outline: none;
+        }
+        .btn {
+            width: 100%; padding: 1rem; border-radius: 8px; border: none; font-weight: 600; font-size: 1rem;
+            background: var(--primary); color: white; cursor: pointer; transition: 0.2s;
+        }
+        .btn:hover { background: var(--primary-hover); }
+        
+        /* Desktop */
+        #desktop { flex: 1; position: relative; padding: 1rem; display: none; }
+        .desktop-icon {
+            width: 100px; height: 100px; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 0.8rem; cursor: pointer; border-radius: 12px; transition: 0.2s;
+        }
+        .desktop-icon:hover { background: rgba(255,255,255,0.05); }
+        .icon-img { font-size: 3rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+        .icon-text { font-size: 0.85rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.8); text-align: center;}
+
+        /* Windows */
+        .window {
+            position: absolute; background: var(--window-bg); border: 1px solid var(--window-border);
+            border-radius: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); display: none;
+            flex-direction: column; overflow: hidden; transform: scale(0.95); opacity: 0; transition: 0.2s;
+        }
+        .window.active { display: flex; transform: scale(1); opacity: 1; }
+        .window-header { background: #09090b; padding: 0.8rem 1rem; display: flex; justify-content: space-between; align-items: center; cursor: move; border-bottom: 1px solid var(--window-border); }
+        .win-close { background: var(--accent); width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer;}
+        .window-content { flex: 1; padding: 1.5rem; overflow-y: auto; }
+
+        /* Custom App Styles */
+        .sop-text { line-height: 1.7; font-size: 0.95rem; }
+        .sop-text h3 { color: var(--primary); margin: 1.5rem 0 0.5rem 0; border-bottom: 1px solid var(--window-border); padding-bottom: 0.5rem;}
+        .sop-box { background: rgba(139, 92, 246, 0.1); border-left: 4px solid var(--primary); padding: 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+
+        .file-item { background: #27272a; border: 1px solid #3f3f46; padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 6px; cursor: grab; font-size: 0.85rem; display: flex; align-items: center; gap: 0.8rem; transition: 0.2s;}
+        .file-item:hover { border-color: var(--primary); }
+        .file-item:active { cursor: grabbing; transform: scale(0.98); }
+
+        .drop-zone { border: 2px dashed var(--window-border); border-radius: 8px; padding: 1rem; min-height: 150px; transition: 0.3s; background: rgba(0,0,0,0.2); }
+        .drop-zone.hover { border-color: var(--primary); background: rgba(139, 92, 246, 0.1); }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .folder-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .folder { background: #18181b; border: 1px solid #3f3f46; border-top: 15px solid var(--primary); border-radius: 8px; padding: 1rem; text-align: center; }
+        .folder.hover { border-color: var(--success); border-top-color: var(--success); }
+
+        .terminal { background: #000; color: #10b981; font-family: 'JetBrains Mono', monospace; padding: 1.5rem; border-radius: 8px; font-size: 0.9rem; }
+        .term-input { background: transparent; border: none; border-bottom: 2px solid #10b981; color: #10b981; font-family: 'JetBrains Mono', monospace; font-size: 1rem; outline: none; text-transform: uppercase; width: 120px; }
+
+        #taskbar { height: 50px; background: #09090b; border-top: 1px solid var(--window-border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; z-index: 100; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Login -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h1 style="font-size: 2rem; color: var(--text-main); margin-bottom: 0.5rem;">Archive OS <span style="color: var(--primary)">v3.0</span></h1>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Secure Corporate Management System</p>
+            <input type="text" id="player-name" placeholder="ID Pegawai / Nama Anda..." autocomplete="off">
+            <button class="btn" onclick="game.start()">Verifikasi Akses</button>
+        </div>
+    </div>
+
+    <!-- Desktop -->
+    <div id="desktop">
+        <div class="desktop-icon" onclick="win.open('win-mail')">
+            <div class="icon-img">📩</div><div class="icon-text">Mail Inbox (1)</div>
+        </div>
+        <div class="desktop-icon" onclick="win.open('win-sop')">
+            <div class="icon-img">📕</div><div class="icon-text">Buku SOP</div>
+        </div>
+        <div class="desktop-icon" onclick="win.open('win-system')">
+            <div class="icon-img">🗄️</div><div class="icon-text">Sistem Arsip</div>
+        </div>
+    </div>
+
+    <!-- Mail Window -->
+    <div class="window" id="win-mail" style="left: 50px; top: 30px; width: 600px; height: 500px;">
+        <div class="window-header"><div>📩 Mail Client</div><button class="win-close" onclick="win.close('win-mail')"></button></div>
+        <div class="window-content">
+            <div style="background: rgba(244, 63, 94, 0.1); border-left: 4px solid var(--accent); padding: 1rem; margin-bottom: 1.5rem;">
+                <strong>DARI:</strong> Direktur Utama<br><strong>SUBJEK:</strong> URGENT - Sabotase Data & Audit Mendadak!
+            </div>
+            <p>Kepada <span id="disp-name" style="font-weight:bold; color:var(--primary);"></span>,</p><br>
+            <p>Sistem server kita diserang *malware* yang mengacak-acak seluruh metadata arsip. Tim auditor akan tiba dalam 45 menit, dan saya butuh Anda merapikan semuanya <strong>sekarang juga</strong>.</p><br>
+            <p>Buka aplikasi <strong>Sistem Arsip</strong> dan selesaikan 3 tahap pemulihan:</p>
+            <ol style="margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.8;">
+                <li><strong>Tahap Agenda:</strong> Pisahkan tumpukan surat menjadi Surat Masuk (dari luar) & Surat Keluar (dari kita).</li>
+                <li><strong>Tahap Klasifikasi:</strong> Masukkan surat ke folder Subjek yang tepat (Keuangan, Kepegawaian, Kerjasama, Umum).</li>
+                <li><strong>Tahap Dekripsi (PENTING!):</strong> Brankas digital saya terkunci. Saya butuh 2 dokumen vital:
+                    <ul>
+                        <li>MoU dengan <strong>PT. Global Sentosa</strong> (Tahun 2026)</li>
+                        <li>SK Mutasi pegawai atas nama <strong>Ahmad Zaelani</strong> (Tahun 2026)</li>
+                    </ul>
+                </li>
+            </ol><br>
+            <p>Baca <strong>Buku SOP</strong> jika Anda lupa cara membuat Kode Indeks Instansi dan Pegawai. Jangan sampai salah ambil dokumen!</p>
+        </div>
+    </div>
+
+    <!-- SOP Window -->
+    <div class="window" id="win-sop" style="left: 680px; top: 30px; width: 500px; height: 600px;">
+        <div class="window-header"><div>📕 SOP Kearsipan v3.0</div><button class="win-close" onclick="win.close('win-sop')"></button></div>
+        <div class="window-content sop-text">
+            <h3>Bab I: Arus Surat</h3>
+            <p><strong>Surat Masuk:</strong> Dokumen yang diterima dari pihak luar/eksternal (Misal: Surat Penawaran dari PT lain, Tagihan Eksternal).</p>
+            <p><strong>Surat Keluar:</strong> Dokumen yang dikirim dari perusahaan kita ke pihak luar (Misal: Balasan Penawaran, Surat Pesanan kita).</p>
+            <p><em>*Catatan: SK/Memo internal perusahaan tetap diklasifikasikan ke folder subjeknya masing-masing.</em></p>
+
+            <h3>Bab II: Sistem Subjek</h3>
+            <ul style="margin-left:1.5rem;">
+                <li><strong>Keuangan:</strong> Invoice, Tagihan, Slip Gaji, Bukti Transfer.</li>
+                <li><strong>Kepegawaian:</strong> SK Mutasi, Surat Cuti, Lamaran Kerja.</li>
+                <li><strong>Kerjasama:</strong> MoU, Kontrak Bisnis, Perjanjian Sewa.</li>
+                <li><strong>Umum:</strong> Undangan, Surat Edaran, Penawaran Barang/Jasa umum.</li>
+            </ul>
+
+            <h3>Bab III: Kode Indeks Instansi</h3>
+            <div class="sop-box">
+                <strong>Aturan:</strong> Abaikan badan hukum (PT, CV, UD, dll). Ambil 2 huruf pertama dari nama instansi.<br>
+                <strong>Format:</strong> [2 HURUF]-[TAHUN]<br>
+                <strong>Contoh:</strong> Surat dari PT. Makmur Abadi tahun 2026.<br>
+                <strong>Kode:</strong> MA-2026
+            </div>
+
+            <h3>Bab IV: Kode Indeks Pegawai</h3>
+            <div class="sop-box">
+                <strong>Aturan:</strong> Menggunakan Sistem Tangkap Utama (Nama Keluarga/Belakang). Ambil 3 huruf pertama dari kata terakhir nama.<br>
+                <strong>Format:</strong> [3 HURUF]-[TAHUN]<br>
+                <strong>Contoh:</strong> SK Mutasi Rina Gunawan tahun 2026.<br>
+                <strong>Kode:</strong> GUN-2026
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive System Window -->
+    <div class="window" id="win-system" style="left: 100px; top: 80px; width: 850px; height: 620px;">
+        <div class="window-header"><div>🗄️ Sistem Arsip Terpadu</div><button class="win-close" onclick="win.close('win-system')"></button></div>
+        <div class="window-content" style="display: flex; flex-direction: column;">
+            
+            <!-- Phase Nav -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--window-border); padding-bottom: 1rem;">
+                <div id="nav-1" style="color: var(--primary); font-weight: bold;">1. Registrasi Agenda</div>
+                <div id="nav-2" style="color: var(--text-muted);">2. Klasifikasi Folder</div>
+                <div id="nav-3" style="color: var(--text-muted);">3. Dekripsi Brankas</div>
+            </div>
+
+            <!-- Phase 1: Agenda -->
+            <div id="phase-1" class="grid-2" style="flex:1;">
+                <div>
+                    <h4 style="margin-bottom: 1rem;">Tumpukan Surat (Unsorted)</h4>
+                    <div id="p1-source" style="height: 350px; overflow-y: auto; padding-right: 10px;"></div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="drop-zone" data-type="masuk" id="dz-masuk">
+                        <h4 style="color: var(--success); margin-bottom: 1rem;">📥 Tray SURAT MASUK</h4>
+                    </div>
+                    <div class="drop-zone" data-type="keluar" id="dz-keluar">
+                        <h4 style="color: var(--warning); margin-bottom: 1rem;">📤 Tray SURAT KELUAR</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2: Subject Folders -->
+            <div id="phase-2" class="hidden grid-2" style="flex:1;">
+                <div>
+                    <h4 style="margin-bottom: 1rem;">Surat Teregistrasi</h4>
+                    <div id="p2-source" style="height: 350px; overflow-y: auto; padding-right: 10px;"></div>
+                </div>
+                <div class="folder-grid">
+                    <div class="folder drop-zone-p2" data-sub="keuangan">💰 KEUANGAN<br><small><span class="fc">0</span> files</small></div>
+                    <div class="folder drop-zone-p2" data-sub="kepegawaian">👥 KEPEGAWAIAN<br><small><span class="fc">0</span> files</small></div>
+                    <div class="folder drop-zone-p2" data-sub="kerjasama">🤝 KERJASAMA<br><small><span class="fc">0</span> files</small></div>
+                    <div class="folder drop-zone-p2" data-sub="umum">📋 UMUM<br><small><span class="fc">0</span> files</small></div>
+                </div>
+            </div>
+
+            <!-- Phase 3: Vault -->
+            <div id="phase-3" class="hidden terminal" style="flex:1;">
+                <div>> ARCHIVE OS SECURE VAULT v3.0</div>
+                <div>> SYSTEM METADATA RESTORED SUCCESSFULLY.</div>
+                <div>> INITIATING DIRECTOR'S REQUEST...</div>
+                <br>
+                <div id="task-1">
+                    <div style="color: var(--warning);">> MISSING DOC 1: MoU PT. Global Sentosa (2026)</div>
+                    <div>> ENTER CORPORATE INDEX CODE: <input type="text" id="inp-1" class="term-input" maxlength="7"> <button class="btn" style="width:auto; padding:0.2rem 1rem; background:var(--primary);" onclick="game.checkCode(1)">EXECUTE</button></div>
+                    <div id="err-1" style="color: var(--accent); margin-top: 5px;"></div>
+                </div>
+                <div id="task-2" class="hidden" style="margin-top: 2rem;">
+                    <div style="color: var(--success);">> [DOC 1 ACQUIRED]</div>
+                    <div style="color: var(--warning); margin-top: 1rem;">> MISSING DOC 2: SK Mutasi Ahmad Zaelani (2026)</div>
+                    <div>> ENTER EMPLOYEE INDEX CODE: <input type="text" id="inp-2" class="term-input" maxlength="8"> <button class="btn" style="width:auto; padding:0.2rem 1rem; background:var(--primary);" onclick="game.checkCode(2)">EXECUTE</button></div>
+                    <div id="err-2" style="color: var(--accent); margin-top: 5px;"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div id="taskbar">
+        <div style="font-weight: bold; color: var(--primary);">Archive OS v3.0</div>
+        <div id="clock" style="font-family: monospace;"></div>
+    </div>
+
+    <script>
+        // Audio Engine
+        const sfx = {
+            ctx: new (window.AudioContext || window.webkitAudioContext)(),
+            play(type) {
+                if(this.ctx.state === 'suspended') this.ctx.resume();
+                const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+                o.connect(g); g.connect(this.ctx.destination);
+                if(type==='type'){ o.type='square'; o.frequency.setValueAtTime(400,this.ctx.currentTime); g.gain.setValueAtTime(0.05,this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.1); o.start(); o.stop(this.ctx.currentTime+0.1); }
+                if(type==='ok'){ o.type='sine'; o.frequency.setValueAtTime(600,this.ctx.currentTime); o.frequency.setValueAtTime(1000,this.ctx.currentTime+0.1); g.gain.setValueAtTime(0.1,this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.3); o.start(); o.stop(this.ctx.currentTime+0.3); }
+                if(type==='err'){ o.type='sawtooth'; o.frequency.setValueAtTime(200,this.ctx.currentTime); g.gain.setValueAtTime(0.1,this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.3); o.start(); o.stop(this.ctx.currentTime+0.3); }
+            }
+        };
+
+        const win = {
+            z: 10,
+            open(id) { 
+                const e = document.getElementById(id); 
+                e.classList.add('active'); e.style.zIndex = ++this.z; 
+                sfx.play('type');
+            },
+            close(id) { document.getElementById(id).classList.remove('active'); }
+        };
+
+        // Window Dragging
+        document.querySelectorAll('.window').forEach(w => {
+            const h = w.querySelector('.window-header');
+            let drag = false, x, y, l, t;
+            w.onmousedown = () => w.style.zIndex = ++win.z;
+            h.onmousedown = e => { if(e.target.classList.contains('win-close')) return; drag = true; x = e.clientX; y = e.clientY; l = w.offsetLeft; t = w.offsetTop; };
+            document.onmousemove = e => { if(!drag) return; w.style.left = l + (e.clientX - x) + 'px'; w.style.top = t + (e.clientY - y) + 'px'; };
+            document.onmouseup = () => drag = false;
+        });
+
+        // Clock
+        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID'), 1000);
+
+        // Database Dokumen
+        const documents = [
+            { id: 'd1', name: 'Penawaran Genset - PT. Maju', type: 'masuk', sub: 'umum', emoji: '📄' },
+            { id: 'd2', name: 'Balasan Penawaran - Kpd PT. Maju', type: 'keluar', sub: 'umum', emoji: '📤' },
+            { id: 'd3', name: 'Tagihan Server AWS (Feb)', type: 'masuk', sub: 'keuangan', emoji: '💸' },
+            { id: 'd4', name: 'Bukti Transfer Pembayaran AWS', type: 'keluar', sub: 'keuangan', emoji: '🧾' },
+            { id: 'd5', name: 'SK Cuti Hamil - Sisca', type: 'internal', sub: 'kepegawaian', emoji: '👩‍⚕️' },
+            { id: 'd6', name: 'Draft MoU - PT. ABC (Revisi)', type: 'masuk', sub: 'kerjasama', emoji: '🤝' },
+            { id: 'd7', name: 'Undangan Seminar Kearsipan', type: 'masuk', sub: 'umum', emoji: '🎟️' },
+            { id: 'd8', name: 'Surat Pesanan Kertas A4', type: 'keluar', sub: 'umum', emoji: '📦' }
+        ];
+
+        const game = {
+            p1Total: 8, p1Done: 0,
+            p2Total: 8, p2Done: 0,
+
+            start() {
+                const name = document.getElementById('player-name').value;
+                if(!name) return alert("Masukkan identitas Anda!");
+                document.getElementById('disp-name').innerText = name;
+                document.getElementById('login-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('desktop').style.display = 'flex';
+                    win.open('win-mail');
+                    this.initPhase1();
+                }, 500);
+                sfx.play('ok');
+            },
+
+            // PHASE 1: AGENDA (Masuk/Keluar)
+            initPhase1() {
+                const src = document.getElementById('p1-source');
+                documents.forEach(d => {
+                    const el = document.createElement('div');
+                    el.className = 'file-item'; el.draggable = true; el.id = d.id;
+                    el.innerHTML = `<span>${d.emoji}</span> <span>${d.name}</span>`;
+                    
+                    el.ondragstart = e => {
+                        // All internal docs go to "masuk" tray for simplified agenda in this game, 
+                        // or we teach them internal skips agenda. Let's say all go to trays.
+                        let correctType = d.type === 'internal' ? 'masuk' : d.type; 
+                        e.dataTransfer.setData('type', correctType);
+                        e.dataTransfer.setData('id', d.id);
+                    };
+                    src.appendChild(el);
+                });
+
+                document.querySelectorAll('.drop-zone').forEach(dz => {
+                    dz.ondragover = e => { e.preventDefault(); dz.classList.add('hover'); };
+                    dz.ondragleave = () => dz.classList.remove('hover');
+                    dz.ondrop = e => {
+                        e.preventDefault(); dz.classList.remove('hover');
+                        const type = e.dataTransfer.getData('type');
+                        const id = e.dataTransfer.getData('id');
+                        
+                        if(dz.dataset.type === type) {
+                            const el = document.getElementById(id);
+                            dz.appendChild(el); el.draggable = false;
+                            el.style.background = 'var(--success)';
+                            sfx.play('ok');
+                            this.p1Done++;
+                            if(this.p1Done === this.p1Total) setTimeout(() => this.gotoPhase2(), 1000);
+                        } else {
+                            sfx.play('err');
+                            // Flash red
+                            dz.style.borderColor = 'var(--accent)';
+                            setTimeout(() => dz.style.borderColor = '', 500);
+                        }
+                    };
+                });
+            },
+
+            // PHASE 2: CLASSIFICATION (Subjek)
+            gotoPhase2() {
+                document.getElementById('phase-1').classList.add('hidden');
+                document.getElementById('phase-2').classList.remove('hidden');
+                document.getElementById('nav-1').style.color = 'var(--text-muted)';
+                document.getElementById('nav-1').style.fontWeight = 'normal';
+                document.getElementById('nav-2').style.color = 'var(--primary)';
+                document.getElementById('nav-2').style.fontWeight = 'bold';
+                sfx.play('ok');
+
+                // Move items to Phase 2 source
+                const src = document.getElementById('p2-source');
+                documents.forEach(d => {
+                    const el = document.getElementById(d.id);
+                    el.style.background = '#27272a'; // reset color
+                    el.draggable = true;
+                    src.appendChild(el);
+                    
+                    el.ondragstart = e => {
+                        e.dataTransfer.setData('sub', d.sub);
+                        e.dataTransfer.setData('id', d.id);
+                    };
+                });
+
+                document.querySelectorAll('.drop-zone-p2').forEach(dz => {
+                    dz.ondragover = e => { e.preventDefault(); dz.classList.add('hover'); };
+                    dz.ondragleave = () => dz.classList.remove('hover');
+                    dz.ondrop = e => {
+                        e.preventDefault(); dz.classList.remove('hover');
+                        if(dz.dataset.sub === e.dataTransfer.getData('sub')) {
+                            const el = document.getElementById(e.dataTransfer.getData('id'));
+                            el.style.display = 'none'; // hide file inside folder
+                            sfx.play('ok');
+                            let cnt = dz.querySelector('.fc');
+                            cnt.innerText = parseInt(cnt.innerText) + 1;
+                            this.p2Done++;
+                            if(this.p2Done === this.p2Total) setTimeout(() => this.gotoPhase3(), 1000);
+                        } else {
+                            sfx.play('err');
+                        }
+                    };
+                });
+            },
+
+            // PHASE 3: VAULT DECRYPTION
+            gotoPhase3() {
+                document.getElementById('phase-2').classList.add('hidden');
+                document.getElementById('phase-3').classList.remove('hidden');
+                document.getElementById('nav-2').style.color = 'var(--text-muted)';
+                document.getElementById('nav-2').style.fontWeight = 'normal';
+                document.getElementById('nav-3').style.color = 'var(--primary)';
+                document.getElementById('nav-3').style.fontWeight = 'bold';
+                document.getElementById('inp-1').focus();
+                sfx.play('ok');
+            },
+
+            checkCode(taskNum) {
+                const val = document.getElementById('inp-' + taskNum).value.toUpperCase().trim();
+                const err = document.getElementById('err-' + taskNum);
+                
+                if(taskNum === 1) {
+                    // PT. Global Sentosa (2026) -> GL-2026
+                    if(val === 'GL-2026') {
+                        sfx.play('ok');
+                        err.innerText = "";
+                        document.getElementById('task-1').style.opacity = '0.5';
+                        document.getElementById('task-2').classList.remove('hidden');
+                        document.getElementById('inp-2').focus();
+                    } else {
+                        sfx.play('err');
+                        err.innerText = "ACCESS DENIED: KODE SALAH. BACA BAB III SOP.";
+                    }
+                } else if (taskNum === 2) {
+                    // Ahmad Zaelani (2026) -> ZAE-2026
+                    if(val === 'ZAE-2026') {
+                        sfx.play('ok');
+                        this.gameWin();
+                    } else {
+                        sfx.play('err');
+                        err.innerText = "ACCESS DENIED: KODE SALAH. BACA BAB IV SOP.";
+                    }
+                }
+            },
+
+            gameWin() {
+                document.body.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center;">
+                        <div style="font-size:6rem; margin-bottom:1rem;">🛡️</div>
+                        <h1 style="color:var(--success); font-size: 2.5rem; margin-bottom:1rem;">AUDIT BERHASIL!</h1>
+                        <p style="max-width:600px; color:var(--text-muted); line-height:1.8; font-size:1.1rem;">
+                            Selamat! Anda berhasil menyelamatkan perusahaan.<br>
+                            Anda telah membuktikan penguasaan terhadap prosedur <strong>Buku Agenda (Surat Masuk/Keluar)</strong>, <strong>Sistem Klasifikasi Subjek</strong>, dan <strong>Sistem Indeks Abjad (Instansi & Nama)</strong>.
+                        </p>
+                        <button class="btn" style="margin-top:2rem; width:250px;" onclick="location.reload()">Selesaikan Misi</button>
+                    </div>
+                `;
+            }
+        };
+    </script>
+</body>
+</html>
