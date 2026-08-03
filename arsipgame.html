@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Archive Detective</title>
+    <title>Archive OS v3.0 - Corporate Sabotage</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --os-bg: #0f172a; --panel-bg: rgba(30, 41, 59, 0.85);
-            --window-bg: #1e293b; --window-border: #334155;
-            --primary: #3b82f6; --primary-hover: #2563eb;
-            --accent: #06b6d4; --success: #10b981; --danger: #ef4444;
-            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --os-bg: #09090b; --panel-bg: rgba(24, 24, 27, 0.9);
+            --window-bg: #18181b; --window-border: #3f3f46;
+            --primary: #8b5cf6; --primary-hover: #7c3aed;
+            --accent: #f43f5e; --success: #10b981; --warning: #f59e0b;
+            --text-main: #f4f4f5; --text-muted: #a1a1aa;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
@@ -19,261 +19,219 @@
         body { 
             height: 100vh; overflow: hidden; background-color: var(--os-bg);
             background-image: 
-                radial-gradient(at 20% 30%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-                radial-gradient(at 80% 80%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
+                linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
             color: var(--text-main); display: flex; flex-direction: column;
         }
 
         /* Login Screen */
         #login-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000;
-            background: var(--os-bg); display: flex; justify-content: center; align-items: center;
-            transition: opacity 0.5s;
+            position: absolute; inset: 0; z-index: 1000; background: var(--os-bg);
+            display: flex; justify-content: center; align-items: center; transition: 0.5s;
         }
         .login-box {
-            background: var(--panel-bg); padding: 2.5rem; border-radius: 16px;
-            border: 1px solid var(--window-border); text-align: center; width: 400px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+            background: var(--panel-bg); padding: 3rem; border-radius: 12px;
+            border: 1px solid var(--window-border); text-align: center; width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
         }
-        .login-box h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--accent); }
-        .login-box p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
         .login-box input {
-            width: 100%; padding: 0.8rem; margin-bottom: 1rem; border-radius: 8px;
-            background: #0f172a; border: 1px solid var(--window-border); color: white; outline: none;
+            width: 100%; padding: 1rem; margin: 1.5rem 0; border-radius: 8px;
+            background: #09090b; border: 1px solid var(--window-border); color: white; outline: none;
         }
         .btn {
-            width: 100%; padding: 0.8rem; border-radius: 8px; border: none; font-weight: 600;
+            width: 100%; padding: 1rem; border-radius: 8px; border: none; font-weight: 600; font-size: 1rem;
             background: var(--primary); color: white; cursor: pointer; transition: 0.2s;
         }
-        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn:hover { background: var(--primary-hover); }
         
-        /* OS Desktop Environment */
+        /* Desktop */
         #desktop { flex: 1; position: relative; padding: 1rem; display: none; }
-        
         .desktop-icon {
-            width: 90px; height: 90px; display: flex; flex-direction: column; align-items: center;
-            justify-content: center; gap: 0.5rem; cursor: pointer; border-radius: 12px;
-            transition: 0.2s; text-align: center; margin-bottom: 1rem;
+            width: 100px; height: 100px; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 0.8rem; cursor: pointer; border-radius: 12px; transition: 0.2s;
         }
-        .desktop-icon:hover { background: rgba(255,255,255,0.1); }
-        .icon-emoji { font-size: 2.5rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
-        .icon-text { font-size: 0.8rem; font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .desktop-icon:hover { background: rgba(255,255,255,0.05); }
+        .icon-img { font-size: 3rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+        .icon-text { font-size: 0.85rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.8); text-align: center;}
 
-        /* Window System */
+        /* Windows */
         .window {
-            position: absolute; top: 50px; left: 150px; width: 700px; height: 500px;
-            background: var(--window-bg); border: 1px solid var(--window-border);
-            border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); display: none;
-            flex-direction: column; overflow: hidden; transform: scale(0.95); opacity: 0;
-            transition: transform 0.2s, opacity 0.2s;
+            position: absolute; background: var(--window-bg); border: 1px solid var(--window-border);
+            border-radius: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); display: none;
+            flex-direction: column; overflow: hidden; transform: scale(0.95); opacity: 0; transition: 0.2s;
         }
-        .window.active { display: flex; transform: scale(1); opacity: 1; z-index: 10; }
-        
-        .window-header {
-            background: #0f172a; padding: 0.8rem 1rem; display: flex; justify-content: space-between;
-            align-items: center; border-bottom: 1px solid var(--window-border); cursor: move;
-        }
-        .window-title { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
-        .window-controls { display: flex; gap: 0.5rem; }
-        .win-btn { width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer; }
-        .win-close { background: #ff5f56; }
-        
+        .window.active { display: flex; transform: scale(1); opacity: 1; }
+        .window-header { background: #09090b; padding: 0.8rem 1rem; display: flex; justify-content: space-between; align-items: center; cursor: move; border-bottom: 1px solid var(--window-border); }
+        .win-close { background: var(--accent); width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer;}
         .window-content { flex: 1; padding: 1.5rem; overflow-y: auto; }
 
-        /* Taskbar */
-        #taskbar {
-            height: 55px; background: rgba(15, 23, 42, 0.9); border-top: 1px solid var(--window-border);
-            backdrop-filter: blur(10px); display: flex; align-items: center; padding: 0 1.5rem;
-            justify-content: space-between; z-index: 100;
-        }
-        #clock { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: bold; color: var(--accent); }
+        /* Custom App Styles */
+        .sop-text { line-height: 1.7; font-size: 0.95rem; }
+        .sop-text h3 { color: var(--primary); margin: 1.5rem 0 0.5rem 0; border-bottom: 1px solid var(--window-border); padding-bottom: 0.5rem;}
+        .sop-box { background: rgba(139, 92, 246, 0.1); border-left: 4px solid var(--primary); padding: 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
 
-        /* App Specific Styles */
-        /* 1. Mail App */
-        .mail-list { border: 1px solid var(--window-border); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; }
-        .mail-item { padding: 1rem; border-bottom: 1px solid var(--window-border); cursor: pointer; background: rgba(255,255,255,0.02); }
-        .mail-item.unread { border-left: 4px solid var(--primary); font-weight: bold; }
-        .mail-body { padding: 1.5rem; background: #0f172a; border-radius: 8px; font-family: serif; line-height: 1.6; display: none; }
-        
-        /* 2. SOP Viewer App */
-        .sop-doc { font-family: 'Inter', sans-serif; line-height: 1.6; }
-        .sop-doc h3 { color: var(--accent); border-bottom: 1px solid var(--window-border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
-        .code-block { background: #000; color: #10b981; padding: 1rem; font-family: 'JetBrains Mono', monospace; border-radius: 8px; margin: 1rem 0; }
+        .file-item { background: #27272a; border: 1px solid #3f3f46; padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 6px; cursor: grab; font-size: 0.85rem; display: flex; align-items: center; gap: 0.8rem; transition: 0.2s;}
+        .file-item:hover { border-color: var(--primary); }
+        .file-item:active { cursor: grabbing; transform: scale(0.98); }
 
-        /* 3. Archive System (File Explorer) */
-        .file-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; height: 100%; }
-        .inbox-area { background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: 1px dashed var(--text-muted); display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto;}
-        .folder-area { display: flex; flex-direction: column; gap: 1rem; }
+        .drop-zone { border: 2px dashed var(--window-border); border-radius: 8px; padding: 1rem; min-height: 150px; transition: 0.3s; background: rgba(0,0,0,0.2); }
+        .drop-zone.hover { border-color: var(--primary); background: rgba(139, 92, 246, 0.1); }
         
-        .draggable-file { background: #2563eb; padding: 0.8rem; border-radius: 6px; cursor: grab; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 500; }
-        .draggable-file:active { cursor: grabbing; opacity: 0.8; }
-        
-        .drop-folder { background: #1e293b; border: 2px solid #334155; padding: 1rem; border-radius: 8px; text-align: center; transition: 0.2s; position: relative; }
-        .drop-folder.hover { border-color: var(--accent); background: rgba(6, 182, 212, 0.1); }
-        .drop-folder h4 { font-size: 0.9rem; margin-bottom: 0.5rem; }
-        .file-count { font-size: 0.75rem; color: var(--text-muted); }
-        .folder-locked { position: absolute; inset: 0; background: rgba(15,23,42,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 6px; }
-        
-        /* Vault Unlocker */
-        .vault-terminal { background: #000; border: 1px solid #333; padding: 1.5rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; color: #10b981; }
-        .vault-input { background: transparent; border: none; border-bottom: 2px solid #10b981; color: #10b981; font-family: 'JetBrains Mono', monospace; font-size: 1rem; outline: none; padding: 0.2rem; width: 150px; text-transform: uppercase;}
-        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .folder-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .folder { background: #18181b; border: 1px solid #3f3f46; border-top: 15px solid var(--primary); border-radius: 8px; padding: 1rem; text-align: center; }
+        .folder.hover { border-color: var(--success); border-top-color: var(--success); }
+
+        .terminal { background: #000; color: #10b981; font-family: 'JetBrains Mono', monospace; padding: 1.5rem; border-radius: 8px; font-size: 0.9rem; }
+        .term-input { background: transparent; border: none; border-bottom: 2px solid #10b981; color: #10b981; font-family: 'JetBrains Mono', monospace; font-size: 1rem; outline: none; text-transform: uppercase; width: 120px; }
+
+        #taskbar { height: 50px; background: #09090b; border-top: 1px solid var(--window-border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; z-index: 100; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- Login Screen -->
+    <!-- Login -->
     <div id="login-screen">
         <div class="login-box">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🕵️‍♂️📁</div>
-            <h1>Archive OS v2.4</h1>
-            <p>Sistem Kearsipan Digital Terpadu</p>
-            <input type="text" id="player-name" placeholder="Masukkan Nama Arsiparis..." autocomplete="off">
-            <button class="btn" onclick="game.start()">Login ke Sistem</button>
+            <h1 style="font-size: 2rem; color: var(--text-main); margin-bottom: 0.5rem;">Archive OS <span style="color: var(--primary)">v3.0</span></h1>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Secure Corporate Management System</p>
+            <input type="text" id="player-name" placeholder="ID Pegawai / Nama Anda..." autocomplete="off">
+            <button class="btn" onclick="game.start()">Verifikasi Akses</button>
         </div>
     </div>
 
     <!-- Desktop -->
     <div id="desktop">
-        <div class="desktop-icon" onclick="winManager.open('win-mail')">
-            <div class="icon-emoji">📧</div>
-            <div class="icon-text">Mail Client</div>
+        <div class="desktop-icon" onclick="win.open('win-mail')">
+            <div class="icon-img">📩</div><div class="icon-text">Mail Inbox (1)</div>
         </div>
-        <div class="desktop-icon" onclick="winManager.open('win-sop')">
-            <div class="icon-emoji">📘</div>
-            <div class="icon-text">SOP Kearsipan</div>
+        <div class="desktop-icon" onclick="win.open('win-sop')">
+            <div class="icon-img">📕</div><div class="icon-text">Buku SOP</div>
         </div>
-        <div class="desktop-icon" onclick="winManager.open('win-archive')">
-            <div class="icon-emoji">🗄️</div>
-            <div class="icon-text">Archive Server</div>
+        <div class="desktop-icon" onclick="win.open('win-system')">
+            <div class="icon-img">🗄️</div><div class="icon-text">Sistem Arsip</div>
         </div>
     </div>
 
-    <!-- Windows -->
-    
-    <!-- 1. Mail Window -->
-    <div class="window" id="win-mail" style="left: 50px; top: 30px;">
-        <div class="window-header">
-            <div class="window-title">📧 Mail Client - Inbox</div>
-            <div class="window-controls"><button class="win-btn win-close" onclick="winManager.close('win-mail')"></button></div>
-        </div>
+    <!-- Mail Window -->
+    <div class="window" id="win-mail" style="left: 50px; top: 30px; width: 600px; height: 500px;">
+        <div class="window-header"><div>📩 Mail Client</div><button class="win-close" onclick="win.close('win-mail')"></button></div>
         <div class="window-content">
-            <div class="mail-list" id="mail-list">
-                <div class="mail-item unread" onclick="game.readMail(this)">
-                    <div style="font-size: 0.8rem; color: var(--text-muted)">Dari: Direktur Utama | Tanggal: Hari Ini</div>
-                    <div style="font-weight: 600; margin-top: 0.3rem;">URGENT: Dokumen Hilang!</div>
-                </div>
+            <div style="background: rgba(244, 63, 94, 0.1); border-left: 4px solid var(--accent); padding: 1rem; margin-bottom: 1.5rem;">
+                <strong>DARI:</strong> Direktur Utama<br><strong>SUBJEK:</strong> URGENT - Sabotase Data & Audit Mendadak!
             </div>
-            <div class="mail-body" id="mail-body">
-                <p>Kepada Arsiparis Baru (<span id="disp-name"></span>),</p><br>
-                <p>Gawat! Kita akan meeting dalam 30 menit, tapi <strong>Surat Perjanjian Kerjasama (MoU) dengan PT. Jaya Abadi</strong> tertanggal <strong>15 Maret 2026</strong> hilang dari folder presentasi saya.</p><br>
-                <p>Sistem Archive Server kita sedang *error* karena ada karyawan magang yang menaruh file sembarangan di Inbox Server. Anda harus:</p>
-                <ol style="margin-left: 1.5rem; margin-top: 1rem; margin-bottom: 1rem;">
-                    <li>Buka <strong>Archive Server</strong>.</li>
-                    <li>Rapikan file yang berserakan ke folder klasifikasi (Subjek) yang tepat agar sistem kembali stabil.</li>
-                    <li>Buka brankas folder rahasia menggunakan <strong>Kode Indeks</strong> untuk menemukan MoU tersebut.</li>
-                </ol>
-                <p>Jika lupa cara membuat kode indeks, baca <strong>SOP Kearsipan</strong> di desktop.</p><br>
-                <p>Cepat temukan dokumen itu!</p>
-            </div>
+            <p>Kepada <span id="disp-name" style="font-weight:bold; color:var(--primary);"></span>,</p><br>
+            <p>Sistem server kita diserang *malware* yang mengacak-acak seluruh metadata arsip. Tim auditor akan tiba dalam 45 menit, dan saya butuh Anda merapikan semuanya <strong>sekarang juga</strong>.</p><br>
+            <p>Buka aplikasi <strong>Sistem Arsip</strong> dan selesaikan 3 tahap pemulihan:</p>
+            <ol style="margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.8;">
+                <li><strong>Tahap Agenda:</strong> Pisahkan tumpukan surat menjadi Surat Masuk (dari luar) & Surat Keluar (dari kita).</li>
+                <li><strong>Tahap Klasifikasi:</strong> Masukkan surat ke folder Subjek yang tepat (Keuangan, Kepegawaian, Kerjasama, Umum).</li>
+                <li><strong>Tahap Dekripsi (PENTING!):</strong> Brankas digital saya terkunci. Saya butuh 2 dokumen vital:
+                    <ul>
+                        <li>MoU dengan <strong>PT. Global Sentosa</strong> (Tahun 2026)</li>
+                        <li>SK Mutasi pegawai atas nama <strong>Ahmad Zaelani</strong> (Tahun 2026)</li>
+                    </ul>
+                </li>
+            </ol><br>
+            <p>Baca <strong>Buku SOP</strong> jika Anda lupa cara membuat Kode Indeks Instansi dan Pegawai. Jangan sampai salah ambil dokumen!</p>
         </div>
     </div>
 
-    <!-- 2. SOP Window -->
-    <div class="window" id="win-sop" style="left: 100px; top: 80px; width: 500px;">
-        <div class="window-header">
-            <div class="window-title">📘 SOP Kearsipan Perusahaan</div>
-            <div class="window-controls"><button class="win-btn win-close" onclick="winManager.close('win-sop')"></button></div>
-        </div>
-        <div class="window-content sop-doc">
-            <h3>Bab II: Klasifikasi Sistem Subjek</h3>
-            <p>Seluruh dokumen yang masuk ke server harus dipilah ke dalam 3 map virtual utama:</p>
-            <ul style="margin-left:1.5rem; margin-bottom:1rem; color:var(--text-muted);">
-                <li><strong>KEUANGAN:</strong> Invoice, Tagihan, Kuitansi, Laporan Pajak.</li>
-                <li><strong>KEPEGAWAIAN:</strong> Surat Lamaran, SK Cuti, Data Presensi.</li>
-                <li><strong>KERJASAMA:</strong> MoU, Kontrak Bisnis, Surat Perjanjian.</li>
+    <!-- SOP Window -->
+    <div class="window" id="win-sop" style="left: 680px; top: 30px; width: 500px; height: 600px;">
+        <div class="window-header"><div>📕 SOP Kearsipan v3.0</div><button class="win-close" onclick="win.close('win-sop')"></button></div>
+        <div class="window-content sop-text">
+            <h3>Bab I: Arus Surat</h3>
+            <p><strong>Surat Masuk:</strong> Dokumen yang diterima dari pihak luar/eksternal (Misal: Surat Penawaran dari PT lain, Tagihan Eksternal).</p>
+            <p><strong>Surat Keluar:</strong> Dokumen yang dikirim dari perusahaan kita ke pihak luar (Misal: Balasan Penawaran, Surat Pesanan kita).</p>
+            <p><em>*Catatan: SK/Memo internal perusahaan tetap diklasifikasikan ke folder subjeknya masing-masing.</em></p>
+
+            <h3>Bab II: Sistem Subjek</h3>
+            <ul style="margin-left:1.5rem;">
+                <li><strong>Keuangan:</strong> Invoice, Tagihan, Slip Gaji, Bukti Transfer.</li>
+                <li><strong>Kepegawaian:</strong> SK Mutasi, Surat Cuti, Lamaran Kerja.</li>
+                <li><strong>Kerjasama:</strong> MoU, Kontrak Bisnis, Perjanjian Sewa.</li>
+                <li><strong>Umum:</strong> Undangan, Surat Edaran, Penawaran Barang/Jasa umum.</li>
             </ul>
 
-            <h3>Bab III: Tata Cara Indexing Arsip Vital</h3>
-            <p>Folder rahasia dilindungi oleh sistem indeks keamanan. Sandi/Kode Indeks dibentuk dari gabungan Sistem Abjad dan Sistem Tanggal dengan format:</p>
-            <div class="code-block">
-                Format: [2 HURUF AWAL NAMA INSTANSI]-[TAHUN DOKUMEN]<br><br>
-                Contoh Kasus:<br>
-                Instansi: PT. Maju Mundur<br>
-                Tanggal: 10 Agustus 2024<br>
-                Kode Indeks: MA-2024<br>
-                *(Catatan: Abaikan awalan badan hukum seperti PT, CV, UD)*
+            <h3>Bab III: Kode Indeks Instansi</h3>
+            <div class="sop-box">
+                <strong>Aturan:</strong> Abaikan badan hukum (PT, CV, UD, dll). Ambil 2 huruf pertama dari nama instansi.<br>
+                <strong>Format:</strong> [2 HURUF]-[TAHUN]<br>
+                <strong>Contoh:</strong> Surat dari PT. Makmur Abadi tahun 2026.<br>
+                <strong>Kode:</strong> MA-2026
+            </div>
+
+            <h3>Bab IV: Kode Indeks Pegawai</h3>
+            <div class="sop-box">
+                <strong>Aturan:</strong> Menggunakan Sistem Tangkap Utama (Nama Keluarga/Belakang). Ambil 3 huruf pertama dari kata terakhir nama.<br>
+                <strong>Format:</strong> [3 HURUF]-[TAHUN]<br>
+                <strong>Contoh:</strong> SK Mutasi Rina Gunawan tahun 2026.<br>
+                <strong>Kode:</strong> GUN-2026
             </div>
         </div>
     </div>
 
-    <!-- 3. Archive System Window -->
-    <div class="window" id="win-archive" style="left: 200px; top: 50px; width: 800px; height: 550px;">
-        <div class="window-header">
-            <div class="window-title">🗄️ Archive Server (Admin Mode)</div>
-            <div class="window-controls"><button class="win-btn win-close" onclick="winManager.close('win-archive')"></button></div>
-        </div>
-        <div class="window-content">
+    <!-- Archive System Window -->
+    <div class="window" id="win-system" style="left: 100px; top: 80px; width: 850px; height: 620px;">
+        <div class="window-header"><div>🗄️ Sistem Arsip Terpadu</div><button class="win-close" onclick="win.close('win-system')"></button></div>
+        <div class="window-content" style="display: flex; flex-direction: column;">
             
-            <!-- Phase 1: Sorting -->
-            <div id="phase-1" class="file-grid">
+            <!-- Phase Nav -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--window-border); padding-bottom: 1rem;">
+                <div id="nav-1" style="color: var(--primary); font-weight: bold;">1. Registrasi Agenda</div>
+                <div id="nav-2" style="color: var(--text-muted);">2. Klasifikasi Folder</div>
+                <div id="nav-3" style="color: var(--text-muted);">3. Dekripsi Brankas</div>
+            </div>
+
+            <!-- Phase 1: Agenda -->
+            <div id="phase-1" class="grid-2" style="flex:1;">
                 <div>
-                    <h3 style="margin-bottom: 1rem; color: var(--danger);">⚠️ SYSTEM INTEGRITY COMPROMISED</h3>
-                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Pindahkan file "Unsorted" ke folder Klasifikasi Subjek yang tepat untuk merestorasi sistem.</p>
-                    <div class="inbox-area" id="unsorted-files">
-                        <!-- Filled by JS -->
-                    </div>
+                    <h4 style="margin-bottom: 1rem;">Tumpukan Surat (Unsorted)</h4>
+                    <div id="p1-source" style="height: 350px; overflow-y: auto; padding-right: 10px;"></div>
                 </div>
-                <div class="folder-area">
-                    <div class="drop-folder" data-cat="keuangan">
-                        <h4>📁 KEUANGAN</h4>
-                        <div class="file-count"><span class="cnt">0</span> files</div>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="drop-zone" data-type="masuk" id="dz-masuk">
+                        <h4 style="color: var(--success); margin-bottom: 1rem;">📥 Tray SURAT MASUK</h4>
                     </div>
-                    <div class="drop-folder" data-cat="kepegawaian">
-                        <h4>📁 KEPEGAWAIAN</h4>
-                        <div class="file-count"><span class="cnt">0</span> files</div>
-                    </div>
-                    <div class="drop-folder" data-cat="kerjasama">
-                        <h4>📁 KERJASAMA</h4>
-                        <div class="file-count"><span class="cnt">0</span> files</div>
-                        <div class="folder-locked" id="lock-overlay">
-                            <span style="font-size:1.5rem; margin-bottom:0.5rem;">🔒</span>
-                            <span style="font-size:0.75rem; color:var(--danger);">SYSTEM ERROR</span>
-                        </div>
+                    <div class="drop-zone" data-type="keluar" id="dz-keluar">
+                        <h4 style="color: var(--warning); margin-bottom: 1rem;">📤 Tray SURAT KELUAR</h4>
                     </div>
                 </div>
             </div>
 
-            <!-- Phase 2: Decryption / Vault -->
-            <div id="phase-2" class="hidden" style="height: 100%; display: flex; flex-direction: column;">
-                <h3 style="margin-bottom: 0.5rem; color: var(--success);">✔️ SYSTEM RESTORED</h3>
-                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Folder KERJASAMA mendeteksi arsip vital. Masukkan Kode Indeks Surat untuk mengakses dokumen PT. Jaya Abadi (15 Maret 2026).</p>
-                
-                <div class="vault-terminal">
-                    <div>> INITIALIZING VAULT...</div>
-                    <div>> FOLDER: KERJASAMA</div>
-                    <div>> TARGET: PT. JAYA ABADI (15-03-2026)</div>
-                    <br>
-                    <div>> ENTER INDEX CODE TO DECRYPT:</div>
-                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center;">
-                        <span style="color:#fff;">ROOT/KERJASAMA/PASS:</span> 
-                        <input type="text" id="index-input" class="vault-input" maxlength="10" autocomplete="off">
-                        <button class="btn" style="width:auto; padding:0.3rem 1rem; font-size:0.8rem; background:#10b981;" onclick="game.checkCode()">DECRYPT</button>
-                    </div>
-                    <div id="term-msg" style="color:var(--danger); margin-top:1rem;"></div>
+            <!-- Phase 2: Subject Folders -->
+            <div id="phase-2" class="hidden grid-2" style="flex:1;">
+                <div>
+                    <h4 style="margin-bottom: 1rem;">Surat Teregistrasi</h4>
+                    <div id="p2-source" style="height: 350px; overflow-y: auto; padding-right: 10px;"></div>
+                </div>
+                <div class="folder-grid">
+                    <div class="folder drop-zone-p2" data-sub="keuangan">💰 KEUANGAN<br><small><span class="fc">0</span> files</small></div>
+                    <div class="folder drop-zone-p2" data-sub="kepegawaian">👥 KEPEGAWAIAN<br><small><span class="fc">0</span> files</small></div>
+                    <div class="folder drop-zone-p2" data-sub="kerjasama">🤝 KERJASAMA<br><small><span class="fc">0</span> files</small></div>
+                    <div class="folder drop-zone-p2" data-sub="umum">📋 UMUM<br><small><span class="fc">0</span> files</small></div>
                 </div>
             </div>
 
-            <!-- Phase 3: Selection -->
-            <div id="phase-3" class="hidden">
-                <h3 style="margin-bottom: 1rem; color: var(--success);">🔓 ACCESS GRANTED: KERJASAMA</h3>
-                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Pilih dokumen yang tepat untuk dikirim ke Direktur.</p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" id="final-docs">
-                    <div class="mail-item" onclick="game.finish(false)">📄 MoU_JayaMakmur_2026.pdf</div>
-                    <div class="mail-item" onclick="game.finish(true)">📄 MoU_JayaAbadi_15032026.pdf</div>
-                    <div class="mail-item" onclick="game.finish(false)">📄 MoU_JayaAbadi_15032025.pdf</div>
-                    <div class="mail-item" onclick="game.finish(false)">📄 Kontrak_AbadiJaya_2026.pdf</div>
+            <!-- Phase 3: Vault -->
+            <div id="phase-3" class="hidden terminal" style="flex:1;">
+                <div>> ARCHIVE OS SECURE VAULT v3.0</div>
+                <div>> SYSTEM METADATA RESTORED SUCCESSFULLY.</div>
+                <div>> INITIATING DIRECTOR'S REQUEST...</div>
+                <br>
+                <div id="task-1">
+                    <div style="color: var(--warning);">> MISSING DOC 1: MoU PT. Global Sentosa (2026)</div>
+                    <div>> ENTER CORPORATE INDEX CODE: <input type="text" id="inp-1" class="term-input" maxlength="7"> <button class="btn" style="width:auto; padding:0.2rem 1rem; background:var(--primary);" onclick="game.checkCode(1)">EXECUTE</button></div>
+                    <div id="err-1" style="color: var(--accent); margin-top: 5px;"></div>
+                </div>
+                <div id="task-2" class="hidden" style="margin-top: 2rem;">
+                    <div style="color: var(--success);">> [DOC 1 ACQUIRED]</div>
+                    <div style="color: var(--warning); margin-top: 1rem;">> MISSING DOC 2: SK Mutasi Ahmad Zaelani (2026)</div>
+                    <div>> ENTER EMPLOYEE INDEX CODE: <input type="text" id="inp-2" class="term-input" maxlength="8"> <button class="btn" style="width:auto; padding:0.2rem 1rem; background:var(--primary);" onclick="game.checkCode(2)">EXECUTE</button></div>
+                    <div id="err-2" style="color: var(--accent); margin-top: 5px;"></div>
                 </div>
             </div>
 
@@ -282,206 +240,216 @@
 
     <!-- Taskbar -->
     <div id="taskbar">
-        <div style="display:flex; align-items:center; gap:0.5rem; font-weight:bold;">
-            <div style="width:24px; height:24px; background:var(--primary); border-radius:50%; text-align:center; line-height:24px;">A</div>
-            <span>Archive OS</span>
-        </div>
-        <div id="clock">10:00 AM</div>
+        <div style="font-weight: bold; color: var(--primary);">Archive OS v3.0</div>
+        <div id="clock" style="font-family: monospace;"></div>
     </div>
 
     <script>
         // Audio Engine
-        const Sfx = {
+        const sfx = {
             ctx: new (window.AudioContext || window.webkitAudioContext)(),
             play(type) {
                 if(this.ctx.state === 'suspended') this.ctx.resume();
-                const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
-                osc.connect(gain); gain.connect(this.ctx.destination);
-                if (type === 'type') { osc.type = 'square'; osc.frequency.setValueAtTime(400, this.ctx.currentTime); gain.gain.setValueAtTime(0.05, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1); osc.start(); osc.stop(this.ctx.currentTime + 0.1); }
-                if (type === 'success') { osc.type = 'sine'; osc.frequency.setValueAtTime(600, this.ctx.currentTime); osc.frequency.setValueAtTime(900, this.ctx.currentTime+0.1); gain.gain.setValueAtTime(0.1, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3); osc.start(); osc.stop(this.ctx.currentTime + 0.3); }
-                if (type === 'error') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, this.ctx.currentTime); gain.gain.setValueAtTime(0.1, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3); osc.start(); osc.stop(this.ctx.currentTime + 0.3); }
+                const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+                o.connect(g); g.connect(this.ctx.destination);
+                if(type==='type'){ o.type='square'; o.frequency.setValueAtTime(400,this.ctx.currentTime); g.gain.setValueAtTime(0.05,this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.1); o.start(); o.stop(this.ctx.currentTime+0.1); }
+                if(type==='ok'){ o.type='sine'; o.frequency.setValueAtTime(600,this.ctx.currentTime); o.frequency.setValueAtTime(1000,this.ctx.currentTime+0.1); g.gain.setValueAtTime(0.1,this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.3); o.start(); o.stop(this.ctx.currentTime+0.3); }
+                if(type==='err'){ o.type='sawtooth'; o.frequency.setValueAtTime(200,this.ctx.currentTime); g.gain.setValueAtTime(0.1,this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+0.3); o.start(); o.stop(this.ctx.currentTime+0.3); }
             }
         };
 
-        // Window Manager
-        let zIndexCounter = 10;
-        const winManager = {
-            open(id) {
-                const win = document.getElementById(id);
-                win.classList.add('active');
-                win.style.zIndex = ++zIndexCounter;
-                Sfx.play('type');
+        const win = {
+            z: 10,
+            open(id) { 
+                const e = document.getElementById(id); 
+                e.classList.add('active'); e.style.zIndex = ++this.z; 
+                sfx.play('type');
             },
-            close(id) {
-                document.getElementById(id).classList.remove('active');
-            }
+            close(id) { document.getElementById(id).classList.remove('active'); }
         };
 
-        // Drag functionality for windows
-        document.querySelectorAll('.window').forEach(win => {
-            const header = win.querySelector('.window-header');
-            let isDragging = false, startX, startY, startLeft, startTop;
-
-            win.addEventListener('mousedown', () => win.style.zIndex = ++zIndexCounter);
-
-            header.addEventListener('mousedown', e => {
-                if(e.target.classList.contains('win-btn')) return;
-                isDragging = true;
-                startX = e.clientX; startY = e.clientY;
-                startLeft = parseInt(window.getComputedStyle(win).left, 10);
-                startTop = parseInt(window.getComputedStyle(win).top, 10);
-            });
-
-            document.addEventListener('mousemove', e => {
-                if (!isDragging) return;
-                win.style.left = startLeft + (e.clientX - startX) + 'px';
-                win.style.top = startTop + (e.clientY - startY) + 'px';
-            });
-
-            document.addEventListener('mouseup', () => isDragging = false);
+        // Window Dragging
+        document.querySelectorAll('.window').forEach(w => {
+            const h = w.querySelector('.window-header');
+            let drag = false, x, y, l, t;
+            w.onmousedown = () => w.style.zIndex = ++win.z;
+            h.onmousedown = e => { if(e.target.classList.contains('win-close')) return; drag = true; x = e.clientX; y = e.clientY; l = w.offsetLeft; t = w.offsetTop; };
+            document.onmousemove = e => { if(!drag) return; w.style.left = l + (e.clientX - x) + 'px'; w.style.top = t + (e.clientY - y) + 'px'; };
+            document.onmouseup = () => drag = false;
         });
 
         // Clock
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }, 1000);
+        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID'), 1000);
 
-        // Game Logic
+        // Database Dokumen
+        const documents = [
+            { id: 'd1', name: 'Penawaran Genset - PT. Maju', type: 'masuk', sub: 'umum', emoji: '📄' },
+            { id: 'd2', name: 'Balasan Penawaran - Kpd PT. Maju', type: 'keluar', sub: 'umum', emoji: '📤' },
+            { id: 'd3', name: 'Tagihan Server AWS (Feb)', type: 'masuk', sub: 'keuangan', emoji: '💸' },
+            { id: 'd4', name: 'Bukti Transfer Pembayaran AWS', type: 'keluar', sub: 'keuangan', emoji: '🧾' },
+            { id: 'd5', name: 'SK Cuti Hamil - Sisca', type: 'internal', sub: 'kepegawaian', emoji: '👩‍⚕️' },
+            { id: 'd6', name: 'Draft MoU - PT. ABC (Revisi)', type: 'masuk', sub: 'kerjasama', emoji: '🤝' },
+            { id: 'd7', name: 'Undangan Seminar Kearsipan', type: 'masuk', sub: 'umum', emoji: '🎟️' },
+            { id: 'd8', name: 'Surat Pesanan Kertas A4', type: 'keluar', sub: 'umum', emoji: '📦' }
+        ];
+
         const game = {
-            playerName: "",
-            files: [
-                { id: 'f1', name: 'Tagihan Listrik PLN Feb 2026.pdf', cat: 'keuangan' },
-                { id: 'f2', name: 'Surat Lamaran Budi.docx', cat: 'kepegawaian' },
-                { id: 'f3', name: 'Invoice Pembelian Kertas.pdf', cat: 'keuangan' },
-                { id: 'f4', name: 'Draft Kontrak PT. Makmur.pdf', cat: 'kerjasama' },
-                { id: 'f5', name: 'SK Cuti Melahirkan Sisca.pdf', cat: 'kepegawaian' }
-            ],
-            filesSorted: 0,
+            p1Total: 8, p1Done: 0,
+            p2Total: 8, p2Done: 0,
 
             start() {
                 const name = document.getElementById('player-name').value;
-                if(!name) return alert("Tolong masukkan nama Anda!");
-                this.playerName = name;
+                if(!name) return alert("Masukkan identitas Anda!");
                 document.getElementById('disp-name').innerText = name;
-                
                 document.getElementById('login-screen').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('desktop').style.display = 'flex';
-                    winManager.open('win-mail'); // Auto open mail
-                    this.initDragDrop();
+                    win.open('win-mail');
+                    this.initPhase1();
                 }, 500);
-                Sfx.play('success');
+                sfx.play('ok');
             },
 
-            readMail(el) {
-                el.classList.remove('unread');
-                document.getElementById('mail-body').style.display = 'block';
-                Sfx.play('type');
-            },
-
-            initDragDrop() {
-                const container = document.getElementById('unsorted-files');
-                this.files.forEach(f => {
+            // PHASE 1: AGENDA (Masuk/Keluar)
+            initPhase1() {
+                const src = document.getElementById('p1-source');
+                documents.forEach(d => {
                     const el = document.createElement('div');
-                    el.className = 'draggable-file';
-                    el.draggable = true;
-                    el.innerHTML = `📄 ${f.name}`;
-                    el.dataset.cat = f.cat;
+                    el.className = 'file-item'; el.draggable = true; el.id = d.id;
+                    el.innerHTML = `<span>${d.emoji}</span> <span>${d.name}</span>`;
                     
-                    el.addEventListener('dragstart', e => {
-                        e.dataTransfer.setData('text/plain', f.cat);
-                        e.dataTransfer.setData('id', f.id);
-                        setTimeout(() => el.style.opacity = '0.5', 0);
-                    });
-                    el.addEventListener('dragend', () => el.style.opacity = '1');
-                    el.id = f.id;
-                    container.appendChild(el);
+                    el.ondragstart = e => {
+                        // All internal docs go to "masuk" tray for simplified agenda in this game, 
+                        // or we teach them internal skips agenda. Let's say all go to trays.
+                        let correctType = d.type === 'internal' ? 'masuk' : d.type; 
+                        e.dataTransfer.setData('type', correctType);
+                        e.dataTransfer.setData('id', d.id);
+                    };
+                    src.appendChild(el);
                 });
 
-                document.querySelectorAll('.drop-folder').forEach(folder => {
-                    folder.addEventListener('dragover', e => {
-                        e.preventDefault();
-                        if(!folder.querySelector('.folder-locked')) folder.classList.add('hover');
-                    });
-                    folder.addEventListener('dragleave', () => folder.classList.remove('hover'));
-                    folder.addEventListener('drop', e => {
-                        e.preventDefault();
-                        folder.classList.remove('hover');
-                        if(folder.querySelector('.folder-locked')) {
-                            Sfx.play('error');
-                            return; // Cannot drop in locked folder directly yet
-                        }
-
-                        const fileCat = e.dataTransfer.getData('text/plain');
-                        const fileId = e.dataTransfer.getData('id');
-                        const targetCat = folder.dataset.cat;
-
-                        if (fileCat === targetCat) {
-                            const fileEl = document.getElementById(fileId);
-                            fileEl.draggable = false;
-                            fileEl.style.background = 'var(--success)';
-                            folder.appendChild(fileEl);
-                            Sfx.play('success');
-                            
-                            const cntEl = folder.querySelector('.cnt');
-                            cntEl.innerText = parseInt(cntEl.innerText) + 1;
-                            
-                            this.filesSorted++;
-                            if (this.filesSorted === this.files.length) this.unlockPhase2();
+                document.querySelectorAll('.drop-zone').forEach(dz => {
+                    dz.ondragover = e => { e.preventDefault(); dz.classList.add('hover'); };
+                    dz.ondragleave = () => dz.classList.remove('hover');
+                    dz.ondrop = e => {
+                        e.preventDefault(); dz.classList.remove('hover');
+                        const type = e.dataTransfer.getData('type');
+                        const id = e.dataTransfer.getData('id');
+                        
+                        if(dz.dataset.type === type) {
+                            const el = document.getElementById(id);
+                            dz.appendChild(el); el.draggable = false;
+                            el.style.background = 'var(--success)';
+                            sfx.play('ok');
+                            this.p1Done++;
+                            if(this.p1Done === this.p1Total) setTimeout(() => this.gotoPhase2(), 1000);
                         } else {
-                            Sfx.play('error');
+                            sfx.play('err');
+                            // Flash red
+                            dz.style.borderColor = 'var(--accent)';
+                            setTimeout(() => dz.style.borderColor = '', 500);
                         }
-                    });
+                    };
                 });
             },
 
-            unlockPhase2() {
-                setTimeout(() => {
-                    document.getElementById('lock-overlay').style.display = 'none'; // Unlock visuals
-                    document.getElementById('phase-1').classList.add('hidden');
-                    document.getElementById('phase-2').classList.remove('hidden');
-                    document.getElementById('index-input').focus();
-                    Sfx.play('success');
-                }, 1000);
-            },
+            // PHASE 2: CLASSIFICATION (Subjek)
+            gotoPhase2() {
+                document.getElementById('phase-1').classList.add('hidden');
+                document.getElementById('phase-2').classList.remove('hidden');
+                document.getElementById('nav-1').style.color = 'var(--text-muted)';
+                document.getElementById('nav-1').style.fontWeight = 'normal';
+                document.getElementById('nav-2').style.color = 'var(--primary)';
+                document.getElementById('nav-2').style.fontWeight = 'bold';
+                sfx.play('ok');
 
-            checkCode() {
-                const input = document.getElementById('index-input').value.toUpperCase().trim();
-                // PT. Jaya Abadi (15 Mar 2026) -> JA-2026
-                if (input === 'JA-2026') {
-                    Sfx.play('success');
-                    document.getElementById('phase-2').classList.add('hidden');
-                    document.getElementById('phase-3').classList.remove('hidden');
+                // Move items to Phase 2 source
+                const src = document.getElementById('p2-source');
+                documents.forEach(d => {
+                    const el = document.getElementById(d.id);
+                    el.style.background = '#27272a'; // reset color
+                    el.draggable = true;
+                    src.appendChild(el);
                     
-                    // Acak dokumen akhir
-                    const container = document.getElementById('final-docs');
-                    for (let i = container.children.length; i >= 0; i--) {
-                        container.appendChild(container.children[Math.random() * i | 0]);
+                    el.ondragstart = e => {
+                        e.dataTransfer.setData('sub', d.sub);
+                        e.dataTransfer.setData('id', d.id);
+                    };
+                });
+
+                document.querySelectorAll('.drop-zone-p2').forEach(dz => {
+                    dz.ondragover = e => { e.preventDefault(); dz.classList.add('hover'); };
+                    dz.ondragleave = () => dz.classList.remove('hover');
+                    dz.ondrop = e => {
+                        e.preventDefault(); dz.classList.remove('hover');
+                        if(dz.dataset.sub === e.dataTransfer.getData('sub')) {
+                            const el = document.getElementById(e.dataTransfer.getData('id'));
+                            el.style.display = 'none'; // hide file inside folder
+                            sfx.play('ok');
+                            let cnt = dz.querySelector('.fc');
+                            cnt.innerText = parseInt(cnt.innerText) + 1;
+                            this.p2Done++;
+                            if(this.p2Done === this.p2Total) setTimeout(() => this.gotoPhase3(), 1000);
+                        } else {
+                            sfx.play('err');
+                        }
+                    };
+                });
+            },
+
+            // PHASE 3: VAULT DECRYPTION
+            gotoPhase3() {
+                document.getElementById('phase-2').classList.add('hidden');
+                document.getElementById('phase-3').classList.remove('hidden');
+                document.getElementById('nav-2').style.color = 'var(--text-muted)';
+                document.getElementById('nav-2').style.fontWeight = 'normal';
+                document.getElementById('nav-3').style.color = 'var(--primary)';
+                document.getElementById('nav-3').style.fontWeight = 'bold';
+                document.getElementById('inp-1').focus();
+                sfx.play('ok');
+            },
+
+            checkCode(taskNum) {
+                const val = document.getElementById('inp-' + taskNum).value.toUpperCase().trim();
+                const err = document.getElementById('err-' + taskNum);
+                
+                if(taskNum === 1) {
+                    // PT. Global Sentosa (2026) -> GL-2026
+                    if(val === 'GL-2026') {
+                        sfx.play('ok');
+                        err.innerText = "";
+                        document.getElementById('task-1').style.opacity = '0.5';
+                        document.getElementById('task-2').classList.remove('hidden');
+                        document.getElementById('inp-2').focus();
+                    } else {
+                        sfx.play('err');
+                        err.innerText = "ACCESS DENIED: KODE SALAH. BACA BAB III SOP.";
                     }
-                } else {
-                    Sfx.play('error');
-                    document.getElementById('term-msg').innerText = "> ERROR: KODE INDEKS TIDAK VALID. PERIKSA SOP.";
-                    setTimeout(() => document.getElementById('term-msg').innerText = "", 2000);
+                } else if (taskNum === 2) {
+                    // Ahmad Zaelani (2026) -> ZAE-2026
+                    if(val === 'ZAE-2026') {
+                        sfx.play('ok');
+                        this.gameWin();
+                    } else {
+                        sfx.play('err');
+                        err.innerText = "ACCESS DENIED: KODE SALAH. BACA BAB IV SOP.";
+                    }
                 }
             },
 
-            finish(isCorrect) {
-                if(isCorrect) {
-                    Sfx.play('success');
-                    document.body.innerHTML = `
-                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:var(--os-bg); text-align:center;">
-                            <div style="font-size:5rem; margin-bottom:1rem;">🏆</div>
-                            <h1 style="color:var(--success); margin-bottom:1rem;">Misi Selesai!</h1>
-                            <p style="max-width:500px; color:var(--text-muted); line-height:1.6;">Luar biasa, Detektif <strong>${this.playerName}</strong>!<br>Anda berhasil memulihkan integritas server menggunakan Sistem Subjek dan menemukan dokumen rahasia menggunakan Sistem Indeks Abjad & Tanggal.</p>
-                            <button class="btn" style="margin-top:2rem; width:200px;" onclick="location.reload()">Main Lagi</button>
-                        </div>
-                    `;
-                } else {
-                    Sfx.play('error');
-                    alert("Fatal Error! Anda mengirimkan dokumen yang salah kepada Direktur. Meeting berantakan. Coba pilih dokumen dengan teliti!");
-                }
+            gameWin() {
+                document.body.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center;">
+                        <div style="font-size:6rem; margin-bottom:1rem;">🛡️</div>
+                        <h1 style="color:var(--success); font-size: 2.5rem; margin-bottom:1rem;">AUDIT BERHASIL!</h1>
+                        <p style="max-width:600px; color:var(--text-muted); line-height:1.8; font-size:1.1rem;">
+                            Selamat! Anda berhasil menyelamatkan perusahaan.<br>
+                            Anda telah membuktikan penguasaan terhadap prosedur <strong>Buku Agenda (Surat Masuk/Keluar)</strong>, <strong>Sistem Klasifikasi Subjek</strong>, dan <strong>Sistem Indeks Abjad (Instansi & Nama)</strong>.
+                        </p>
+                        <button class="btn" style="margin-top:2rem; width:250px;" onclick="location.reload()">Selesaikan Misi</button>
+                    </div>
+                `;
             }
         };
     </script>
