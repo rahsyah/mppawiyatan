@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Archive Detective</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --os-bg: #0f172a; --panel-bg: rgba(30, 41, 59, 0.85);
+            --window-bg: #1e293b; --window-border: #334155;
+            --primary: #3b82f6; --primary-hover: #2563eb;
+            --accent: #06b6d4; --success: #10b981; --danger: #ef4444;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        
+        body { 
+            height: 100vh; overflow: hidden; background-color: var(--os-bg);
+            background-image: 
+                radial-gradient(at 20% 30%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 80%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
+            color: var(--text-main); display: flex; flex-direction: column;
+        }
+
+        /* Login Screen */
+        #login-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000;
+            background: var(--os-bg); display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.5s;
+        }
+        .login-box {
+            background: var(--panel-bg); padding: 2.5rem; border-radius: 16px;
+            border: 1px solid var(--window-border); text-align: center; width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+        }
+        .login-box h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--accent); }
+        .login-box p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+        .login-box input {
+            width: 100%; padding: 0.8rem; margin-bottom: 1rem; border-radius: 8px;
+            background: #0f172a; border: 1px solid var(--window-border); color: white; outline: none;
+        }
+        .btn {
+            width: 100%; padding: 0.8rem; border-radius: 8px; border: none; font-weight: 600;
+            background: var(--primary); color: white; cursor: pointer; transition: 0.2s;
+        }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        
+        /* OS Desktop Environment */
+        #desktop { flex: 1; position: relative; padding: 1rem; display: none; }
+        
+        .desktop-icon {
+            width: 90px; height: 90px; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 0.5rem; cursor: pointer; border-radius: 12px;
+            transition: 0.2s; text-align: center; margin-bottom: 1rem;
+        }
+        .desktop-icon:hover { background: rgba(255,255,255,0.1); }
+        .icon-emoji { font-size: 2.5rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+        .icon-text { font-size: 0.8rem; font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
+        /* Window System */
+        .window {
+            position: absolute; top: 50px; left: 150px; width: 700px; height: 500px;
+            background: var(--window-bg); border: 1px solid var(--window-border);
+            border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); display: none;
+            flex-direction: column; overflow: hidden; transform: scale(0.95); opacity: 0;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .window.active { display: flex; transform: scale(1); opacity: 1; z-index: 10; }
+        
+        .window-header {
+            background: #0f172a; padding: 0.8rem 1rem; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 1px solid var(--window-border); cursor: move;
+        }
+        .window-title { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .window-controls { display: flex; gap: 0.5rem; }
+        .win-btn { width: 14px; height: 14px; border-radius: 50%; border: none; cursor: pointer; }
+        .win-close { background: #ff5f56; }
+        
+        .window-content { flex: 1; padding: 1.5rem; overflow-y: auto; }
+
+        /* Taskbar */
+        #taskbar {
+            height: 55px; background: rgba(15, 23, 42, 0.9); border-top: 1px solid var(--window-border);
+            backdrop-filter: blur(10px); display: flex; align-items: center; padding: 0 1.5rem;
+            justify-content: space-between; z-index: 100;
+        }
+        #clock { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: bold; color: var(--accent); }
+
+        /* App Specific Styles */
+        /* 1. Mail App */
+        .mail-list { border: 1px solid var(--window-border); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; }
+        .mail-item { padding: 1rem; border-bottom: 1px solid var(--window-border); cursor: pointer; background: rgba(255,255,255,0.02); }
+        .mail-item.unread { border-left: 4px solid var(--primary); font-weight: bold; }
+        .mail-body { padding: 1.5rem; background: #0f172a; border-radius: 8px; font-family: serif; line-height: 1.6; display: none; }
+        
+        /* 2. SOP Viewer App */
+        .sop-doc { font-family: 'Inter', sans-serif; line-height: 1.6; }
+        .sop-doc h3 { color: var(--accent); border-bottom: 1px solid var(--window-border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        .code-block { background: #000; color: #10b981; padding: 1rem; font-family: 'JetBrains Mono', monospace; border-radius: 8px; margin: 1rem 0; }
+
+        /* 3. Archive System (File Explorer) */
+        .file-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; height: 100%; }
+        .inbox-area { background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: 1px dashed var(--text-muted); display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto;}
+        .folder-area { display: flex; flex-direction: column; gap: 1rem; }
+        
+        .draggable-file { background: #2563eb; padding: 0.8rem; border-radius: 6px; cursor: grab; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 500; }
+        .draggable-file:active { cursor: grabbing; opacity: 0.8; }
+        
+        .drop-folder { background: #1e293b; border: 2px solid #334155; padding: 1rem; border-radius: 8px; text-align: center; transition: 0.2s; position: relative; }
+        .drop-folder.hover { border-color: var(--accent); background: rgba(6, 182, 212, 0.1); }
+        .drop-folder h4 { font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .file-count { font-size: 0.75rem; color: var(--text-muted); }
+        .folder-locked { position: absolute; inset: 0; background: rgba(15,23,42,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 6px; }
+        
+        /* Vault Unlocker */
+        .vault-terminal { background: #000; border: 1px solid #333; padding: 1.5rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; color: #10b981; }
+        .vault-input { background: transparent; border: none; border-bottom: 2px solid #10b981; color: #10b981; font-family: 'JetBrains Mono', monospace; font-size: 1rem; outline: none; padding: 0.2rem; width: 150px; text-transform: uppercase;}
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <div class="login-box">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🕵️‍♂️📁</div>
+            <h1>Archive OS v2.4</h1>
+            <p>Sistem Kearsipan Digital Terpadu</p>
+            <input type="text" id="player-name" placeholder="Masukkan Nama Arsiparis..." autocomplete="off">
+            <button class="btn" onclick="game.start()">Login ke Sistem</button>
+        </div>
+    </div>
+
+    <!-- Desktop -->
+    <div id="desktop">
+        <div class="desktop-icon" onclick="winManager.open('win-mail')">
+            <div class="icon-emoji">📧</div>
+            <div class="icon-text">Mail Client</div>
+        </div>
+        <div class="desktop-icon" onclick="winManager.open('win-sop')">
+            <div class="icon-emoji">📘</div>
+            <div class="icon-text">SOP Kearsipan</div>
+        </div>
+        <div class="desktop-icon" onclick="winManager.open('win-archive')">
+            <div class="icon-emoji">🗄️</div>
+            <div class="icon-text">Archive Server</div>
+        </div>
+    </div>
+
+    <!-- Windows -->
+    
+    <!-- 1. Mail Window -->
+    <div class="window" id="win-mail" style="left: 50px; top: 30px;">
+        <div class="window-header">
+            <div class="window-title">📧 Mail Client - Inbox</div>
+            <div class="window-controls"><button class="win-btn win-close" onclick="winManager.close('win-mail')"></button></div>
+        </div>
+        <div class="window-content">
+            <div class="mail-list" id="mail-list">
+                <div class="mail-item unread" onclick="game.readMail(this)">
+                    <div style="font-size: 0.8rem; color: var(--text-muted)">Dari: Direktur Utama | Tanggal: Hari Ini</div>
+                    <div style="font-weight: 600; margin-top: 0.3rem;">URGENT: Dokumen Hilang!</div>
+                </div>
+            </div>
+            <div class="mail-body" id="mail-body">
+                <p>Kepada Arsiparis Baru (<span id="disp-name"></span>),</p><br>
+                <p>Gawat! Kita akan meeting dalam 30 menit, tapi <strong>Surat Perjanjian Kerjasama (MoU) dengan PT. Jaya Abadi</strong> tertanggal <strong>15 Maret 2026</strong> hilang dari folder presentasi saya.</p><br>
+                <p>Sistem Archive Server kita sedang *error* karena ada karyawan magang yang menaruh file sembarangan di Inbox Server. Anda harus:</p>
+                <ol style="margin-left: 1.5rem; margin-top: 1rem; margin-bottom: 1rem;">
+                    <li>Buka <strong>Archive Server</strong>.</li>
+                    <li>Rapikan file yang berserakan ke folder klasifikasi (Subjek) yang tepat agar sistem kembali stabil.</li>
+                    <li>Buka brankas folder rahasia menggunakan <strong>Kode Indeks</strong> untuk menemukan MoU tersebut.</li>
+                </ol>
+                <p>Jika lupa cara membuat kode indeks, baca <strong>SOP Kearsipan</strong> di desktop.</p><br>
+                <p>Cepat temukan dokumen itu!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. SOP Window -->
+    <div class="window" id="win-sop" style="left: 100px; top: 80px; width: 500px;">
+        <div class="window-header">
+            <div class="window-title">📘 SOP Kearsipan Perusahaan</div>
+            <div class="window-controls"><button class="win-btn win-close" onclick="winManager.close('win-sop')"></button></div>
+        </div>
+        <div class="window-content sop-doc">
+            <h3>Bab II: Klasifikasi Sistem Subjek</h3>
+            <p>Seluruh dokumen yang masuk ke server harus dipilah ke dalam 3 map virtual utama:</p>
+            <ul style="margin-left:1.5rem; margin-bottom:1rem; color:var(--text-muted);">
+                <li><strong>KEUANGAN:</strong> Invoice, Tagihan, Kuitansi, Laporan Pajak.</li>
+                <li><strong>KEPEGAWAIAN:</strong> Surat Lamaran, SK Cuti, Data Presensi.</li>
+                <li><strong>KERJASAMA:</strong> MoU, Kontrak Bisnis, Surat Perjanjian.</li>
+            </ul>
+
+            <h3>Bab III: Tata Cara Indexing Arsip Vital</h3>
+            <p>Folder rahasia dilindungi oleh sistem indeks keamanan. Sandi/Kode Indeks dibentuk dari gabungan Sistem Abjad dan Sistem Tanggal dengan format:</p>
+            <div class="code-block">
+                Format: [2 HURUF AWAL NAMA INSTANSI]-[TAHUN DOKUMEN]<br><br>
+                Contoh Kasus:<br>
+                Instansi: PT. Maju Mundur<br>
+                Tanggal: 10 Agustus 2024<br>
+                Kode Indeks: MA-2024<br>
+                *(Catatan: Abaikan awalan badan hukum seperti PT, CV, UD)*
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Archive System Window -->
+    <div class="window" id="win-archive" style="left: 200px; top: 50px; width: 800px; height: 550px;">
+        <div class="window-header">
+            <div class="window-title">🗄️ Archive Server (Admin Mode)</div>
+            <div class="window-controls"><button class="win-btn win-close" onclick="winManager.close('win-archive')"></button></div>
+        </div>
+        <div class="window-content">
+            
+            <!-- Phase 1: Sorting -->
+            <div id="phase-1" class="file-grid">
+                <div>
+                    <h3 style="margin-bottom: 1rem; color: var(--danger);">⚠️ SYSTEM INTEGRITY COMPROMISED</h3>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Pindahkan file "Unsorted" ke folder Klasifikasi Subjek yang tepat untuk merestorasi sistem.</p>
+                    <div class="inbox-area" id="unsorted-files">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+                <div class="folder-area">
+                    <div class="drop-folder" data-cat="keuangan">
+                        <h4>📁 KEUANGAN</h4>
+                        <div class="file-count"><span class="cnt">0</span> files</div>
+                    </div>
+                    <div class="drop-folder" data-cat="kepegawaian">
+                        <h4>📁 KEPEGAWAIAN</h4>
+                        <div class="file-count"><span class="cnt">0</span> files</div>
+                    </div>
+                    <div class="drop-folder" data-cat="kerjasama">
+                        <h4>📁 KERJASAMA</h4>
+                        <div class="file-count"><span class="cnt">0</span> files</div>
+                        <div class="folder-locked" id="lock-overlay">
+                            <span style="font-size:1.5rem; margin-bottom:0.5rem;">🔒</span>
+                            <span style="font-size:0.75rem; color:var(--danger);">SYSTEM ERROR</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2: Decryption / Vault -->
+            <div id="phase-2" class="hidden" style="height: 100%; display: flex; flex-direction: column;">
+                <h3 style="margin-bottom: 0.5rem; color: var(--success);">✔️ SYSTEM RESTORED</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Folder KERJASAMA mendeteksi arsip vital. Masukkan Kode Indeks Surat untuk mengakses dokumen PT. Jaya Abadi (15 Maret 2026).</p>
+                
+                <div class="vault-terminal">
+                    <div>> INITIALIZING VAULT...</div>
+                    <div>> FOLDER: KERJASAMA</div>
+                    <div>> TARGET: PT. JAYA ABADI (15-03-2026)</div>
+                    <br>
+                    <div>> ENTER INDEX CODE TO DECRYPT:</div>
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+                        <span style="color:#fff;">ROOT/KERJASAMA/PASS:</span> 
+                        <input type="text" id="index-input" class="vault-input" maxlength="10" autocomplete="off">
+                        <button class="btn" style="width:auto; padding:0.3rem 1rem; font-size:0.8rem; background:#10b981;" onclick="game.checkCode()">DECRYPT</button>
+                    </div>
+                    <div id="term-msg" style="color:var(--danger); margin-top:1rem;"></div>
+                </div>
+            </div>
+
+            <!-- Phase 3: Selection -->
+            <div id="phase-3" class="hidden">
+                <h3 style="margin-bottom: 1rem; color: var(--success);">🔓 ACCESS GRANTED: KERJASAMA</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Pilih dokumen yang tepat untuk dikirim ke Direktur.</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" id="final-docs">
+                    <div class="mail-item" onclick="game.finish(false)">📄 MoU_JayaMakmur_2026.pdf</div>
+                    <div class="mail-item" onclick="game.finish(true)">📄 MoU_JayaAbadi_15032026.pdf</div>
+                    <div class="mail-item" onclick="game.finish(false)">📄 MoU_JayaAbadi_15032025.pdf</div>
+                    <div class="mail-item" onclick="game.finish(false)">📄 Kontrak_AbadiJaya_2026.pdf</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div id="taskbar">
+        <div style="display:flex; align-items:center; gap:0.5rem; font-weight:bold;">
+            <div style="width:24px; height:24px; background:var(--primary); border-radius:50%; text-align:center; line-height:24px;">A</div>
+            <span>Archive OS</span>
+        </div>
+        <div id="clock">10:00 AM</div>
+    </div>
+
+    <script>
+        // Audio Engine
+        const Sfx = {
+            ctx: new (window.AudioContext || window.webkitAudioContext)(),
+            play(type) {
+                if(this.ctx.state === 'suspended') this.ctx.resume();
+                const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                if (type === 'type') { osc.type = 'square'; osc.frequency.setValueAtTime(400, this.ctx.currentTime); gain.gain.setValueAtTime(0.05, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1); osc.start(); osc.stop(this.ctx.currentTime + 0.1); }
+                if (type === 'success') { osc.type = 'sine'; osc.frequency.setValueAtTime(600, this.ctx.currentTime); osc.frequency.setValueAtTime(900, this.ctx.currentTime+0.1); gain.gain.setValueAtTime(0.1, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3); osc.start(); osc.stop(this.ctx.currentTime + 0.3); }
+                if (type === 'error') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, this.ctx.currentTime); gain.gain.setValueAtTime(0.1, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3); osc.start(); osc.stop(this.ctx.currentTime + 0.3); }
+            }
+        };
+
+        // Window Manager
+        let zIndexCounter = 10;
+        const winManager = {
+            open(id) {
+                const win = document.getElementById(id);
+                win.classList.add('active');
+                win.style.zIndex = ++zIndexCounter;
+                Sfx.play('type');
+            },
+            close(id) {
+                document.getElementById(id).classList.remove('active');
+            }
+        };
+
+        // Drag functionality for windows
+        document.querySelectorAll('.window').forEach(win => {
+            const header = win.querySelector('.window-header');
+            let isDragging = false, startX, startY, startLeft, startTop;
+
+            win.addEventListener('mousedown', () => win.style.zIndex = ++zIndexCounter);
+
+            header.addEventListener('mousedown', e => {
+                if(e.target.classList.contains('win-btn')) return;
+                isDragging = true;
+                startX = e.clientX; startY = e.clientY;
+                startLeft = parseInt(window.getComputedStyle(win).left, 10);
+                startTop = parseInt(window.getComputedStyle(win).top, 10);
+            });
+
+            document.addEventListener('mousemove', e => {
+                if (!isDragging) return;
+                win.style.left = startLeft + (e.clientX - startX) + 'px';
+                win.style.top = startTop + (e.clientY - startY) + 'px';
+            });
+
+            document.addEventListener('mouseup', () => isDragging = false);
+        });
+
+        // Clock
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }, 1000);
+
+        // Game Logic
+        const game = {
+            playerName: "",
+            files: [
+                { id: 'f1', name: 'Tagihan Listrik PLN Feb 2026.pdf', cat: 'keuangan' },
+                { id: 'f2', name: 'Surat Lamaran Budi.docx', cat: 'kepegawaian' },
+                { id: 'f3', name: 'Invoice Pembelian Kertas.pdf', cat: 'keuangan' },
+                { id: 'f4', name: 'Draft Kontrak PT. Makmur.pdf', cat: 'kerjasama' },
+                { id: 'f5', name: 'SK Cuti Melahirkan Sisca.pdf', cat: 'kepegawaian' }
+            ],
+            filesSorted: 0,
+
+            start() {
+                const name = document.getElementById('player-name').value;
+                if(!name) return alert("Tolong masukkan nama Anda!");
+                this.playerName = name;
+                document.getElementById('disp-name').innerText = name;
+                
+                document.getElementById('login-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('desktop').style.display = 'flex';
+                    winManager.open('win-mail'); // Auto open mail
+                    this.initDragDrop();
+                }, 500);
+                Sfx.play('success');
+            },
+
+            readMail(el) {
+                el.classList.remove('unread');
+                document.getElementById('mail-body').style.display = 'block';
+                Sfx.play('type');
+            },
+
+            initDragDrop() {
+                const container = document.getElementById('unsorted-files');
+                this.files.forEach(f => {
+                    const el = document.createElement('div');
+                    el.className = 'draggable-file';
+                    el.draggable = true;
+                    el.innerHTML = `📄 ${f.name}`;
+                    el.dataset.cat = f.cat;
+                    
+                    el.addEventListener('dragstart', e => {
+                        e.dataTransfer.setData('text/plain', f.cat);
+                        e.dataTransfer.setData('id', f.id);
+                        setTimeout(() => el.style.opacity = '0.5', 0);
+                    });
+                    el.addEventListener('dragend', () => el.style.opacity = '1');
+                    el.id = f.id;
+                    container.appendChild(el);
+                });
+
+                document.querySelectorAll('.drop-folder').forEach(folder => {
+                    folder.addEventListener('dragover', e => {
+                        e.preventDefault();
+                        if(!folder.querySelector('.folder-locked')) folder.classList.add('hover');
+                    });
+                    folder.addEventListener('dragleave', () => folder.classList.remove('hover'));
+                    folder.addEventListener('drop', e => {
+                        e.preventDefault();
+                        folder.classList.remove('hover');
+                        if(folder.querySelector('.folder-locked')) {
+                            Sfx.play('error');
+                            return; // Cannot drop in locked folder directly yet
+                        }
+
+                        const fileCat = e.dataTransfer.getData('text/plain');
+                        const fileId = e.dataTransfer.getData('id');
+                        const targetCat = folder.dataset.cat;
+
+                        if (fileCat === targetCat) {
+                            const fileEl = document.getElementById(fileId);
+                            fileEl.draggable = false;
+                            fileEl.style.background = 'var(--success)';
+                            folder.appendChild(fileEl);
+                            Sfx.play('success');
+                            
+                            const cntEl = folder.querySelector('.cnt');
+                            cntEl.innerText = parseInt(cntEl.innerText) + 1;
+                            
+                            this.filesSorted++;
+                            if (this.filesSorted === this.files.length) this.unlockPhase2();
+                        } else {
+                            Sfx.play('error');
+                        }
+                    });
+                });
+            },
+
+            unlockPhase2() {
+                setTimeout(() => {
+                    document.getElementById('lock-overlay').style.display = 'none'; // Unlock visuals
+                    document.getElementById('phase-1').classList.add('hidden');
+                    document.getElementById('phase-2').classList.remove('hidden');
+                    document.getElementById('index-input').focus();
+                    Sfx.play('success');
+                }, 1000);
+            },
+
+            checkCode() {
+                const input = document.getElementById('index-input').value.toUpperCase().trim();
+                // PT. Jaya Abadi (15 Mar 2026) -> JA-2026
+                if (input === 'JA-2026') {
+                    Sfx.play('success');
+                    document.getElementById('phase-2').classList.add('hidden');
+                    document.getElementById('phase-3').classList.remove('hidden');
+                    
+                    // Acak dokumen akhir
+                    const container = document.getElementById('final-docs');
+                    for (let i = container.children.length; i >= 0; i--) {
+                        container.appendChild(container.children[Math.random() * i | 0]);
+                    }
+                } else {
+                    Sfx.play('error');
+                    document.getElementById('term-msg').innerText = "> ERROR: KODE INDEKS TIDAK VALID. PERIKSA SOP.";
+                    setTimeout(() => document.getElementById('term-msg').innerText = "", 2000);
+                }
+            },
+
+            finish(isCorrect) {
+                if(isCorrect) {
+                    Sfx.play('success');
+                    document.body.innerHTML = `
+                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:var(--os-bg); text-align:center;">
+                            <div style="font-size:5rem; margin-bottom:1rem;">🏆</div>
+                            <h1 style="color:var(--success); margin-bottom:1rem;">Misi Selesai!</h1>
+                            <p style="max-width:500px; color:var(--text-muted); line-height:1.6;">Luar biasa, Detektif <strong>${this.playerName}</strong>!<br>Anda berhasil memulihkan integritas server menggunakan Sistem Subjek dan menemukan dokumen rahasia menggunakan Sistem Indeks Abjad & Tanggal.</p>
+                            <button class="btn" style="margin-top:2rem; width:200px;" onclick="location.reload()">Main Lagi</button>
+                        </div>
+                    `;
+                } else {
+                    Sfx.play('error');
+                    alert("Fatal Error! Anda mengirimkan dokumen yang salah kepada Direktur. Meeting berantakan. Coba pilih dokumen dengan teliti!");
+                }
+            }
+        };
+    </script>
+</body>
+</html>
