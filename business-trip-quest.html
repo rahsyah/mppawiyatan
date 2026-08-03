@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Trip Quest: Master Challenge (Audio Edition)</title>
+    <title>Business Trip Quest: Master Challenge (HOTS & Crisis Edition)</title>
     <style>
         :root { --primary: #0284c7; --secondary: #334155; --bg: #f8fafc; --surface: #ffffff; --success: #10b981; --danger: #ef4444; --text: #0f172a; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -14,12 +14,12 @@
         
         /* Modal & Start */
         .modal { background: radial-gradient(circle, #1e293b, #0f172a); color: white; flex-direction: column; justify-content: center; align-items: center; text-align: center; z-index: 100; }
-        .card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 3rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); max-width: 700px; }
+        .card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 3rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); max-width: 800px; }
         .btn { background: var(--primary); color: white; border: none; padding: 1rem 2rem; font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn:hover { transform: scale(1.05); filter: brightness(1.2); }
         
         /* Dashboard */
-        aside { width: 280px; background: var(--surface); border-right: 1px solid #e2e8f0; padding: 1rem; display: flex; flex-direction: column; }
+        aside { width: 300px; background: var(--surface); border-right: 1px solid #e2e8f0; padding: 1rem; display: flex; flex-direction: column; }
         .timer { background: #fee2e2; color: var(--danger); padding: 1rem; text-align: center; font-size: 1.8rem; font-weight: bold; border-radius: 8px; margin-bottom: 1rem; border: 2px solid #fca5a5; transition: 0.3s;}
         .steps { list-style: none; overflow-y: auto; flex: 1; padding-right: 5px; }
         .steps li { padding: 0.8rem; margin-bottom: 0.5rem; background: var(--bg); border-radius: 6px; font-size: 0.85rem; color: var(--secondary); transition: 0.3s; border: 1px solid transparent; }
@@ -35,7 +35,7 @@
         
         .header { margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 1rem; }
         .header h2 { color: var(--primary); margin-bottom: 0.5rem; }
-        .header p { line-height: 1.5; color: #475569; }
+        .header p { line-height: 1.5; color: #475569; font-size: 0.95rem; }
         .workspace { display: flex; gap: 1.5rem; flex: 1; }
         .panel { background: var(--surface); padding: 1rem; border-radius: 12px; flex: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; overflow-y: auto; }
         .panel h3 { margin-bottom: 1rem; font-size: 1rem; color: var(--secondary); border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
@@ -44,11 +44,14 @@
         .draggable { background: white; border: 2px solid #cbd5e1; padding: 0.8rem; border-radius: 6px; margin-bottom: 0.5rem; cursor: grab; font-size: 0.9rem; font-weight: 500; transition: 0.2s;}
         .draggable:hover { border-color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .draggable:active { cursor: grabbing; }
-        .dropzone { background: #f8fafc; border: 2px dashed #94a3b8; min-height: 55px; border-radius: 6px; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.85rem; padding: 0.5rem; text-align: center;}
+        .dropzone { background: #f8fafc; border: 2px dashed #94a3b8; min-height: 60px; border-radius: 6px; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.85rem; padding: 0.5rem; text-align: center;}
         .dropzone.drag-over { background: #eff6ff; border-color: var(--primary); }
         .dropzone .draggable { margin: 0; width: 100%; border: none; background: transparent; box-shadow: none; pointer-events: none; }
         
         .submit-btn { margin-top: 1.5rem; align-self: flex-end; }
+        
+        /* HOTS Highlight */
+        .hots-badge { background: #f59e0b; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left: 10px; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -75,10 +78,10 @@
     <div id="start-screen" class="screen modal">
         <div class="card">
             <h1 style="color: #38bdf8; margin-bottom: 10px;">KODE MERAH: PROTOKOL TOKYO</h1>
-            <p><strong>Traveloka / Agoda Crisis & Document Audit</strong></p>
-            <p style="margin: 20px 0;">Sistem pemesanan online menyala merah! Penerbangan langsung penuh. Anda bertugas mengelola rute darurat, audit dokumen domestik, dan strategi perjalanan dinas Bapak Budi ke Jepang. Jangan sampai tiket hangus!</p>
+            <p><strong>Business Trip Quest: HOTS & Crisis Edition</strong></p>
+            <p style="margin: 20px 0;">Sistem Agoda dan Traveloka menyala merah! Anda tidak hanya mencocokkan kata, melainkan harus <strong>menganalisis data, menghitung biaya nyata, mendeteksi kecurangan (fraud), dan memecahkan krisis rute</strong>. Buktikan *High-Order Thinking Skills* Anda!</p>
             <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                ⏳ Batas Waktu Portal: <strong>10 Menit (600 Detik)</strong>
+                ⏳ Batas Waktu Audit & Booking: <strong>10 Menit (600 Detik)</strong>
             </div>
             <button class="btn" onclick="startGame()">Mulai Ujian Praktik & Aktifkan Radar</button>
         </div>
@@ -89,16 +92,16 @@
         <aside>
             <div class="timer" id="timerDisplay">10:00</div>
             <ul class="steps" id="step-list">
-                <li id="nav-1" class="active">1. Audit Surat Tugas</li>
-                <li id="nav-2">2. Agoda: Krisis Transit</li>
-                <li id="nav-3">3. Traveloka: Biaya Hotel</li>
-                <li id="nav-4">4. Kalkulasi Kurs Valas</li>
-                <li id="nav-5">5. Etika Tempat Duduk</li>
-                <li id="nav-6">6. Manajemen Krisis Badai</li>
+                <li id="nav-1" class="active">1. Audit SPT (Error Detection)</li>
+                <li id="nav-2">2. Krisis Transit & Zona Waktu</li>
+                <li id="nav-3">3. Analisis Biaya Hotel</li>
+                <li id="nav-4">4. Kalkulasi FX Math</li>
+                <li id="nav-5">5. Kamiza vs Shimoza</li>
+                <li id="nav-6">6. Emergency Rerouting</li>
                 <li id="nav-7">7. Audit Fraud Kuitansi</li>
-                <li id="nav-8">8. Efisiensi Tiket Kereta</li>
-                <li id="nav-9">9. Email Diplomatik Keigo</li>
-                <li id="nav-10">10. Rekonsiliasi LPJ</li>
+                <li id="nav-8">8. Efisiensi Pass Lokal</li>
+                <li id="nav-9">9. Komunikasi Diplomatik (Keigo)</li>
+                <li id="nav-10">10. Variance Analysis LPJ</li>
             </ul>
         </aside>
 
@@ -106,23 +109,23 @@
             <!-- TASK 1 -->
             <div id="task-1" class="task-container active">
                 <div class="header">
-                    <h2>Task 1: Audit Draft Surat Tugas (Error Detection)</h2>
-                    <p>Draft SPT salah mencantumkan dasar hukum yang sudah kadaluarsa (Tahun 2018) dan kode anggaran yang bentrok. Temukan "Patch" perbaikan yang benar untuk menggantikannya sebelum diaudit keuangan.</p>
+                    <h2>Task 1: Audit Draft Surat Tugas <span class="hots-badge">ERROR DETECTION</span></h2>
+                    <p><strong>Skenario:</strong> Draft SPT mengandung kesalahan fatal. Dasar hukum menggunakan aturan kadaluarsa, kode anggaran salah untuk luar negeri, dan tanggal bentrok. Lakukan *patch audit* sekarang!</p>
                 </div>
                 <div class="workspace">
                     <div class="panel">
                         <h3>Opsi Perbaikan (Drag)</h3>
-                        <div class="draggable" draggable="true" id="patch1" ondragstart="drag(event)">Perpres No. 53 Tahun 2023 (Perjadin Terbaru)</div>
-                        <div class="draggable" draggable="true" id="patch2" ondragstart="drag(event)">Perpres No. 33 Tahun 2020 (Sudah Direvisi)</div>
-                        <div class="draggable" draggable="true" id="patch3" ondragstart="drag(event)">Kode Anggaran: 524119 (Perjadin Luar Negeri)</div>
-                        <div class="draggable" draggable="true" id="patch4" ondragstart="drag(event)">Kode Anggaran: 524111 (Perjadin Dalam Negeri)</div>
+                        <div class="draggable" draggable="true" id="patch1" ondragstart="drag(event)">Ubah ke Perpres No. 53 Tahun 2023 (Terbaru)</div>
+                        <div class="draggable" draggable="true" id="patch2" ondragstart="drag(event)">Biarkan Perpres No. 33 Tahun 2020</div>
+                        <div class="draggable" draggable="true" id="patch3" ondragstart="drag(event)">Ubah Kode Anggaran: 524119 (Luar Negeri)</div>
+                        <div class="draggable" draggable="true" id="patch4" ondragstart="drag(event)">Ubah Kode Anggaran: 524111 (Dalam Negeri)</div>
                     </div>
                     <div class="panel">
                         <h3>Dokumen SPT (Drop Zone)</h3>
                         <p style="font-size: 0.85rem; margin-bottom: 5px;"><strong>Dasar Hukum:</strong></p>
-                        <div class="dropzone" id="z1-1" data-expected="patch1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Dasar Hukum Terbaru]</div>
+                        <div class="dropzone" id="z1-1" data-expected="patch1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Dasar Hukum yang Berlaku]</div>
                         <p style="font-size: 0.85rem; margin-bottom: 5px; margin-top: 15px;"><strong>Beban Anggaran:</strong></p>
-                        <div class="dropzone" id="z1-2" data-expected="patch3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Kode Anggaran Luar Negeri]</div>
+                        <div class="dropzone" id="z1-2" data-expected="patch3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Kode Anggaran yang Tepat]</div>
                     </div>
                 </div>
                 <button class="btn submit-btn" onclick="validate(1, ['z1-1', 'z1-2'])">Verifikasi Audit</button>
@@ -131,20 +134,20 @@
             <!-- TASK 2 -->
             <div id="task-2" class="task-container">
                 <div class="header">
-                    <h2>Task 2: Peringatan Sistem Agoda - Rute Darurat</h2>
-                    <p>Penerbangan langsung ke Tokyo (HND) habis! Rapat jam 09:00 JST. Zona JST adalah WIB +2 Jam. Minimum Connecting Time (MCT) transit minimal 2 Jam. Amankan rute sebelum kursi ini diambil orang lain!</p>
+                    <h2>Task 2: Optimalisasi Transit <span class="hots-badge">FLIGHT PROBLEM SOLVING</span></h2>
+                    <p><strong>Skenario:</strong> Penerbangan langsung Traveloka habis! Rapat jam 09:00 JST. Zona waktu WIB ke JST adalah +2 Jam. <em>Minimum Connecting Time</em> (MCT) transit minimal harus 2 Jam. Hitung & amankan rute!</p>
                 </div>
                 <div class="workspace">
                     <div class="panel">
-                        <h3>Opsi Penerbangan Darurat</h3>
-                        <div class="draggable" draggable="true" id="f1" ondragstart="drag(event)">✈️ Flight A: Dep 22:00 WIB, Transit KUL (1 Jam), Arr 07:30 JST</div>
-                        <div class="draggable" draggable="true" id="f2" ondragstart="drag(event)">✈️ Flight B: Dep 20:00 WIB, Transit SIN (2.5 Jam), Arr 08:00 JST</div>
-                        <div class="draggable" draggable="true" id="f3" ondragstart="drag(event)">✈️ Flight C: Dep 21:00 WIB, Transit BKK (2 Jam), Arr 10:30 JST</div>
+                        <h3>Opsi Rute Darurat</h3>
+                        <div class="draggable" draggable="true" id="f1" ondragstart="drag(event)">✈️ Flight A: Dep 22:00 WIB | Transit KUL (1 Jam) | Arr 07:30 JST</div>
+                        <div class="draggable" draggable="true" id="f2" ondragstart="drag(event)">✈️ Flight B: Dep 20:00 WIB | Transit SIN (2.5 Jam) | Arr 08:00 JST</div>
+                        <div class="draggable" draggable="true" id="f3" ondragstart="drag(event)">✈️ Flight C: Dep 21:00 WIB | Transit BKK (2 Jam) | Arr 10:30 JST</div>
                     </div>
                     <div class="panel">
                         <h3>Keranjang Tiket Final</h3>
-                        <p style="font-size: 0.85rem; color: #64748b;">Hint: Perhatikan waktu transit (MCT) dan jam tiba rapat.</p>
-                        <div class="dropzone" id="z2-1" data-expected="f2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Penerbangan Terpilih]</div>
+                        <p style="font-size: 0.85rem; color: #64748b;">Analisis: MCT harus &ge; 2 jam dan tiba sebelum jam 09:00 JST.</p>
+                        <div class="dropzone" id="z2-1" data-expected="f2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Penerbangan yang Lolos Analisis]</div>
                     </div>
                 </div>
                 <button class="btn submit-btn" onclick="validate(2, ['z2-1'])">Validasi Rute & Issue Tiket</button>
@@ -153,19 +156,19 @@
             <!-- TASK 3 -->
             <div id="task-3" class="task-container">
                 <div class="header">
-                    <h2>Task 3: Traveloka Hotel - Analisis Plafon Anggaran</h2>
-                    <p>Plafon anggaran Perusahaan: Maksimal Rp 2.000.000/malam. Hitung total biaya riil: (Room Rate + Pajak/Servis 15% + Transport Lokal). Pilih hotel yang tidak memicu penolakan kartu korporat!</p>
+                    <h2>Task 3: Analisis Biaya Hotel <span class="hots-badge">BUDGET OPTIMIZATION</span></h2>
+                    <p><strong>Skenario:</strong> Plafon maksimal Rp 2.000.000/malam. Anda harus menghitung total nyata: Room Rate + Pajak/Servis (15%) + City Tax (Rp 50.000) + Transport Lokal. Mana yang masuk budget?</p>
                 </div>
                 <div class="workspace">
                     <div class="panel">
-                        <h3>Daftar Hotel Tersedia</h3>
-                        <div class="draggable" draggable="true" id="h1" ondragstart="drag(event)">🏨 Hotel Alpha: Rate 1.6M + Tax 15% + Transport 100rb</div>
-                        <div class="draggable" draggable="true" id="h2" ondragstart="drag(event)">🏨 Hotel Beta: Rate 1.8M + Tax 15% + Transport 50rb</div>
+                        <h3>Daftar Hotel di Agoda</h3>
+                        <div class="draggable" draggable="true" id="h1" ondragstart="drag(event)">🏨 Hotel Alpha: Rate 1.6M + Tax 15% + City Tax 50rb + Transport 100rb</div>
+                        <div class="draggable" draggable="true" id="h2" ondragstart="drag(event)">🏨 Hotel Beta: Rate 1.8M + Tax 15% + City Tax 50rb + Transport 50rb</div>
                     </div>
                     <div class="panel">
                         <h3>Booking Valid (Under Budget)</h3>
-                        <p style="font-size: 0.85rem; color: #64748b;">Kalkulasi manual sebelum konfirmasi.</p>
-                        <div class="dropzone" id="z3-1" data-expected="h1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Hotel Pilihan]</div>
+                        <p style="font-size: 0.85rem; color: #64748b;">Lakukan kalkulasi mendetail sebelum konfirmasi.</p>
+                        <div class="dropzone" id="z3-1" data-expected="h1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Hotel yang Memenuhi Plafon]</div>
                     </div>
                 </div>
                 <button class="btn submit-btn" onclick="validate(3, ['z3-1'])">Setujui Booking Hotel</button>
@@ -174,18 +177,18 @@
             <!-- TASK 4 -->
             <div id="task-4" class="task-container">
                 <div class="header">
-                    <h2>Task 4: Kalkulasi Valuta Asing & Komisi</h2>
-                    <p>Perlu menukar ¥50.000 JPY untuk kas operasional darurat. Analisis total pengeluaran Rupiah terdikit dari dua Money Changer di bawah ini.</p>
+                    <h2>Task 4: Kalkulasi Valuta Asing <span class="hots-badge">FX MATH</span></h2>
+                    <p><strong>Skenario:</strong> Bapak Budi butuh ¥50.000 JPY. Bandingkan 2 Money Changer ini (Flat Fee vs Kurs Tinggi) untuk menemukan total pengeluaran Rupiah paling hemat.</p>
                 </div>
                 <div class="workspace">
                     <div class="panel">
                         <h3>Opsi Money Changer</h3>
-                        <div class="draggable" draggable="true" id="mc1" ondragstart="drag(event)">💱 MC X: Kurs Rp105/JPY | Biaya Admin Flat Rp50.000</div>
-                        <div class="draggable" draggable="true" id="mc2" ondragstart="drag(event)">💱 MC Y: Kurs Rp107/JPY | Tanpa Biaya Admin (Bebas Fee)</div>
+                        <div class="draggable" draggable="true" id="mc1" ondragstart="drag(event)">💱 MC X: Kurs Jual Rp105/JPY | Biaya Admin Flat Rp50.000</div>
+                        <div class="draggable" draggable="true" id="mc2" ondragstart="drag(event)">💱 MC Y: Kurs Jual Rp107/JPY | Tanpa Biaya Admin (Bebas Fee)</div>
                     </div>
                     <div class="panel">
-                        <h3>Pilihan Paling Hemat</h3>
-                        <div class="dropzone" id="z4-1" data-expected="mc1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Money Changer Terpilih]</div>
+                        <h3>Pilihan Paling Hemat (Total IDR)</h3>
+                        <div class="dropzone" id="z4-1" data-expected="mc1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Money Changer Hasil Kalkulasi]</div>
                     </div>
                 </div>
                 <button class="btn submit-btn" onclick="validate(4, ['z4-1'])">Eksekusi Penukaran Valas</button>
@@ -194,19 +197,19 @@
             <!-- TASK 5 -->
             <div id="task-5" class="task-container">
                 <div class="header">
-                    <h2>Task 5: Etika Tempat Duduk (Budaya Jepang)</h2>
-                    <p>Dalam pertemuan bisnis di Tokyo, tata krama adalah segalanya. Atur posisi duduk di ruang rapat (Pintu masuk ada di sebelah Kanan Bawah).</p>
+                    <h2>Task 5: Etika Tata Tempat Duduk <span class="hots-badge">KAMIZA VS SHIMOZA</span></h2>
+                    <p><strong>Skenario:</strong> Pengaturan posisi duduk eksekutif saat rapat resmi di Tokyo. Anda harus menempatkan tamu VIP (Presiden Direktur) dan Staf Junior berdasarkan hierarki kedudukan terhadap pintu masuk.</p>
                 </div>
                 <div class="workspace">
                     <div class="panel">
-                        <h3>Eksekutif</h3>
-                        <div class="draggable" draggable="true" id="seat1" ondragstart="drag(event)">Presiden Direktur (Tamu VIP / Kamiza)</div>
-                        <div class="draggable" draggable="true" id="seat2" ondragstart="drag(event)">Staf Junior (Penerjemah / Shimoza)</div>
+                        <h3>Delegasi Rapat</h3>
+                        <div class="draggable" draggable="true" id="seat1" ondragstart="drag(event)">Presiden Direktur (Tamu VIP)</div>
+                        <div class="draggable" draggable="true" id="seat2" ondragstart="drag(event)">Staf Junior (Penerjemah/Notulen)</div>
                     </div>
                     <div class="panel">
-                        <h3>Posisi Meja Rapat</h3>
-                        <div class="dropzone" id="z5-1" data-expected="seat1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Ujung Terdalam dari Pintu Masuk]</div>
-                        <div class="dropzone" id="z5-2" data-expected="seat2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Terdekat dengan Pintu Masuk]</div>
+                        <h3>Posisi Meja (Pintu di Kanan Bawah)</h3>
+                        <div class="dropzone" id="z5-1" data-expected="seat1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Kamiza: Ujung Terdalam dari Pintu]</div>
+                        <div class="dropzone" id="z5-2" data-expected="seat2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Shimoza: Kursi Terdekat Pintu]</div>
                     </div>
                 </div>
                 <button class="btn submit-btn" onclick="validate(5, ['z5-1', 'z5-2'])">Kunci Posisi Duduk</button>
@@ -215,20 +218,20 @@
             <!-- TASK 6 -->
             <div id="task-6" class="task-container">
                 <div class="header">
-                    <h2>Task 6: Manajemen Krisis Badai Topan</h2>
-                    <p>Force Majeure! Badai Topan di Jepang menunda penerbangan selama 4 jam. Urutkan prioritas tindakan darurat yang harus Anda lakukan dari yang paling krusial.</p>
+                    <h2>Task 6: Manajemen Krisis Perjalanan <span class="hots-badge">EMERGENCY REROUTING</span></h2>
+                    <p><strong>Skenario:</strong> Peringatan Cuaca! Badai Topan menunda penerbangan Bapak Budi selama 4 jam. Susun ulang urutan tindakan darurat untuk menyelamatkan kemitraan bisnis.</p>
                 </div>
                 <div class="workspace">
                     <div class="panel">
                         <h3>Tindakan Darurat</h3>
-                        <div class="draggable" draggable="true" id="em3" ondragstart="drag(event)">Membuat Laporan Kejadian Internal Perusahaan</div>
-                        <div class="draggable" draggable="true" id="em1" ondragstart="drag(event)">Segera Hubungi Mitra Jepang & Jadwal Ulang Rapat</div>
-                        <div class="draggable" draggable="true" id="em2" ondragstart="drag(event)">Reschedule Tiket Kereta & Info Late Check-in Hotel</div>
+                        <div class="draggable" draggable="true" id="em3" ondragstart="drag(event)">Menyusun Laporan Kejadian (Force Majeure) ke HRD Internal</div>
+                        <div class="draggable" draggable="true" id="em1" ondragstart="drag(event)">Hubungi Mitra Jepang Segera (Reschedule Rapat Pertama)</div>
+                        <div class="draggable" draggable="true" id="em2" ondragstart="drag(event)">Modifikasi Tiket Transport & Hubungi Hotel untuk Late Check-in</div>
                     </div>
                     <div class="panel">
-                        <h3>SOP Urutan Eksekusi</h3>
-                        <div class="dropzone" id="z6-1" data-expected="em1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Prioritas 1: Eksternal Utama]</div>
-                        <div class="dropzone" id="z6-2" data-expected="em2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Prioritas 2: Logistik Perjalanan]</div>
+                        <h3>SOP Urutan Eksekusi Logis</h3>
+                        <div class="dropzone" id="z6-1" data-expected="em1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Prioritas 1: Klien / Eksternal]</div>
+                        <div class="dropzone" id="z6-2" data-expected="em2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Prioritas 2: Akomodasi Logistik]</div>
                         <div class="dropzone" id="z6-3" data-expected="em3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Prioritas 3: Administrasi Internal]</div>
                     </div>
                 </div>
@@ -238,24 +241,24 @@
             <!-- TASK 7 -->
             <div id="task-7" class="task-container">
                 <div class="header">
-                    <h2>Task 7: Audit Fraud Kuitansi Domestik/SPPD</h2>
-                    <p>Tim keuangan menemukan indikasi pelanggaran. Pisahkan kuitansi yang sah (Reimbursable) sesuai aturan dari kuitansi bodong/pelanggaran (Non-Reimbursable).</p>
+                    <h2>Task 7: Audit Kuitansi & Tax Compliance <span class="hots-badge">FRAUD DETECTION</span></h2>
+                    <p><strong>Skenario:</strong> Pisahkan kuitansi yang sah dengan kuitansi <em>non-reimbursable</em> (mengandung item pribadi, alkohol, atau tanpa NPWP instansi). Lakukan audit dengan teliti!</p>
                 </div>
                 <div class="workspace">
                     <div class="panel">
-                        <h3>Tumpukan Kuitansi</h3>
-                        <div class="draggable" draggable="true" id="rec1" ondragstart="drag(event)">Makan Siang Klien Bisnis (Resi Bercap & Ada NPWP)</div>
-                        <div class="draggable" draggable="true" id="rec2" ondragstart="drag(event)">Tagihan Minibar Hotel (Minuman Beralkohol)</div>
+                        <h3>Tumpukan Kuitansi (Drag)</h3>
+                        <div class="draggable" draggable="true" id="rec1" ondragstart="drag(event)">Bill Makan Siang Klien Bisnis (Resi Bercap & Tercantum NPWP)</div>
+                        <div class="draggable" draggable="true" id="rec2" ondragstart="drag(event)">Tagihan Minibar Hotel (Terdapat Item Minuman Beralkohol)</div>
                         <div class="draggable" draggable="true" id="rec3" ondragstart="drag(event)">Tiket Kereta Shinkansen Resmi Antar Kota Rapat</div>
-                        <div class="draggable" draggable="true" id="rec4" ondragstart="drag(event)">Oleh-oleh Barang Mewah (Kuitansi Tulis Tangan)</div>
+                        <div class="draggable" draggable="true" id="rec4" ondragstart="drag(event)">Oleh-oleh Barang Mewah Pribadi (Kuitansi Tulis Tangan)</div>
                     </div>
                     <div class="panel">
                         <h3>Sah (Reimbursable)</h3>
-                        <div class="dropzone" id="z7-1" data-expected="rec1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Slot Sah 1]</div>
-                        <div class="dropzone" id="z7-2" data-expected="rec3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Slot Sah 2]</div>
-                        <h3 style="margin-top: 15px; color: var(--danger);">Tolak (Fraud/Pribadi)</h3>
-                        <div class="dropzone" id="z7-3" data-expected="rec2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Slot Ditolak 1]</div>
-                        <div class="dropzone" id="z7-4" data-expected="rec4" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Slot Ditolak 2]</div>
+                        <div class="dropzone" id="z7-1" data-expected="rec1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Kuitansi Sah 1]</div>
+                        <div class="dropzone" id="z7-2" data-expected="rec3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Kuitansi Sah 2]</div>
+                        <h3 style="margin-top: 15px; color: var(--danger);">Tolak (Fraud/Non-Reimbursable)</h3>
+                        <div class="dropzone" id="z7-3" data-expected="rec2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Indikasi Fraud/Pribadi 1]</div>
+                        <div class="dropzone" id="z7-4" data-expected="rec4" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Indikasi Fraud/Pribadi 2]</div>
                     </div>
                 </div>
                 <button class="btn submit-btn" onclick="validate(7, ['z7-1', 'z7-2', 'z7-3', 'z7-4'])">Selesaikan Audit Keuangan</button>
@@ -264,42 +267,42 @@
             <!-- TASK 8 -->
             <div id="task-8" class="task-container">
                 <div class="header">
-                    <h2>Task 8: Efisiensi Transportasi Lokal Tokyo</h2>
-                    <p>Bapak Budi memiliki mobilitas sangat tinggi di dalam kota Tokyo selama 3 hari (lebih dari 15 kali naik kereta bawah tanah). Tentukan tiket yang paling menguntungkan perusahaan.</p>
+                    <h2>Task 8: Efisiensi Transportasi Lokal <span class="hots-badge">PASS VS PAY-PER-RIDE</span></h2>
+                    <p><strong>Skenario:</strong> Menganalisis kebutuhan mobilitas 3 hari di Tokyo. Rapat tersebar di pusat kota dan membutuhkan lebih dari 15 kali perjalanan Subway. Tentukan strategi tiket paling hemat biaya!</p>
                 </div>
                 <div class="workspace">
                     <div class="panel">
                         <h3>Opsi Tiket Transportasi</h3>
-                        <div class="draggable" draggable="true" id="t1" ondragstart="drag(event)">Suica IC Card (Pay-per-ride: Estimasi Total JPY 4,000)</div>
+                        <div class="draggable" draggable="true" id="t1" ondragstart="drag(event)">E-Money Suica Card (Pay-per-ride: Estimasi Total JPY 4,500)</div>
                         <div class="draggable" draggable="true" id="t2" ondragstart="drag(event)">Tokyo Subway 72-Hour Pass (Unlimited Ride: JPY 1,500)</div>
-                        <div class="draggable" draggable="true" id="t3" ondragstart="drag(event)">JR Pass Seluruh Jepang (JPY 30,000 - Terlalu mahal)</div>
+                        <div class="draggable" draggable="true" id="t3" ondragstart="drag(event)">JR Pass Seluruh Jepang (JPY 30,000 - Tidak efisien untuk dalam kota)</div>
                     </div>
                     <div class="panel">
                         <h3>Strategi Transportasi Terbaik</h3>
-                        <div class="dropzone" id="z8-1" data-expected="t2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Opsi Paling Hemat]</div>
+                        <div class="dropzone" id="z8-1" data-expected="t2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Opsi Paling Hemat & Logis]</div>
                     </div>
                 </div>
-                <button class="btn submit-btn" onclick="validate(8, ['z8-1'])">Konfirmasi Tiket Kereta</button>
+                <button class="btn submit-btn" onclick="validate(8, ['z8-1'])">Konfirmasi Tiket</button>
             </div>
 
             <!-- TASK 9 -->
             <div id="task-9" class="task-container">
                 <div class="header">
-                    <h2>Task 9: Menyusun Komunikasi Diplomatik (Keigo)</h2>
-                    <p>Susun struktur email penundaan rapat akibat cuaca buruk kepada mitra Jepang (Bpk. Tanaka) menggunakan bahasa formal dan etika komunikasi tingkat tinggi.</p>
+                    <h2>Task 9: Komunikasi Diplomatik / Keigo <span class="hots-badge">CRISIS COMMUNICATION</span></h2>
+                    <p><strong>Skenario:</strong> Susun email pembatalan/penundaan jadwal ke mitra Jepang menggunakan struktur bahasa bisnis resmi beretika tinggi akibat krisis cuaca (Topan).</p>
                 </div>
                 <div class="workspace">
                     <div class="panel">
                         <h3>Potongan Paragraf Email</h3>
-                        <div class="draggable" draggable="true" id="mail3" ondragstart="drag(event)">Permohonan: "Bolehkah kita menjadwalkan ulang pertemuan besok sore?"</div>
-                        <div class="draggable" draggable="true" id="mail1" ondragstart="drag(event)">Permintaan Maaf Terdalam (Moushiwake gozaimasen) atas ketidaknyamanan ini.</div>
-                        <div class="draggable" draggable="true" id="mail2" ondragstart="drag(event)">Penjelasan Logis: "Penerbangan kami tertunda akibat Badai Topan..."</div>
+                        <div class="draggable" draggable="true" id="mail3" ondragstart="drag(event)">Permohonan: "Bolehkah kita menjadwalkan ulang pertemuan menjadi besok sore?"</div>
+                        <div class="draggable" draggable="true" id="mail1" ondragstart="drag(event)">Permintaan Maaf (Moushiwake gozaimasen) atas ketidaknyamanan yang mendadak ini.</div>
+                        <div class="draggable" draggable="true" id="mail2" ondragstart="drag(event)">Penjelasan Logis: "Penerbangan kami tertunda akibat cuaca ekstrem Badai Topan..."</div>
                     </div>
                     <div class="panel">
                         <h3>Struktur Email Bisnis (Atas ke Bawah)</h3>
-                        <div class="dropzone" id="z9-1" data-expected="mail1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Paragraf 1: Etika Pembuka]</div>
-                        <div class="dropzone" id="z9-2" data-expected="mail2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Paragraf 2: Inti Masalah]</div>
-                        <div class="dropzone" id="z9-3" data-expected="mail3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Paragraf 3: Solusi / Harapan]</div>
+                        <div class="dropzone" id="z9-1" data-expected="mail1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[1. Etika Pembuka & Apologi]</div>
+                        <div class="dropzone" id="z9-2" data-expected="mail2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[2. Inti Masalah / Alasan]</div>
+                        <div class="dropzone" id="z9-3" data-expected="mail3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[3. Solusi Alternatif / Harapan]</div>
                     </div>
                 </div>
                 <button class="btn submit-btn" onclick="validate(9, ['z9-1', 'z9-2', 'z9-3'])">Kirim Email ke Tokyo</button>
@@ -308,22 +311,22 @@
             <!-- TASK 10 -->
             <div id="task-10" class="task-container">
                 <div class="header">
-                    <h2>Task 10: Rekonsiliasi Akhir Laporan Pertanggungjawaban (LPJ)</h2>
-                    <p>Uang Muka Kerja (UMK) yang diberikan: Rp 15.000.000. Total Realisasi Kuitansi Sah setelah di-audit pada Task 7: Rp 14.000.000. Tentukan status akhir dokumen keuangan ini.</p>
+                    <h2>Task 10: Rekonsiliasi Keuangan LPJ <span class="hots-badge">VARIANCE ANALYSIS</span></h2>
+                    <p><strong>Skenario:</strong> Menghitung selisih Uang Muka Kerja (UMK) awal Rp 15.000.000 dengan realisasi pengeluaran yang disetujui audit (Rp 14.000.000). Tentukan status pengembalian/reimbursement yang tepat.</p>
                 </div>
                 <div class="workspace">
                     <div class="panel">
-                        <h3>Opsi Status Laporan (Variance)</h3>
-                        <div class="draggable" draggable="true" id="var1" ondragstart="drag(event)">Reimburse: Perusahaan membayarkan tambahan Rp 1.000.000 ke Bpk Budi.</div>
-                        <div class="draggable" draggable="true" id="var2" ondragstart="drag(event)">Refund: Bpk Budi menyetor sisa Rp 1.000.000 kembali ke kas Perusahaan.</div>
-                        <div class="draggable" draggable="true" id="var3" ondragstart="drag(event)">Nihil: Tidak ada selisih, laporan langsung ditutup.</div>
+                        <h3>Opsi Status Laporan Akhir</h3>
+                        <div class="draggable" draggable="true" id="var1" ondragstart="drag(event)">Reimbursement: Perusahaan harus membayar ganti rugi Rp 1.000.000 ke Bpk Budi.</div>
+                        <div class="draggable" draggable="true" id="var2" ondragstart="drag(event)">Refund: Bpk Budi menyetor sisa lebih Rp 1.000.000 kembali ke kas Perusahaan.</div>
+                        <div class="draggable" draggable="true" id="var3" ondragstart="drag(event)">Nihil: Tidak ada selisih, laporan ditutup.</div>
                     </div>
                     <div class="panel">
-                        <h3>Keputusan Final Keuangan</h3>
-                        <div class="dropzone" id="z10-1" data-expected="var2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Keputusan Akhir]</div>
+                        <h3>Keputusan Final (Variance)</h3>
+                        <div class="dropzone" id="z10-1" data-expected="var2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)">[Tarik Keputusan Rekonsiliasi]</div>
                     </div>
                 </div>
-                <button class="btn submit-btn" onclick="validate(10, ['z10-1'])">Tutup Laporan Perjalanan & Hentikan Krisis!</button>
+                <button class="btn submit-btn" onclick="validate(10, ['z10-1'])">Tutup Laporan & Hentikan Krisis!</button>
             </div>
         </main>
     </div>
@@ -332,13 +335,13 @@
     <div id="end-screen" class="screen modal hidden">
         <div class="card">
             <h1 style="color: #34d399;">🏆 Protokol Tokyo Berhasil!</h1>
-            <p>Sistem Traveloka dan Agoda telah stabil, dokumen domestik lolos audit, dan krisis teratasi. Anda adalah ahli strategi administrasi yang luar biasa!</p>
+            <p>Sistem Traveloka dan Agoda telah stabil. Analisis HOTS Anda berhasil mengaudit dokumen domestik, mengoptimalkan budget, dan memecahkan krisis internasional. Anda adalah profesional elit!</p>
             <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; margin-bottom: 2rem; margin-top: 2rem;">
-                <p>Sisa Waktu Tim:</p>
+                <p>Sisa Waktu Tim (Score Analysis):</p>
                 <p style="font-size: 3.5rem; color: #a7f3d0; font-weight: bold; margin: 10px 0;" id="time-score">--:--</p>
                 <div id="star-rating" style="font-size: 3rem;">⭐⭐⭐</div>
             </div>
-            <button class="btn" onclick="location.reload()">Reset Sistem untuk Tim Selanjutnya</button>
+            <button class="btn" onclick="location.reload()">Reset Sistem untuk Kandidat Selanjutnya</button>
         </div>
     </div>
 </div>
@@ -348,11 +351,11 @@
     let timerInterval;
 
     function startGame() {
-        // Memutar SFX Peringatan dan Background Music
-        document.getElementById('sfx-alert').play().catch(e => console.log("Audio play blocked by browser interaction policy"));
+        // Play Alert and BGM
+        document.getElementById('sfx-alert').play().catch(e => console.log("Audio play blocked by browser."));
         let bgm = document.getElementById('bgm-tense');
-        bgm.volume = 0.3; // Volume BGM diatur lebih rendah agar tidak mengganggu
-        bgm.play().catch(e => console.log("Audio play blocked"));
+        bgm.volume = 0.3;
+        bgm.play().catch(e => console.log("Audio play blocked."));
 
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('game-screen').classList.remove('hidden');
@@ -364,7 +367,7 @@
             let timerEl = document.getElementById('timerDisplay');
             timerEl.innerText = `${m}:${s}`;
             
-            // Efek detak jantung / peringatan saat waktu tersisa 1 menit
+            // Pulse effect at 1 minute remaining
             if(timeLeft === 60) {
                 timerEl.style.animation = "pulseAlert 1s infinite";
                 document.getElementById('sfx-error').play();
@@ -374,21 +377,21 @@
                 clearInterval(timerInterval);
                 bgm.pause();
                 document.getElementById('sfx-error').play();
-                alert("Waktu Habis! Dokumen tertahan dan tiket hangus. Silakan coba lagi.");
+                alert("Waktu Habis! Dokumen tertahan dan tiket hangus. Audit Keuangan menggagalkan proses. Silakan coba lagi.");
                 location.reload();
             }
         }, 1000);
     }
 
-    /* Drag & Drop Core */
+    /* Drag & Drop Mechanics */
     function allowDrop(ev) { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
     function leaveDrop(ev) { ev.currentTarget.classList.remove('drag-over'); }
     
     function drag(ev) { 
         ev.dataTransfer.setData("text", ev.target.id); 
-        // Memutar SFX kertas/gesekan saat drag
+        // Play paper/drag SFX
         let dragSound = document.getElementById('sfx-drag');
-        dragSound.currentTime = 0; // Reset dari awal jika ditarik berulang kali
+        dragSound.currentTime = 0; 
         dragSound.play().catch(e => {});
     }
     
@@ -405,7 +408,7 @@
         }
     }
 
-    /* Validator System */
+    /* Task Validation Logic (HOTS checking) */
     function validate(taskNum, zones) {
         let valid = true, empty = false;
         zones.forEach(z => {
@@ -421,12 +424,12 @@
         });
 
         if (empty) { 
-            alert("Sistem mendeteksi area kosong! Lengkapi analisis Anda terlebih dahulu."); 
+            alert("Sistem mendeteksi area kosong! Lakukan analisis pada semua opsi terlebih dahulu."); 
             return; 
         }
         
         if (valid) {
-            // Suara sukses: Stempel Approval / Tiket Issued
+            // Success SFX
             let successSound = document.getElementById('sfx-success');
             successSound.currentTime = 0;
             successSound.play();
@@ -440,14 +443,15 @@
                 gameWin();
             }
         } else {
-            // Suara error: Audit Gagal / Booking Ditolak
+            // Error SFX
             let errorSound = document.getElementById('sfx-error');
             errorSound.currentTime = 0;
             errorSound.play();
-            alert("PERINGATAN SISTEM: Analisis keliru. Dokumen Anda ditolak oleh Audit Keuangan atau Sistem OTA (Traveloka/Agoda). Harap periksa kembali logika Anda!");
+            alert("PERINGATAN AUDIT: Analisis atau kalkulasi Anda keliru. Periksa kembali logika Problem Solving Anda!");
         }
     }
 
+    /* Win State */
     function gameWin() {
         clearInterval(timerInterval);
         document.getElementById('bgm-tense').pause();
@@ -459,8 +463,8 @@
         document.getElementById('time-score').innerText = `${m}:${s}`;
         
         let stars = "⭐";
-        if (timeLeft > 400) stars = "⭐⭐⭐"; // Selesai sangat cepat
-        else if (timeLeft > 200) stars = "⭐⭐"; // Selesai rata-rata
+        if (timeLeft > 400) stars = "⭐⭐⭐"; // Sangat Cepat
+        else if (timeLeft > 200) stars = "⭐⭐"; // Menengah
         document.getElementById('star-rating').innerText = stars;
     }
 </script>
