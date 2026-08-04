@@ -2,170 +2,206 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <!-- Wajib Mobile-Friendly -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guess The Media</title>
+    <title>Guess The Media: Humas</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
         :root {
-            --neon-green: #39ff14;
-            --neon-dim: rgba(57, 255, 20, 0.2);
-            --dark-bg: #0b0f19;
-            --glass-bg: rgba(17, 25, 40, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.125);
-            --text-light: #e2e8f0;
+            --primary: #4f46e5; /* Indigo */
+            --primary-hover: #4338ca;
+            --accent: #f97316; /* Coral/Orange */
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-light: #e5e7eb;
+            --clue-bg: #eef2ff;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            background-color: var(--dark-bg);
-            background-image: radial-gradient(circle at 50% -20%, #1e3a8a 0%, var(--dark-bg) 70%);
-            color: var(--text-light);
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow-x: hidden;
+            padding: 1rem;
         }
 
-        /* Glassmorphism Container */
+        /* Modern Clean Card */
         .app-container {
             width: 100%;
             max-width: 480px;
-            min-height: 550px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 20px var(--neon-dim);
+            min-height: 600px;
+            background: var(--bg-card);
+            border-radius: 30px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05);
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        /* Typography & Spacing */
+        /* Typography */
         h1, h2 {
             text-align: center;
-            margin-bottom: 1.5rem;
-            color: white;
-            text-shadow: 0 0 10px var(--neon-dim);
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
         h1 span {
-            color: var(--neon-green);
+            color: var(--primary);
         }
-        p {
-            margin-bottom: 1rem;
-            line-height: 1.6;
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
         }
 
         /* Inputs & Buttons */
         input[type="text"] {
             width: 100%;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            color: white;
+            padding: 1rem 1.5rem;
+            background: #f9fafb;
+            border: 2px solid var(--border-light);
+            border-radius: 99px; /* Pill shape */
+            color: var(--text-main);
             font-size: 1rem;
             margin-bottom: 1.5rem;
             outline: none;
             transition: all 0.3s ease;
         }
         input[type="text"]:focus {
-            border-color: var(--neon-green);
-            box-shadow: 0 0 15px var(--neon-dim);
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
 
         button {
             width: 100%;
             padding: 1rem;
             border: none;
-            border-radius: 12px;
+            border-radius: 99px;
             font-size: 1rem;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             margin-bottom: 0.75rem;
         }
         .btn-primary {
-            background: var(--neon-green);
-            color: var(--dark-bg);
-            box-shadow: 0 0 15px var(--neon-dim);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
         }
         .btn-primary:hover {
-            box-shadow: 0 0 25px var(--neon-green);
+            background: var(--primary-hover);
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
         }
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid var(--glass-border);
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--border-light);
         }
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: #f9fafb;
+            border-color: #d1d5db;
         }
 
-        /* Clue Badges & Game Stats */
+        /* Game Header & Clues */
         .game-header {
             display: flex;
             justify-content: space-between;
             margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--neon-green);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: #fff7ed;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+        }
+        .question-image-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 180px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            object-fit: cover;
+            animation: scaleIn 0.5s ease-out;
         }
         .clue-box {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 4px solid var(--neon-green);
-            padding: 1rem;
-            border-radius: 8px;
+            background: var(--clue-bg);
+            border-left: 5px solid var(--primary);
+            padding: 1.25rem;
+            border-radius: 0 12px 12px 0;
             margin-bottom: 1.5rem;
-            font-style: italic;
+            color: #374151;
+            font-size: 0.95rem;
         }
         .clue-item {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             opacity: 0;
-            transform: translateY(10px);
-            animation: fadeUp 0.4s forwards ease-out;
+            transform: translateX(-10px);
+            animation: slideRight 0.4s forwards ease-out;
+        }
+        .clue-item:last-child {
+            margin-bottom: 0;
         }
 
         /* Leaderboard Table */
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-bottom: 1.5rem;
         }
         th, td {
             text-align: left;
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--glass-border);
-            font-size: 0.9rem;
+            padding: 1rem 0.5rem;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.95rem;
         }
         th {
-            color: var(--neon-green);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+        td {
+            font-weight: 500;
         }
         .pagination {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-top: 1rem;
         }
         .pagination button {
             width: auto;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.5rem;
             margin: 0;
+            border-radius: 12px;
         }
 
-        /* Screens & Transitions */
+        /* Screens & Transisitions */
         .screen {
             display: none;
             flex-direction: column;
@@ -179,67 +215,88 @@
             position: absolute;
             top: 20px; left: 50%;
             transform: translateX(-50%);
-            background: #ff3333;
+            background: #ef4444;
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 99px;
+            font-size: 0.9rem;
+            font-weight: 500;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+        }
+        .toast.show {
+            opacity: 1;
+            top: 30px;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideRight {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <div id="toast" class="toast">Feedback msg</div>
+        <div id="toast" class="toast">Notifikasi</div>
 
         <!-- 1. START SCREEN -->
         <div id="screen-start" class="screen active">
-            <h1>Guess The <span>Media</span></h1>
-            <p style="text-align: center; color: #94a3b8;">Komunikasi Humas Edition</p>
+            <div style="margin-top: 2rem;">
+                <h1>Guess The <span>Media</span></h1>
+                <p class="subtitle">Komunikasi Humas Edition</p>
+            </div>
             <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
-                <input type="text" id="playerName" placeholder="Masukkan Nama Kamu..." autocomplete="off">
+                <input type="text" id="playerName" placeholder="Ketik nama kamu di sini..." autocomplete="off">
                 <button class="btn-primary" onclick="startGame()">Mulai Bermain</button>
-                <button class="btn-secondary" onclick="showLeaderboard()">Lihat Leaderboard</button>
+                <button class="btn-secondary" onclick="showLeaderboard()">Lihat Papan Peringkat</button>
             </div>
         </div>
 
         <!-- 2. GAME SCREEN -->
         <div id="screen-game" class="screen">
             <div class="game-header">
-                <span id="level-display">Soal 1/3</span>
+                <span id="level-display">Soal 1/10</span>
                 <span id="score-display">Skor: 0</span>
             </div>
             
-            <h2 style="font-size: 1.2rem; margin-bottom: 1rem;">Tebak Istilah Humas:</h2>
+            <h2 style="font-size: 1.1rem; text-align: left; margin-bottom: 1rem; color: var(--text-main);">Tebak Istilah Humas:</h2>
+            
+            <div class="question-image-container">
+                <img id="questionImage" class="question-image" src="" alt="Clue Visual">
+            </div>
+
             <div id="clues-container" class="clue-box">
                 <!-- Clues masuk via JS -->
             </div>
 
             <div style="margin-top: auto;">
-                <input type="text" id="answerInput" placeholder="Jawaban Anda..." autocomplete="off">
-                <button class="btn-primary" onclick="submitAnswer()">Jawab</button>
+                <input type="text" id="answerInput" placeholder="Jawaban kamu..." autocomplete="off">
+                <button class="btn-primary" onclick="submitAnswer()">Jawab Sekarang</button>
                 <button id="btn-next-clue" class="btn-secondary" onclick="useNextClue()">Minta Clue (+)</button>
             </div>
         </div>
 
         <!-- 3. RESULT SCREEN -->
         <div id="screen-result" class="screen">
-            <h1>Game <span>Over!</span></h1>
-            <div style="text-align: center; margin: 2rem 0;">
-                <p style="font-size: 1.2rem;">Skor Akhir Kamu:</p>
-                <div style="font-size: 4rem; font-weight: 700; color: var(--neon-green); text-shadow: 0 0 20px var(--neon-dim);" id="finalScoreDisplay">0</div>
-                <p id="saving-status" style="color: #94a3b8; font-size: 0.8rem; margin-top: 1rem;">Menyimpan data...</p>
+            <div style="margin-top: 2rem;">
+                <h1>Game <span>Over!</span></h1>
+                <p class="subtitle">Kerja bagus, PR Specialist!</p>
+            </div>
+            <div style="text-align: center; margin: 2rem 0; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 0.5rem;">Skor Akhir Kamu</p>
+                <div style="font-size: 5rem; font-weight: 700; color: var(--primary); line-height: 1;" id="finalScoreDisplay">0</div>
+                <p id="saving-status" style="color: var(--accent); font-size: 0.9rem; margin-top: 1.5rem; font-weight: 500;">Menyimpan data...</p>
             </div>
             <div style="margin-top: auto;">
                 <button class="btn-primary" onclick="showLeaderboard()">Lihat Papan Peringkat</button>
@@ -248,35 +305,37 @@
 
         <!-- 4. LEADERBOARD SCREEN -->
         <div id="screen-leaderboard" class="screen">
-            <h2>Leader<span>board</span></h2>
+            <h2>Papan <span>Peringkat</span></h2>
+            <p class="subtitle">Top PR Specialists</p>
+            
             <div style="flex-grow: 1; overflow-y: auto;">
                 <table id="leaderboard-table">
                     <thead>
                         <tr>
                             <th>Rank</th>
                             <th>Nama</th>
-                            <th>Skor</th>
+                            <th style="text-align: right;">Skor</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboard-body">
-                        <tr><td colspan="3" style="text-align:center;">Loading data...</td></tr>
+                        <tr><td colspan="3" style="text-align:center; color: var(--text-muted);">Memuat data...</td></tr>
                     </tbody>
                 </table>
             </div>
+            
             <div class="pagination">
                 <button id="btn-prev" class="btn-secondary" onclick="changePage(-1)" disabled>Prev</button>
-                <span id="page-info" style="font-size: 0.9rem;">1 / 1</span>
+                <span id="page-info" style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">1 / 1</span>
                 <button id="btn-next" class="btn-secondary" onclick="changePage(1)" disabled>Next</button>
             </div>
-            <button class="btn-primary" style="margin-top: 1rem;" onclick="switchScreen('screen-start')">Kembali ke Home</button>
+            
+            <button class="btn-primary" style="margin-top: 1.5rem;" onclick="switchScreen('screen-start')">Kembali ke Beranda</button>
         </div>
     </div>
 
     <script>
         /**
          * GEMINI CANVAS FRIENDLY WRAPPER
-         * Menjembatani google.script.run dan mock data lokal
-         * (Menjamin Safe Data Passing dengan hanya menerima tipe data primitif)
          */
         function apiCall(funcName, ...args) {
             return new Promise((resolve, reject) => {
@@ -286,16 +345,15 @@
                         .withFailureHandler(reject)
                         [funcName](...args);
                 } else {
-                    // Fallback Dummy Data (Max 3 data sesuai instruksi)
                     console.log(`[Mock API] ${funcName} dipanggil dengan:`, args);
                     setTimeout(() => {
                         if (funcName === 'saveScore') resolve({ status: 'success' });
                         if (funcName === 'getLeaderboardData') {
                             resolve({
                                 data: [
-                                    ["PLAY-0001", "04 Aug 2026", "Guest Pro", 300],
-                                    ["PLAY-0002", "04 Aug 2026", "Humas Master", 250],
-                                    ["PLAY-0003", "04 Aug 2026", "Media Newbie", 125]
+                                    ["PLAY-0001", "04 Aug 2026", "Guest Pro", 1000],
+                                    ["PLAY-0002", "04 Aug 2026", "Humas Master", 850],
+                                    ["PLAY-0003", "04 Aug 2026", "Media Newbie", 425]
                                 ],
                                 totalPages: 1,
                                 page: 1
@@ -307,31 +365,97 @@
         }
 
         /**
-         * STATE MANAGEMENT GAME
+         * 10 SOAL GAME & GAMBAR REFERENSI
          */
         const questions = [
             {
                 answer: "PRESS RELEASE",
+                image: "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=400&q=80",
                 clues: [
-                    "Dokumen tertulis yang dibuat oleh humas/PR.",
-                    "Dikirimkan ke wartawan atau redaksi media.",
+                    "Dokumen tertulis yang dibuat oleh praktisi humas/PR.",
+                    "Dikirimkan ke wartawan atau redaksi media masa.",
                     "Berisi informasi resmi/berita terkait perusahaan untuk dipublikasikan."
                 ]
             },
             {
                 answer: "KONFERENSI PERS",
+                image: "https://images.unsplash.com/photo-1541535881962-3bb380b08458?w=400&q=80",
                 clues: [
                     "Sebuah acara tatap muka yang diorganisir oleh perusahaan.",
-                    "Mengundang banyak jurnalis secara bersamaan.",
+                    "Mengundang banyak jurnalis secara bersamaan dalam satu waktu.",
                     "Biasanya ada sesi pernyataan resmi dilanjutkan dengan tanya jawab (Q&A)."
                 ]
             },
             {
-                answer: "MEDIA SOSIAL",
+                answer: "MEDIA KIT",
+                image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&q=80",
                 clues: [
-                    "Platform digital yang jadi alat humas modern.",
-                    "Memungkinkan interaksi langsung dua arah dengan audiens.",
-                    "Contoh salurannya adalah Instagram, X (Twitter), dan LinkedIn."
+                    "Sebuah paket informasi komprehensif tentang perusahaan.",
+                    "Biasanya dibagikan saat acara peluncuran produk atau pameran.",
+                    "Berisi profil perusahaan, siaran pers, foto produk, dan kontak PR."
+                ]
+            },
+            {
+                answer: "JURU BICARA",
+                image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&q=80",
+                clues: [
+                    "Individu yang secara resmi ditunjuk oleh perusahaan.",
+                    "Bertugas mewakili organisasi untuk berbicara kepada publik.",
+                    "Orang yang dicari wartawan untuk dimintai kutipan (quotes) resmi."
+                ]
+            },
+            {
+                answer: "MEDIA MONITORING",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80",
+                clues: [
+                    "Kegiatan rutin harian seorang staf PR.",
+                    "Melacak penyebutan (mentions) nama perusahaan di koran, TV, atau internet.",
+                    "Tujuannya untuk mengukur sentimen publik (positif/negatif/netral)."
+                ]
+            },
+            {
+                answer: "ADVERTORIAL",
+                image: "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=400&q=80",
+                clues: [
+                    "Singkatan dari dua kata dalam bahasa Inggris.",
+                    "Bentuk publikasi berbayar di media massa.",
+                    "Iklan yang ditulis dan dikemas dengan gaya bahasa jurnalistik/berita."
+                ]
+            },
+            {
+                answer: "MEDIA VISIT",
+                image: "https://images.unsplash.com/photo-1497215898147-5ddf3a43657b?w=400&q=80",
+                clues: [
+                    "Kegiatan PR untuk membangun hubungan baik dengan redaksi.",
+                    "Perusahaan mendatangi kantor media (koran/TV/Portal Berita).",
+                    "Sering juga disebut sebagai 'Kunjungan Media' atau 'Silahturahmi Redaksi'."
+                ]
+            },
+            {
+                answer: "KRISIS KOMUNIKASI",
+                image: "https://images.unsplash.com/photo-1521790797524-b2497295b8a0?w=400&q=80",
+                clues: [
+                    "Situasi darurat yang mengancam reputasi perusahaan.",
+                    "Contoh: Ada produk cacat, kecelakaan kerja, atau skandal pegawai.",
+                    "Humas harus bertindak cepat meredam isu agar tidak membesar."
+                ]
+            },
+            {
+                answer: "COMPANY PROFILE",
+                image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80",
+                clues: [
+                    "Buku atau dokumen resmi pengenalan organisasi.",
+                    "Berisi sejarah, visi-misi, nilai-nilai, dan struktur dewan direksi.",
+                    "Menjadi senjata utama PR untuk mengenalkan perusahaan ke investor atau klien."
+                ]
+            },
+            {
+                answer: "PRESS TOUR",
+                image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&q=80",
+                clues: [
+                    "Kegiatan mengajak jurnalis melakukan perjalanan bersama.",
+                    "Bertujuan meninjau langsung proyek, pabrik, atau fasilitas perusahaan.",
+                    "Diharapkan jurnalis mendapat pengalaman langsung untuk bahan liputan eksklusif."
                 ]
             }
         ];
@@ -356,15 +480,14 @@
             const toast = document.getElementById('toast');
             toast.textContent = msg;
             toast.style.background = isError ? '#ef4444' : '#10b981';
-            toast.style.opacity = '1';
-            setTimeout(() => toast.style.opacity = '0', 2500);
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
         }
 
         /**
          * CORE GAME LOGIC
          */
         function startGame() {
-            // SAFE DATA PASSING: Ekstrak nilai murni ke string
             const inputName = document.getElementById('playerName').value.trim();
             if (!inputName) {
                 showToast("Nama tidak boleh kosong!");
@@ -393,6 +516,17 @@
             document.getElementById('btn-next-clue').disabled = false;
             document.getElementById('clues-container').innerHTML = "";
             
+            const q = questions[state.currentQIndex];
+            const imgEl = document.getElementById('questionImage');
+            
+            if (q.image) {
+                imgEl.src = q.image;
+                imgEl.style.display = "inline-block";
+            } else {
+                imgEl.style.display = "none";
+                imgEl.src = "";
+            }
+
             renderClue();
         }
 
@@ -403,7 +537,7 @@
             
             const clueEl = document.createElement('div');
             clueEl.className = 'clue-item';
-            clueEl.textContent = `💡 Clue ${state.currentClueIndex + 1}: ${clueText}`;
+            clueEl.innerHTML = `<strong>Clue ${state.currentClueIndex + 1}:</strong> ${clueText}`;
             container.appendChild(clueEl);
 
             if (state.currentClueIndex >= q.clues.length - 1) {
@@ -420,18 +554,16 @@
         }
 
         function submitAnswer() {
-            // SAFE DATA PASSING: Ekstrak input
             const inputAns = String(document.getElementById('answerInput').value.trim()).toUpperCase();
             const correctAns = questions[state.currentQIndex].answer;
 
             if (!inputAns) {
-                showToast("Isi jawaban dulu!");
+                showToast("Isi jawaban dulu ya!");
                 return;
             }
 
             if (inputAns === correctAns) {
-                showToast("Benar!", false);
-                // Hitung Poin: 1 clue = 100, 2 clue = 75, 3 clue = 50
+                showToast("Tepat Sekali!", false);
                 const points = 100 - (state.currentClueIndex * 25);
                 state.score += points;
                 
@@ -440,7 +572,7 @@
                     loadQuestion();
                 }, 1000);
             } else {
-                showToast("Salah! Coba lagi atau minta clue.");
+                showToast("Kurang tepat! Coba lagi atau minta clue.");
                 document.getElementById('answerInput').value = "";
             }
         }
@@ -450,16 +582,16 @@
             document.getElementById('finalScoreDisplay').textContent = state.score;
             
             const statusEl = document.getElementById('saving-status');
-            statusEl.textContent = "Menyimpan skor ke database...";
+            statusEl.textContent = "Sedang menyimpan skor...";
+            statusEl.style.color = "var(--accent)";
             
             try {
-                // Eksekusi API secara async (primitif data only)
                 await apiCall('saveScore', state.playerName, state.score);
                 statusEl.textContent = "Skor berhasil disimpan!";
-                statusEl.style.color = 'var(--neon-green)';
+                statusEl.style.color = "#10b981"; // Sukses hijau
             } catch (err) {
-                statusEl.textContent = "Gagal menyimpan skor.";
-                statusEl.style.color = '#ef4444';
+                statusEl.textContent = "Gagal menyimpan skor ke server.";
+                statusEl.style.color = "#ef4444";
             }
         }
 
@@ -471,17 +603,16 @@
             switchScreen('screen-leaderboard');
             
             const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Loading Server Data...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">Menarik data dari server...</td></tr>`;
             
             document.getElementById('btn-prev').disabled = true;
             document.getElementById('btn-next').disabled = true;
 
             try {
-                // Request pageSize 5 ke backend
                 const res = await apiCall('getLeaderboardData', page, 5);
                 renderTable(res.data, res.page, res.totalPages);
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:red;">Gagal mengambil data</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: #ef4444;">Gagal mengambil data</td></tr>`;
             }
         }
 
@@ -490,28 +621,26 @@
             tbody.innerHTML = "";
 
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Belum ada pemain</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">Belum ada pemain yang terdaftar</td></tr>`;
             } else {
-                // Data mapping (Rank, Nama, Skor)
                 data.forEach((row, index) => {
                     const rank = ((currentPage - 1) * 5) + (index + 1);
                     const tr = document.createElement('tr');
                     
-                    let rankHtml = rank;
-                    if (rank === 1) rankHtml = '🥇';
-                    else if (rank === 2) rankHtml = '🥈';
-                    else if (rank === 3) rankHtml = '🥉';
+                    let rankHtml = `<strong>#${rank}</strong>`;
+                    if (rank === 1) rankHtml = '🥇 #1';
+                    else if (rank === 2) rankHtml = '🥈 #2';
+                    else if (rank === 3) rankHtml = '🥉 #3';
 
                     tr.innerHTML = `
                         <td>${rankHtml}</td>
                         <td>${row[2]}</td>
-                        <td style="color: var(--neon-green); font-weight: bold;">${row[3]}</td>
+                        <td style="text-align: right; color: var(--primary); font-weight: 700;">${row[3]}</td>
                     `;
                     tbody.appendChild(tr);
                 });
             }
 
-            // Update Pagination UI
             document.getElementById('page-info').textContent = `${currentPage} / ${totalPages || 1}`;
             document.getElementById('btn-prev').disabled = currentPage <= 1;
             document.getElementById('btn-next').disabled = currentPage >= totalPages;
