@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMEKTAN Go Coding - Executive Travel Challenge</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .tab-active { @apply bg-indigo-600 text-white shadow-md; }
+    .tab-inactive { @apply bg-slate-100 text-slate-600 hover:bg-slate-200; }
+  </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
+
+  <!-- TOP NAVBAR -->
+  <header class="bg-slate-900 text-white px-6 py-3 flex justify-between items-center shadow-lg sticky top-0 z-40">
+    <div class="flex items-center space-x-3">
+      <div class="bg-indigo-600 p-2 rounded-lg text-white">
+        <i class="fa-solid fa-gamepad text-xl"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-base leading-tight">SMEKTAN Go Coding</h1>
+        <p class="text-xs text-indigo-300">Executive Travel & Calendar Simulation</p>
+      </div>
+    </div>
+
+    <!-- DYNAMIC BUDGET METER -->
+    <div class="flex items-center space-x-6">
+      <div class="text-right">
+        <span class="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold">Sisa Budget Dinas</span>
+        <span id="display-sisa-budget" class="font-extrabold text-emerald-400 text-lg">Rp 5.000.000</span>
+      </div>
+      <button onclick="submitEvaluation()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition shadow-md flex items-center space-x-2">
+        <i class="fa-solid fa-paper-plane"></i>
+        <span>Kirim Evaluasi</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <div class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow w-full">
+
+    <!-- LEFT SIDEBAR: BRIEF & LOGISTICS (4 COLS) -->
+    <aside class="lg:col-span-4 space-y-5">
+      <!-- MISSION CARD -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+          <h2 class="font-bold text-slate-900 text-sm uppercase tracking-wide flex items-center">
+            <i class="fa-solid fa-bullseye text-indigo-600 mr-2"></i> Brief Misi Perjalanan
+          </h2>
+          <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">3 Hari 2 Malam</span>
+        </div>
+        <ul class="text-xs space-y-3 text-slate-600">
+          <li class="flex items-start">
+            <i class="fa-solid fa-users text-indigo-500 mr-2.5 mt-0.5 w-4"></i>
+            <span><strong>Jumlah Tamu:</strong> 2 Pax (Pimpinan & Staf)</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fa-solid fa-location-dot text-indigo-500 mr-2.5 mt-0.5 w-4"></i>
+            <span><strong>Tujuan:</strong> Jakarta Pusat (Area Sudirman)</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fa-solid fa-calendar-check text-indigo-500 mr-2.5 mt-0.5 w-4"></i>
+            <span><strong>Agenda Wajib:</strong> Meeting Klien (Hari ke-2, Jam 10:00 WIB)</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fa-solid fa-wallet text-indigo-500 mr-2.5 mt-0.5 w-4"></i>
+            <span><strong>Batas Budget:</strong> Rp 5.000.000 (Maksimal)</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- COST BREAKDOWN WIDGET -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="font-bold text-slate-900 text-sm uppercase tracking-wide mb-3 border-b border-slate-100 pb-2">
+          Rincian Pengeluaran
+        </h2>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between text-slate-600">
+            <span>Tiket Pesawat (PP 2 Pax):</span>
+            <span id="cost-tiket" class="font-semibold">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-slate-600">
+            <span>Hotel (2 Malam):</span>
+            <span id="cost-hotel" class="font-semibold">Rp 0</span>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex justify-between text-sm font-bold text-slate-800">
+            <span>Total Terpakai:</span>
+            <span id="cost-total" class="text-indigo-600">Rp 0</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT MAIN WORKSPACE (8 COLS) -->
+    <main class="lg:col-span-8 space-y-4">
+
+      <!-- TAB NAVIGATION -->
+      <div class="bg-white p-1.5 rounded-xl shadow-sm border border-slate-200 flex space-x-2">
+        <button id="btn-tab-1" onclick="switchTab(1)" class="flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs flex items-center justify-center space-x-2 tab-active transition">
+          <i class="fa-solid fa-plane"></i>
+          <span>1. Riset Booking (Traveloka/Agoda)</span>
+        </button>
+        <button id="btn-tab-2" onclick="switchTab(2)" class="flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs flex items-center justify-center space-x-2 tab-inactive transition">
+          <i class="fa-regular fa-calendar-alt"></i>
+          <span>2. Integrasi Google Calendar</span>
+        </button>
+      </div>
+
+      <!-- TAB CONTENT 1: BOOKING FORM -->
+      <section id="tab-1" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+        <div class="border-b border-slate-100 pb-3">
+          <h3 class="font-bold text-slate-800 text-base">Riset Akomodasi & Transportasi</h3>
+          <p class="text-xs text-slate-500">Cari opsi penerbangan dan hotel terbaik yang sesuai jadwal & budget.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Maskapai & Rute Penerbangan</label>
+            <input type="text" id="input-maskapai" placeholder="Misal: Garuda Indonesia (SUB - CGK)" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Total Biaya Tiket PP (2 Pax)</label>
+            <input type="number" id="input-harga-tiket" oninput="calculateBudget()" placeholder="0" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Hotel & Area</label>
+            <input type="text" id="input-hotel" placeholder="Misal: Hotel Aston Sudirman" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Total Biaya Hotel (2 Malam)</label>
+            <input type="number" id="input-harga-hotel" oninput="calculateBudget()" placeholder="0" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB CONTENT 2: GOOGLE CALENDAR SIMULATOR -->
+      <section id="tab-2" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4 hidden">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <div>
+            <h3 class="font-bold text-slate-800 text-base">Simulator Event Google Calendar</h3>
+            <p class="text-xs text-slate-500">Masukkan detail agenda lengkap untuk dipasang di kalender pimpinan.</p>
+          </div>
+          <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-md flex items-center">
+            <i class="fa-brands fa-google mr-1.5"></i> Sync Mode
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Judul Agenda (Event Title)</label>
+            <input type="text" id="cal-title" placeholder="Misal: Meeting Dinas - PT Maju Bersama & Klien" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Tautan Lokasi (Google Maps Link)</label>
+              <input type="text" id="cal-location" placeholder="https://maps.google.com/..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Undang Peserta (Email Guests)</label>
+              <input type="text" id="cal-guests" placeholder="pimpinan@perusahaan.com, klien@partner.com" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Pengaturan Reminder / Pengingat</label>
+              <select id="cal-reminder" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs outline-none bg-white">
+                <option value="30">30 Menit Sebelum Agenda</option>
+                <option value="60">1 Jam Sebelum Agenda</option>
+                <option value="120">2 Jam Sebelum Agenda</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Warna Kategori (Color Code)</label>
+              <select id="cal-color" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs outline-none bg-white">
+                <option value="blue">🔵 Biru - Transportasi / Penerbangan</option>
+                <option value="green">🟢 Hijau - Akomodasi / Hotel</option>
+                <option value="yellow">🟡 Kuning - Meeting Penting</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- EVALUATION MODAL (AI RESULT POPUP) -->
+  <div id="eval-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-slate-100">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-robot text-indigo-600 text-xl"></i>
+          <h3 class="font-bold text-slate-900 text-base">Hasil Evaluasi AI Manager</h3>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="text-center py-4 bg-indigo-50 rounded-xl">
+        <span class="text-xs uppercase font-bold text-indigo-500 tracking-wider">Skor Akhir Kamu</span>
+        <div id="eval-score" class="text-4xl font-extrabold text-indigo-600 my-1">92 / 100</div>
+        <span id="eval-status" class="inline-block bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">LULUS / EXCELLENT</span>
+      </div>
+
+      <div class="space-y-2 text-xs text-slate-600">
+        <p class="font-semibold text-slate-800">Ulasan Logistik & Jadwal:</p>
+        <ul id="eval-feedback" class="list-disc list-inside space-y-1 bg-slate-50 p-3 rounded-lg border border-slate-200">
+          <li>Pengeluaran budget sangat efisien.</li>
+          <li>Estimasi waktu transit dan meeting sudah presisi.</li>
+          <li>Fitur Google Calendar terisi secara detail.</li>
+        </ul>
+      </div>
+
+      <button onclick="closeModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-lg text-xs transition">
+        Selesai & Lanjutkan
+      </button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    const MAX_BUDGET = 5000000;
+
+    function switchTab(tabIndex) {
+      const tab1 = document.getElementById('tab-1');
+      const tab2 = document.getElementById('tab-2');
+      const btn1 = document.getElementById('btn-tab-1');
+      const btn2 = document.getElementById('btn-tab-2');
+
+      if (tabIndex === 1) {
+        tab1.classList.remove('hidden');
+        tab2.classList.add('hidden');
+        btn1.className = "flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs flex items-center justify-center space-x-2 tab-active transition";
+        btn2.className = "flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs flex items-center justify-center space-x-2 tab-inactive transition";
+      } else {
+        tab1.classList.add('hidden');
+        tab2.classList.remove('hidden');
+        btn1.className = "flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs flex items-center justify-center space-x-2 tab-inactive transition";
+        btn2.className = "flex-1 py-2.5 px-4 rounded-lg font-semibold text-xs flex items-center justify-center space-x-2 tab-active transition";
+      }
+    }
+
+    function calculateBudget() {
+      const tiket = parseFloat(document.getElementById('input-harga-tiket').value) || 0;
+      const hotel = parseFloat(document.getElementById('input-harga-hotel').value) || 0;
+      const total = tiket + hotel;
+      const sisa = MAX_BUDGET - total;
+
+      document.getElementById('cost-tiket').innerText = 'Rp ' + tiket.toLocaleString('id-ID');
+      document.getElementById('cost-hotel').innerText = 'Rp ' + hotel.toLocaleString('id-ID');
+      document.getElementById('cost-total').innerText = 'Rp ' + total.toLocaleString('id-ID');
+
+      const sisaElement = document.getElementById('display-sisa-budget');
+      sisaElement.innerText = 'Rp ' + sisa.toLocaleString('id-ID');
+
+      if (sisa < 0) {
+        sisaElement.className = "font-extrabold text-rose-500 text-lg animate-pulse";
+      } else if (sisa < 500000) {
+        sisaElement.className = "font-extrabold text-amber-400 text-lg";
+      } else {
+        sisaElement.className = "font-extrabold text-emerald-400 text-lg";
+      }
+    }
+
+    function submitEvaluation() {
+      document.getElementById('eval-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('eval-modal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
