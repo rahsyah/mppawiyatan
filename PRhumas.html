@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PR Crisis Manager - Simulasi Humas SMK</title>
+    <title>PR Crisis Manager - Advanced 30 Menit</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -35,7 +35,7 @@
 
         .container {
             background-color: var(--card-bg);
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -49,6 +49,7 @@
             color: white;
             padding: 20px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -56,9 +57,29 @@
             margin-bottom: 5px;
         }
 
-        .header p {
-            font-size: 0.9rem;
-            opacity: 0.9;
+        .timer-box {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-warning {
+            color: #fecaca;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .dashboard {
@@ -96,7 +117,7 @@
 
         .content {
             padding: 30px;
-            min-height: 300px;
+            min-height: 400px;
         }
 
         .screen {
@@ -113,13 +134,20 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .scenario-counter {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
         .scenario-text {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             line-height: 1.6;
             margin-bottom: 25px;
             padding: 15px;
-            border-left: 4px solid var(--warning);
-            background-color: #fef3c7;
+            border-left: 4px solid var(--primary);
+            background-color: #eff6ff;
             border-radius: 0 8px 8px 0;
         }
 
@@ -153,6 +181,7 @@
             color: var(--text-main);
             border: 1px solid #d1d5db;
             text-align: left;
+            line-height: 1.4;
         }
 
         .btn-option:hover {
@@ -166,10 +195,6 @@
             margin-bottom: 20px;
         }
 
-        .feedback-box h3 {
-            margin-bottom: 10px;
-        }
-
         .impact-text {
             font-weight: bold;
             margin-top: 15px;
@@ -179,23 +204,27 @@
 
         .positive { color: var(--success); }
         .negative { color: var(--danger); }
+        .neutral { color: var(--warning); }
 
         .result-summary {
             text-align: center;
         }
-        
-        .result-summary h2 {
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
 
         .badge {
             display: inline-block;
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 30px;
             font-weight: bold;
             color: white;
             margin: 15px 0;
+            font-size: 1.2rem;
+        }
+        
+        @media (max-width: 600px) {
+            .header { padding-top: 60px; }
+            .timer-box { top: 10px; left: 50%; transform: translateX(-50%); right: auto; }
+            .dashboard { flex-direction: column; gap: 15px; }
+            .stat-box { width: 100%; }
         }
     </style>
 </head>
@@ -203,8 +232,11 @@
 
 <div class="container">
     <div class="header">
-        <h1>PR Crisis Manager</h1>
-        <p>Simulasi Manajemen Krisis Humas | SMEKTAN Go Coding</p>
+        <div class="timer-box" id="timer-display" style="display: none;">
+            ⏱️ <span id="time-left">30:00</span>
+        </div>
+        <h1>PR Crisis Manager PRO</h1>
+        <p>Asesmen Manajemen Krisis Humas (30 Menit)</p>
     </div>
 
     <!-- Dashboard Status -->
@@ -226,15 +258,20 @@
     <div class="content">
         <!-- Layar Mulai -->
         <div id="screen-start" class="screen active">
-            <h2 style="margin-bottom: 15px;">Selamat datang, Staff Humas!</h2>
-            <p style="margin-bottom: 15px; line-height: 1.6;">Perusahaan Anda baru saja merilis produk minuman baru. Namun, sebuah krisis sedang mengintai. Tugas Anda adalah mengambil keputusan Public Relations (PR) yang tepat untuk menjaga <strong>Kepercayaan Publik</strong> dan <strong>Hubungan Media</strong>.</p>
-            <p style="margin-bottom: 25px;">Setiap pilihan akan berdampak pada reputasi perusahaan. Apakah Anda siap menangani krisis ini?</p>
-            <button class="btn-primary" onclick="startGame()">Mulai Simulasi</button>
+            <h2 style="margin-bottom: 15px;">Ujian Simulasi Humas Dimulai</h2>
+            <p style="margin-bottom: 15px; line-height: 1.6;">Anda memiliki waktu <strong>30 Menit</strong> untuk menyelesaikan serangkaian skenario krisis PR yang bertubi-tubi. Pastikan Anda membaca situasi dengan cermat sebelum mengambil keputusan.</p>
+            <ul style="margin-left: 20px; margin-bottom: 25px; line-height: 1.6;">
+                <li>Skor awal Anda adalah 70 untuk Kepercayaan dan Media.</li>
+                <li>Jika waktu habis sebelum skenario selesai, permainan berakhir dengan skor saat itu.</li>
+                <li>Pertahankan skor di atas 50 untuk lulus dari asesmen ini.</li>
+            </ul>
+            <button class="btn-primary" onclick="startGame()" style="width: 100%;">Mulai Simulasi Ujian</button>
         </div>
 
         <!-- Layar Skenario -->
         <div id="screen-scenario" class="screen">
-            <h3 id="scenario-title" style="margin-bottom: 15px; color: var(--primary);">Skenario 1</h3>
+            <div class="scenario-counter" id="scenario-counter">Kasus 1 dari X</div>
+            <h3 id="scenario-title" style="margin-bottom: 15px; color: var(--text-main);">Judul Kasus</h3>
             <div class="scenario-text" id="scenario-text">
                 Teks Skenario
             </div>
@@ -246,22 +283,24 @@
         <!-- Layar Feedback -->
         <div id="screen-feedback" class="screen">
             <div class="feedback-box" id="feedback-box">
-                <h3 id="feedback-title">Evaluasi Tindakan</h3>
-                <p id="feedback-text" style="line-height: 1.6;">Teks evaluasi edukatif.</p>
-                <div class="impact-text" id="feedback-impact">
-                    <!-- Dampak skor -->
-                </div>
+                <h3 id="feedback-title" style="margin-bottom: 10px;">Analisis Keputusan</h3>
+                <p id="feedback-text" style="line-height: 1.6;">Teks evaluasi.</p>
+                <div class="impact-text" id="feedback-impact"></div>
             </div>
-            <button class="btn-primary" onclick="nextScenario()" id="btn-next">Lanjut ke Skenario Berikutnya</button>
+            <button class="btn-primary" onclick="nextScenario()" id="btn-next">Lanjut ke Kasus Berikutnya</button>
         </div>
 
         <!-- Layar Hasil Akhir -->
         <div id="screen-result" class="screen result-summary">
-            <h2>Simulasi Selesai!</h2>
-            <p>Berikut adalah hasil evaluasi kinerja Anda sebagai Staff Humas:</p>
+            <h2 id="result-title">Asesmen Selesai!</h2>
+            <p id="timeout-msg" style="color: var(--danger); font-weight: bold; margin-bottom: 10px; display: none;">WAKTU HABIS!</p>
             <div id="final-badge" class="badge">Status</div>
+            <div style="margin: 20px 0; background: #f3f4f6; padding: 15px; border-radius: 8px;">
+                <p><strong>Skor Akhir Kepercayaan:</strong> <span id="final-trust">0</span>/100</p>
+                <p><strong>Skor Akhir Media:</strong> <span id="final-media">0</span>/100</p>
+            </div>
             <p id="final-eval" style="margin-bottom: 25px; line-height: 1.6;"></p>
-            <button class="btn-primary" onclick="location.reload()">Mainkan Ulang</button>
+            <button class="btn-primary" onclick="location.reload()">Mulai Ulang Asesmen</button>
         </div>
     </div>
 </div>
@@ -271,85 +310,106 @@
     let currentStep = 0;
     let trustScore = 70;
     let mediaScore = 70;
+    
+    // Sistem Timer (30 Menit = 1800 Detik)
+    let timeLeft = 1800; 
+    let timerInterval;
 
-    // Data Skenario
+    // Bank Soal Skala Besar (Bisa ditambah terus ke bawah)
     const scenarios = [
         {
-            title: "Skenario 1: Rumor Awal",
-            text: "Sebuah akun anonim di Twitter/X menyebarkan rumor bahwa produk minuman terbaru perusahaan Anda mengandung bahan pengawet berbahaya. Cuitan tersebut mulai mendapat retweet. Apa langkah pertama Anda?",
+            title: "Rumor Bahan Pengawet Berbahaya",
+            text: "Sebuah akun anonim di Twitter/X menyebarkan rumor bahwa produk minuman terbaru perusahaan Anda mengandung bahan pengawet berbahaya. Cuitan tersebut mulai viral. Apa langkah pertama Anda?",
             options: [
-                {
-                    text: "A. Mengabaikan rumor tersebut karena hanya berasal dari akun anonim.",
-                    trustChange: -20,
-                    mediaChange: -10,
-                    feedback: "Menunda respon atau mengabaikan isu (Silence is not golden) membuat spekulasi liar merajalela. Publik merasa perusahaan menyembunyikan sesuatu."
-                },
-                {
-                    text: "B. Segera membuat klarifikasi singkat di Media Sosial perusahaan.",
-                    trustChange: 10,
-                    mediaChange: 5,
-                    feedback: "Respon cepat di media sosial meredakan kepanikan awal. Ini adalah langkah responsif yang baik, namun Anda akan butuh bukti kuat ke depannya."
-                },
-                {
-                    text: "C. Menerbitkan Press Release resmi beserta lampiran hasil uji lab BPOM.",
-                    trustChange: 20,
-                    mediaChange: 15,
-                    feedback: "Luar biasa! Transparansi data (fakta lab) dan komunikasi resmi (Press Release) adalah cara paling efektif untuk mematikan rumor palsu sejak dini."
-                }
+                { text: "Mengabaikan rumor tersebut karena hanya dari akun anonim.", trustChange: -15, mediaChange: -5, feedback: "Silence is not golden. Mengabaikan isu membuat spekulasi liar merajalela." },
+                { text: "Menerbitkan Press Release resmi beserta lampiran hasil uji lab BPOM.", trustChange: 15, mediaChange: 10, feedback: "Transparansi data adalah cara paling efektif mematikan rumor." },
+                { text: "Membalas cuitan tersebut dengan akun resmi dengan nada marah.", trustChange: -20, mediaChange: -15, feedback: "Emosi di media sosial sangat tidak profesional dan merusak citra." }
             ]
         },
         {
-            title: "Skenario 2: Eskalasi Influencer",
-            text: "Krisis memanas! Seorang Influencer terkenal dengan jutaan pengikut membuat video reaksi menyudutkan produk Anda tanpa mengonfirmasi fakta. Wartawan mulai menghubungi kantor Anda. Apa tindakan Anda?",
+            title: "Teguran Influencer",
+            text: "Seorang Influencer membuat video komplain karena menemukan benda asing di kemasan produk Anda. Media lokal mulai mengangkat berita ini.",
             options: [
-                {
-                    text: "A. Mengirimkan somasi ancaman hukum kepada Influencer tersebut.",
-                    trustChange: -15,
-                    mediaChange: -20,
-                    feedback: "Sangat berisiko! Ancaman hukum yang agresif sering memicu 'Streisand Effect' (isu makin viral) dan membuat media melihat perusahaan sebagai pihak yang arogan anti-kritik."
-                },
-                {
-                    text: "B. Menggelar Konferensi Pers yang defensif dan menyalahkan netizen.",
-                    trustChange: -10,
-                    mediaChange: -5,
-                    feedback: "Konferensi pers memang bagus, tapi sikap defensif dan menyalahkan publik melanggar etika dasar PR. Publik butuh empati, bukan argumen."
-                },
-                {
-                    text: "C. Mengundang Influencer tersebut dan media ke pabrik untuk tur transparansi.",
-                    trustChange: 25,
-                    mediaChange: 20,
-                    feedback: "Strategi Brilian! Mengubah lawan menjadi kawan. Tur pabrik (Open House) menunjukkan transparansi mutlak dan memberikan konten eksklusif yang disukai jurnalis."
-                }
+                { text: "Mengirim somasi hukum kepada Influencer karena pencemaran nama baik.", trustChange: -20, mediaChange: -20, feedback: "Memicu Streisand Effect. Publik akan membela influencer dan membenci brand Anda." },
+                { text: "Menghubungi influencer secara privat, meminta maaf, dan melakukan investigasi pabrik.", trustChange: 20, mediaChange: 10, feedback: "Empati dan tindakan nyata menyelesaikan akar masalah tanpa drama publik." },
+                { text: "Menyebarkan rilis media bahwa benda asing itu adalah ulah pesaing.", trustChange: -10, mediaChange: -15, feedback: "Melempar tuduhan tanpa bukti membuat media meragukan kredibilitas Anda." }
             ]
         },
         {
-            title: "Skenario 3: Serangan Kompetitor",
-            text: "Saat situasi mulai reda, kompetitor Anda meluncurkan kampanye iklan yang secara implisit menyindir 'keamanan' produk Anda. Bagaimana cara Anda mempertahankan citra brand?",
+            title: "Kebocoran Data Pelanggan",
+            text: "Sistem IT perusahaan Anda diretas dan data base pelanggan (nama & email) bocor ke forum gelap. IT sedang memulihkan sistem.",
             options: [
-                {
-                    text: "A. Menyerang balik kompetitor dengan membongkar kelemahan produk mereka.",
-                    trustChange: -25,
-                    mediaChange: -15,
-                    feedback: "Mengerikan! Kampanye hitam (Black Campaign) balasan hanya akan merusak reputasi industri secara keseluruhan dan membuat brand Anda terlihat tidak profesional."
-                },
-                {
-                    text: "B. Fokus pada Kampanye Positif dan mempublikasikan testimoni pelanggan setia.",
-                    trustChange: 15,
-                    mediaChange: 10,
-                    feedback: "Langkah solid. Tetap profesional dan fokus pada 'Brand Value' sendiri menunjukkan kedewasaan perusahaan di mata publik."
-                },
-                {
-                    text: "C. Berkolaborasi dengan Pakar Kesehatan/Ahli Gizi untuk endorsement keamanan.",
-                    trustChange: 20,
-                    mediaChange: 15,
-                    feedback: "Taktik sangat cerdas! Menggunakan 'Third-party Endorsement' dari otoritas netral (pakar) memberikan validasi yang tidak bisa dibantah oleh sindiran kompetitor."
-                }
+                { text: "Menyembunyikan fakta ini agar saham perusahaan tidak turun.", trustChange: -30, mediaChange: -20, feedback: "Pelanggaran etika berat. Jika ketahuan nanti, kehancuran reputasi tidak bisa diperbaiki." },
+                { text: "Segera merilis pemberitahuan ke publik, meminta maaf, dan menjelaskan langkah mitigasi.", trustChange: 10, mediaChange: 15, feedback: "Kejujuran walau pahit adalah langkah PR terbaik dalam krisis data." },
+                { text: "Menyalahkan vendor server pihak ketiga atas kejadian tersebut.", trustChange: -5, mediaChange: -10, feedback: "Cuci tangan (scapegoating) tidak disukai publik. Tanggung jawab tetap di tangan Anda." }
+            ]
+        },
+        {
+            title: "Viralnya Pelayanan Karyawan yang Buruk",
+            text: "Video seorang staf *frontliner* Anda yang memarahi lansia viral di TikTok. Publik menuntut keadilan.",
+            options: [
+                { text: "Memecat staf tersebut hari itu juga dan mengumumkannya secara publik.", trustChange: 5, mediaChange: 10, feedback: "Langkah tegas, tapi pastikan investigasi internal sudah dilakukan dengan adil." },
+                { text: "Menskor staf, meminta maaf langsung kepada korban, dan menjanjikan pelatihan ulang SOP.", trustChange: 15, mediaChange: 15, feedback: "Sangat baik. Anda menunjukkan ketegasan, empati kepada korban, dan perbaikan sistem." },
+                { text: "Membela staf tersebut dan mengatakan bahwa video tersebut dipotong.", trustChange: -25, mediaChange: -20, feedback: "Langkah bunuh diri PR jika Anda tidak memiliki bukti CCTV penuh yang mendukung klaim Anda." }
+            ]
+        },
+        {
+            title: "Isu Pencemaran Lingkungan",
+            text: "LSM Lingkungan menuduh pabrik Anda membuang limbah sembarangan ke sungai desa terdekat.",
+            options: [
+                { text: "Mengundang media dan LSM untuk inspeksi langsung ke sistem pengolahan limbah pabrik.", trustChange: 20, mediaChange: 20, feedback: "Transparansi mutlak (Open Door Policy) adalah cara terbaik membantah tuduhan." },
+                { text: "Membayar buzzer untuk menyerang reputasi LSM tersebut.", trustChange: -30, mediaChange: -25, feedback: "Black campaign yang sangat melanggar kode etik PR dan merusak moral perusahaan." },
+                { text: "Diam saja sambil diam-diam memperbaiki sistem limbah.", trustChange: -10, mediaChange: 0, feedback: "Memperbaiki itu bagus, tapi diam secara PR membuat publik percaya pada tuduhan LSM." }
+            ]
+        },
+        {
+            title: "Blunder Ucapan CEO",
+            text: "CEO Anda membuat komentar lelucon yang dianggap sensitif/menyinggung saat wawancara *live* di TV.",
+            options: [
+                { text: "Merilis klarifikasi bahwa ucapan CEO disalahpahami media.", trustChange: -15, mediaChange: -20, feedback: "Menyalahkan media (blaming the messenger) akan merusak hubungan media Anda." },
+                { text: "Membuat video CEO meminta maaf secara tulus tanpa alasan/pembelaan.", trustChange: 20, mediaChange: 15, feedback: "Permintaan maaf yang tulus dan jujur selalu memenangkan hati publik kembali." },
+                { text: "Meminta TV tersebut menurunkan video wawancara.", trustChange: -20, mediaChange: -10, feedback: "Jejak digital tidak bisa dihapus dengan paksaan. Itu hanya membuat publik makin marah." }
+            ]
+        },
+        {
+            title: "Penarikan Produk (Product Recall)",
+            text: "Ditemukan kecacatan pada batch produksi nomor 889 yang bisa menyebabkan keracunan ringan. Belum ada korban.",
+            options: [
+                { text: "Menarik produk diam-diam dari rak toko tanpa pengumuman.", trustChange: -25, mediaChange: -15, feedback: "Sangat berbahaya jika konsumen sudah telanjur membeli. Ini adalah kelalaian." },
+                { text: "Mengumumkan *Product Recall* secara luas dan menawarkan *refund* penuh.", trustChange: 15, mediaChange: 25, feedback: "Langkah proaktif ini menunjukkan keselamatan konsumen adalah prioritas utama." },
+                { text: "Menunggu sampai ada konsumen yang komplain baru bertindak.", trustChange: -30, mediaChange: -20, feedback: "Menunggu korban jatuh adalah kesalahan manajemen krisis yang fatal." }
+            ]
+        },
+        {
+            title: "Sponsor Menarik Diri",
+            text: "Sponsor utama acara tahunan perusahaan Anda tiba-tiba menarik diri satu minggu sebelum acara karena alasan internal mereka.",
+            options: [
+                { text: "Menjelek-jelekkan sponsor tersebut di media.", trustChange: -15, mediaChange: -15, feedback: "Tidak profesional. Dunia bisnis sempit, Anda mungkin butuh mereka di masa depan." },
+                { text: "Mengumumkan pembatalan acara dan menyalahkan sponsor.", trustChange: -10, mediaChange: -5, feedback: "Publik akan kecewa dengan acara Anda, apa pun alasan internalnya." },
+                { text: "Mengeluarkan rilis media yang elegan, fokus pada keberlanjutan acara dengan dana mandiri.", trustChange: 15, mediaChange: 15, feedback: "Menjaga martabat perusahaan dan tetap memberikan *value* kepada peserta acara." }
+            ]
+        },
+        {
+            title: "Website Perusahaan Diretas (Deface)",
+            text: "Halaman depan website resmi Anda diubah oleh *hacker* dengan pesan protes sosial.",
+            options: [
+                { text: "Segera *take down* web untuk perbaikan, dan rilis info di medsos bahwa sedang ada *maintenance*.", trustChange: 10, mediaChange: 5, feedback: "Tindakan taktis yang cepat untuk mencegah *hacker* mendapat panggung lebih lama." },
+                { text: "Membiarkan saja sampai tim IT perlahan memperbaikinya sambil web tetap online.", trustChange: -20, mediaChange: -10, feedback: "Membiarkan pesan peretas tayang berjam-jam meruntuhkan kredibilitas perusahaan." },
+                { text: "Menantang *hacker* tersebut di media sosial.", trustChange: -25, mediaChange: -20, feedback: "Sangat amatir dan membahayakan infrastruktur IT perusahaan secara keseluruhan." }
+            ]
+        },
+        {
+            title: "Serangan Kompetitor",
+            text: "Kompetitor Anda meluncurkan kampanye iklan yang secara implisit menyindir 'keamanan' produk Anda.",
+            options: [
+                { text: "Menyerang balik kompetitor dengan membongkar kelemahan produk mereka.", trustChange: -15, mediaChange: -15, feedback: "Kampanye hitam balasan merusak reputasi industri secara keseluruhan." },
+                { text: "Berkolaborasi dengan Pakar Kesehatan untuk endorsement keamanan produk Anda.", trustChange: 20, mediaChange: 15, feedback: "Validasi pihak ketiga (Ahli) adalah cara elegan membungkam sindiran tanpa harus membalas." },
+                { text: "Mengeluh di media sosial tentang persaingan yang tidak sehat.", trustChange: -10, mediaChange: -5, feedback: "Perusahaan terlihat lemah (playing victim) di mata konsumen." }
             ]
         }
     ];
 
     function updateDashboard() {
-        // Batasi nilai 0 - 100
         trustScore = Math.max(0, Math.min(100, trustScore));
         mediaScore = Math.max(0, Math.min(100, mediaScore));
 
@@ -362,9 +422,34 @@
         trustBar.style.width = trustScore + '%';
         mediaBar.style.width = mediaScore + '%';
 
-        // Ganti warna berdasarkan skor
-        trustBar.style.backgroundColor = trustScore > 60 ? 'var(--success)' : (trustScore > 30 ? 'var(--warning)' : 'var(--danger)');
-        mediaBar.style.backgroundColor = mediaScore > 60 ? 'var(--success)' : (mediaScore > 30 ? 'var(--warning)' : 'var(--danger)');
+        trustBar.style.backgroundColor = trustScore >= 60 ? 'var(--success)' : (trustScore >= 40 ? 'var(--warning)' : 'var(--danger)');
+        mediaBar.style.backgroundColor = mediaScore >= 60 ? 'var(--success)' : (mediaScore >= 40 ? 'var(--warning)' : 'var(--danger)');
+    }
+
+    function formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function startTimer() {
+        const timerDisplay = document.getElementById('time-left');
+        const timerBox = document.getElementById('timer-display');
+        timerBox.style.display = 'flex';
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerDisplay.innerText = formatTime(timeLeft);
+
+            if (timeLeft <= 300) { // 5 menit terakhir
+                timerBox.classList.add('timer-warning');
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                showResult(true); // Waktu habis
+            }
+        }, 1000);
     }
 
     function switchScreen(screenId) {
@@ -374,56 +459,56 @@
 
     function startGame() {
         document.getElementById('dashboard').style.display = 'flex';
+        startTimer();
         loadScenario();
         switchScreen('screen-scenario');
     }
 
     function loadScenario() {
         const scenario = scenarios[currentStep];
+        document.getElementById('scenario-counter').innerText = `Kasus ${currentStep + 1} dari ${scenarios.length}`;
         document.getElementById('scenario-title').innerText = scenario.title;
         document.getElementById('scenario-text').innerText = scenario.text;
         
         const optionsContainer = document.getElementById('options-container');
         optionsContainer.innerHTML = '';
 
-        scenario.options.forEach((opt, index) => {
+        // Mengacak posisi jawaban (opsional agar tidak mudah dihapal)
+        let shuffledOptions = scenario.options.map((opt, i) => ({...opt, originalIndex: i}))
+                                              .sort(() => Math.random() - 0.5);
+
+        shuffledOptions.forEach((opt, index) => {
             const btn = document.createElement('button');
             btn.className = 'btn-option';
             btn.innerText = opt.text;
-            btn.onclick = () => selectOption(index);
+            btn.onclick = () => selectOption(opt);
             optionsContainer.appendChild(btn);
         });
     }
 
-    function selectOption(optionIndex) {
-        const scenario = scenarios[currentStep];
-        const selected = scenario.options[optionIndex];
-
-        // Update skor
-        trustScore += selected.trustChange;
-        mediaScore += selected.mediaChange;
+    function selectOption(selectedOpt) {
+        trustScore += selectedOpt.trustChange;
+        mediaScore += selectedOpt.mediaChange;
         updateDashboard();
 
-        // Siapkan layar feedback
-        document.getElementById('feedback-text').innerText = selected.feedback;
+        document.getElementById('feedback-text').innerText = selectedOpt.feedback;
         
         const fbBox = document.getElementById('feedback-box');
-        fbBox.style.backgroundColor = (selected.trustChange > 0) ? '#d1fae5' : '#fee2e2';
-        fbBox.style.border = (selected.trustChange > 0) ? '1px solid #34d399' : '1px solid #f87171';
+        fbBox.style.backgroundColor = (selectedOpt.trustChange > 0) ? '#d1fae5' : (selectedOpt.trustChange < 0 ? '#fee2e2' : '#fef3c7');
+        fbBox.style.border = (selectedOpt.trustChange > 0) ? '1px solid #34d399' : (selectedOpt.trustChange < 0 ? '1px solid #f87171' : '1px solid #f59e0b');
 
-        // Teks Dampak
         const impactContainer = document.getElementById('feedback-impact');
         impactContainer.innerHTML = `
-            <span class="${selected.trustChange > 0 ? 'positive' : 'negative'}">
-                Kepercayaan Publik: ${selected.trustChange > 0 ? '+' : ''}${selected.trustChange}
+            <span class="${selectedOpt.trustChange > 0 ? 'positive' : (selectedOpt.trustChange < 0 ? 'negative' : 'neutral')}">
+                Trust: ${selectedOpt.trustChange > 0 ? '+' : ''}${selectedOpt.trustChange}
             </span>
-            <span class="${selected.mediaChange > 0 ? 'positive' : 'negative'}">
-                Hubungan Media: ${selected.mediaChange > 0 ? '+' : ''}${selected.mediaChange}
+            <span class="${selectedOpt.mediaChange > 0 ? 'positive' : (selectedOpt.mediaChange < 0 ? 'negative' : 'neutral')}">
+                Media: ${selectedOpt.mediaChange > 0 ? '+' : ''}${selectedOpt.mediaChange}
             </span>
         `;
 
         if(currentStep === scenarios.length - 1) {
-            document.getElementById('btn-next').innerText = "Lihat Hasil Akhir";
+            document.getElementById('btn-next').innerText = "Selesaikan Asesmen & Lihat Hasil Akhir";
         }
 
         switchScreen('screen-feedback');
@@ -435,33 +520,49 @@
             loadScenario();
             switchScreen('screen-scenario');
         } else {
-            showResult();
+            clearInterval(timerInterval); // Matikan timer jika selesai duluan
+            showResult(false);
         }
     }
 
-    function showResult() {
+    function showResult(isTimeout) {
+        // Sembunyikan dashboard dan timer saat di result screen
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('timer-display').style.display = 'none';
+
+        if (isTimeout) {
+            document.getElementById('timeout-msg').style.display = 'block';
+        }
+
+        document.getElementById('final-trust').innerText = trustScore;
+        document.getElementById('final-media').innerText = mediaScore;
+
         const avgScore = (trustScore + mediaScore) / 2;
         const badge = document.getElementById('final-badge');
         const evalText = document.getElementById('final-eval');
 
         if (avgScore >= 80) {
-            badge.innerText = "⭐ EXPERT PR MANAGER ⭐";
+            badge.innerText = "🏆 CHIEF COMMUNICATIONS OFFICER (CCO) 🏆";
+            badge.style.backgroundColor = "var(--primary)";
+            evalText.innerText = "Luar biasa! Insting PR Anda sangat tajam. Anda tidak hanya berhasil meredam berbagai macam krisis, tapi juga memutarbalikkan keadaan menjadi keuntungan bagi reputasi perusahaan.";
+        } else if (avgScore >= 60) {
+            badge.innerText = "⭐ SENIOR PR MANAGER ⭐";
             badge.style.backgroundColor = "var(--success)";
-            evalText.innerText = "Luar biasa! Anda berhasil menangani krisis dengan sangat transparan dan elegan. Perusahaan tidak hanya selamat dari rumor, namun citra brand justru meningkat karena profesionalisme Anda.";
-        } else if (avgScore >= 50) {
-            badge.innerText = "👍 JUNIOR PR STAFF 👍";
+            evalText.innerText = "Sangat solid. Anda mampu menangani mayoritas kasus dengan profesional, meskipun ada beberapa celah kecil. Reputasi perusahaan terjaga dengan baik di tangan Anda.";
+        } else if (avgScore >= 40) {
+            badge.innerText = "👍 PR STAFF 👍";
             badge.style.backgroundColor = "var(--warning)";
-            evalText.innerText = "Kerja bagus. Krisis berhasil diredam meskipun ada beberapa keputusan yang membuat publik sedikit ragu. Terus pelajari strategi komunikasi krisis untuk menjadi lebih baik.";
+            evalText.innerText = "Anda selamat, tapi perusahaan mengalami memar reputasi. Diperlukan lebih banyak fokus pada empati dan transparansi untuk menghindari kesalahan manajemen krisis di masa depan.";
         } else {
-            badge.innerText = "⚠️ KORBAN KRISIS ⚠️";
+            badge.innerText = "⚠️ KRISIS FATAL ⚠️";
             badge.style.backgroundColor = "var(--danger)";
-            evalText.innerText = "Sayang sekali, penanganan krisis yang salah langkah membuat reputasi perusahaan hancur. Ingatlah bahwa dalam PR, kejujuran, transparansi, dan empati adalah senjata utama.";
+            evalText.innerText = "Reputasi perusahaan hancur akibat serangkaian keputusan yang salah. Hindari bersikap emosional, defensif, atau menutupi kebenaran dalam menghadapi krisis PR.";
         }
 
         switchScreen('screen-result');
     }
 
-    // Inisialisasi awal
+    // Inisialisasi tampilan awal
     updateDashboard();
 </script>
 
