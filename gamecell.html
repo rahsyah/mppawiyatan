@@ -361,7 +361,7 @@
       <div class="hero">
         <span class="eyebrow">📊 Kuis Dasar Excel</span>
         <h1>Formula Quest</h1>
-        <p>Uji kemampuanmu memahami rumus dasar Excel lewat quiz seru ini.</p>
+        <p>Uji kemampuanmu memahami CELL, KOLOM, BARIS, dan rumus dasar Excel lewat 13 soal seru dari tabel angka acak.</p>
         <div class="mini-grid-icon"><span></span><span></span><span></span><span></span></div>
       </div>
       <div class="start-body">
@@ -452,7 +452,7 @@
 (function(){
   "use strict";
   const ROWS = 10, COLS = 10;
-  const QUESTION_TIME = 25; // seconds
+  const QUESTION_TIME = 60; // seconds
   const TOTAL_QUESTIONS = 13;
 
   let gridData = [];
@@ -694,7 +694,7 @@
       timeLeft--;
       const pct = Math.max(0, (timeLeft / QUESTION_TIME) * 100);
       fill.style.width = pct + "%";
-      if(timeLeft <= 7) fill.classList.add("low");
+      if(timeLeft <= 15) fill.classList.add("low");
       if(timeLeft <= 0){
         clearInterval(timerInterval);
         if(!answered) submitAnswer(true);
