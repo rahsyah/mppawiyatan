@@ -308,7 +308,7 @@
   .feedback-sheet .fb-detail .mono{background:var(--paper-alt); padding:2px 6px; border-radius:5px; color:var(--ink);}
   .fb-next-btn{
     width:100%; padding:13px; border-radius:var(--radius-md); font-weight:800; font-size:15px;
-    background:var(--ink); color:#fff;
+    background:var(--amber); color:#523300;
   }
   .fb-progress{height:3px; background:var(--line); border-radius:3px; margin-top:12px; overflow:hidden;}
   .fb-progress-fill{height:100%; background:var(--green); width:100%;}
@@ -361,17 +361,17 @@
       <div class="hero">
         <span class="eyebrow">📊 Kuis Dasar Excel</span>
         <h1>Formula Quest</h1>
-        <p>Uji kemampuanmu memahami CELL, KOLOM, BARIS, dan rumus dasar Excel lewat 13 soal seru dari tabel angka acak.</p>
+        <p>Uji kemampuanmu memahami CELL, KOLOM, BARIS, dan rumus dasar Excel lewat 15 soal seru dari tabel angka acak.</p>
         <div class="mini-grid-icon"><span></span><span></span><span></span><span></span></div>
       </div>
       <div class="start-body">
         <label class="field-label" for="playerName">Nama kamu (opsional)</label>
         <input type="text" id="playerName" placeholder="Tulis namamu di sini..." maxlength="20">
-        <button class="btn-primary" id="btnStart">Mulai Main <span>→</span></button>
+        <button class="btn-primary" id="btnStart">🎯 Main Formula Quest <span>→</span></button>
         <ul class="feature-list">
-          <li><span class="ic">🎲</span><span>Ada <b>13 Soal</b> Harus bersabar ini bukan Ujian!</span></li>
+          <li><span class="ic">🎲</span><span>Ada <b>15 Soal</b> Harus bersabar ini bukan Ujian!</span></li>
           <li><span class="ic">🧮</span><span>Pelajari Prinsip dasar rumus <b>SUM, AVERAGE, MAX, MIN,</b> dan <b>COUNT</b> Perhatikan dengan Seksama.</span></li>
-          <li><span class="ic">⏱️</span><span>Waktu <b>25 detik</b> tiap soal — tetap tenang dan teliti membaca tiap baris dan kolom!</span></li>
+          <li><span class="ic">⏱️</span><span>Waktu <b>60 detik</b> tiap soal — tetap tenang dan teliti membaca tiap baris dan kolom!</span></li>
         </ul>
       </div>
     </div>
@@ -381,7 +381,7 @@
   <section id="screen-game" class="screen">
     <div class="card">
       <div class="topbar">
-        <div class="stat"><div class="num" id="qCounter">1/13</div><div class="lbl">Soal</div></div>
+        <div class="stat"><div class="num" id="qCounter">1/15</div><div class="lbl">Soal</div></div>
         <div class="streak-flame"><span class="flame-emoji">🔥</span><span class="num" id="streakNum">0</span></div>
         <div class="stat"><div class="num" id="scoreNum">0</div><div class="lbl">Skor</div></div>
       </div>
@@ -420,11 +420,11 @@
       </div>
       <div class="result-body">
         <div class="stat-row">
-          <div class="stat-box"><div class="v" id="statCorrect">0/13</div><div class="l">Jawaban Benar</div></div>
+          <div class="stat-box"><div class="v" id="statCorrect">0/15</div><div class="l">Jawaban Benar</div></div>
           <div class="stat-box"><div class="v" id="statScore">0</div><div class="l">Skor Total</div></div>
           <div class="stat-box"><div class="v" id="statAcc">0%</div><div class="l">Akurasi</div></div>
         </div>
-        <div class="review-title">Rekap 13 Soal</div>
+        <div class="review-title">Rekap 15 Soal</div>
         <div class="review-row" id="reviewRow"></div>
         <button class="btn-secondary" id="btnShare">📸 Screenshot &amp; Bagikan</button>
         <button class="btn-primary" id="btnReplay">🔁 Main Lagi (Soal Baru)</button>
@@ -453,7 +453,7 @@
   "use strict";
   const ROWS = 10, COLS = 10;
   const QUESTION_TIME = 60; // seconds
-  const TOTAL_QUESTIONS = 13;
+  const TOTAL_QUESTIONS = 15;
 
   let gridData = [];
   let questions = [];
@@ -622,9 +622,9 @@
       Array(2).fill("LOOKUP"),
       Array(3).fill("SUM"),
       Array(3).fill("AVG"),
-      Array(2).fill("MAX"),
+      Array(3).fill("MAX"),
       Array(2).fill("MIN"),
-      Array(1).fill("COUNTIF")
+      Array(2).fill("COUNTIF")
     );
     shuffle(pool);
     return pool.map(buildQuestion);
@@ -807,9 +807,9 @@
     $("statAcc").textContent = `${acc}%`;
 
     let tier, trophy, greeting;
-    if(correctCount >= 12){ tier = "Excel Master! 🏆"; trophy = "🏆"; }
-    else if(correctCount >= 9){ tier = "Jago Banget! 🌟"; trophy = "🌟"; }
-    else if(correctCount >= 6){ tier = "Lumayan, Terus Berlatih! 💪"; trophy = "💪"; }
+    if(correctCount >= 14){ tier = "Excel Master! 🏆"; trophy = "🏆"; }
+    else if(correctCount >= 11){ tier = "Jago Banget! 🌟"; trophy = "🌟"; }
+    else if(correctCount >= 7){ tier = "Lumayan, Terus Berlatih! 💪"; trophy = "💪"; }
     else { tier = "Yuk Coba Lagi! 🔁"; trophy = "🔁"; }
     greeting = name ? `Kerja bagus, ${name}!` : "Kerja bagus!";
 
@@ -831,8 +831,8 @@
     showScreen("screen-result");
   }
 
-  function spawnConfetti(){
-    const hero = $("resultHero");
+  function spawnConfetti(heroId){
+    const hero = $(heroId || "resultHero");
     hero.querySelectorAll(".confetti").forEach(el => el.remove());
     const colors = ["#2E7D5B", "#F3A621", "#E4574A", "#3F7FCB", "#FFFFFF"];
     for(let i = 0; i < 26; i++){
@@ -910,7 +910,65 @@
     }
   }
 
-  $("btnShare").addEventListener("click", shareScreenshot);
+  async function shareScreenshot(buttonId, cardSelector){
+    const btn = $(buttonId);
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = "⏳ Menyiapkan gambar...";
+
+    try{
+      const target = document.querySelector(cardSelector);
+      const canvas = await html2canvas(target, {
+        backgroundColor: "#1A2029",
+        scale: 2,
+        useCORS: true
+      });
+
+      canvas.toBlob(async (blob) => {
+        if(!blob){
+          throw new Error("Gagal membuat gambar");
+        }
+        const fileName = "formula-quest-hasil.png";
+        let shared = false;
+
+        try{
+          const file = new File([blob], fileName, { type: "image/png" });
+          if(navigator.canShare && navigator.canShare({ files: [file] })){
+            await navigator.share({
+              files: [file],
+              title: "Formula Quest",
+              text: "Lihat hasil permainan Formula Quest aku! 🏆"
+            });
+            shared = true;
+          }
+        }catch(shareErr){
+          // pengguna membatalkan share sheet, tidak masalah
+          shared = true;
+        }
+
+        if(!shared){
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(url), 4000);
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }, "image/png");
+    } catch(err){
+      console.error(err);
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      alert("Gagal membuat screenshot otomatis. Coba screenshot manual layar HP kamu ya!");
+    }
+  }
+
+  $("btnShare").addEventListener("click", () => shareScreenshot("btnShare", "#screen-result .card"));
 
   $("btnStart").addEventListener("click", startGame);
   $("btnReplay").addEventListener("click", startGame);
