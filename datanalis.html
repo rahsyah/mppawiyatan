@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b0e14">
+<title>Berkas Rahasia: Audit Anggaran Kantor Pawiyatan</title>
+<style>
+:root{
+  --void:#0b0e14;
+  --void2:#141a24;
+  --void-line: rgba(201,162,39,0.07);
+  --paper:#f3ecd9;
+  --paper-dark:#e8dfc4;
+  --paper-line:#cdbf94;
+  --ink:#241f14;
+  --ink-soft:#5b543f;
+  --gold:#c9a227;
+  --gold-deep:#8f7015;
+  --alert:#b3261e;
+  --alert-soft:#e8b0ab;
+  --verified:#2f7a6f;
+  --verified-soft:#bfe3da;
+  --f-abs:#4c6ef5;
+  --f-inv:#e8790c;
+  --f-keu:#2f9e44;
+  --mono: "SFMono-Regular","Consolas","Liberation Mono","Courier New",monospace;
+  --sans: -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --slab: Georgia,"Cambria","Times New Roman",serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+html,body{margin:0;padding:0;height:100%;overscroll-behavior:none;}
+body{
+  font-family:var(--sans);
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(76,110,245,0.08), transparent 55%),
+    radial-gradient(ellipse at 85% 100%, rgba(201,162,39,0.10), transparent 55%),
+    repeating-linear-gradient(0deg, var(--void-line) 0px, var(--void-line) 1px, transparent 1px, transparent 26px),
+    repeating-linear-gradient(90deg, var(--void-line) 0px, var(--void-line) 1px, transparent 1px, transparent 26px),
+    var(--void);
+  color:var(--paper);
+  min-height:100vh;
+  min-height:100svh;
+  overflow-x:hidden;
+}
+body.modal-open{overflow:hidden;position:fixed;inset:0;width:100%;}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+input,textarea{font-size:16px;-webkit-appearance:none;appearance:none;border-radius:3px;touch-action:manipulation;}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+.screen{display:none;min-height:100vh;min-height:100svh;}
+.screen.active{display:flex;flex-direction:column;}
+@media (prefers-reduced-motion: reduce){ *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;} }
+
+/* ---------- SCREEN 0: LOGIN ---------- */
+#screen-login{align-items:center;justify-content:center;padding:24px;text-align:center;}
+.badge-stamp{
+  width:110px;height:110px;border:3px solid var(--gold);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 22px;
+  transform:rotate(-8deg);color:var(--gold);font-family:var(--slab);
+  font-size:12px;letter-spacing:2px;text-transform:uppercase;line-height:1.3;
+  box-shadow:0 0 0 4px rgba(201,162,39,0.12);
+}
+.login-card{
+  background:var(--paper);color:var(--ink);border-radius:4px;
+  padding:38px 34px;max-width:460px;width:100%;
+  box-shadow:0 30px 60px rgba(0,0,0,0.5), 0 0 0 1px var(--paper-line);
+  position:relative;
+}
+.login-card::before{
+  content:"RAHASIA / TERBATAS";
+  position:absolute; top:14px; right:-38px; width:160px;
+  background:var(--alert); color:#fff; font-size:10px; letter-spacing:2px;
+  text-align:center; padding:4px 0; transform:rotate(35deg);
+  font-family:var(--mono); box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+.login-card h1{font-family:var(--slab);font-size:1.55rem;margin:0 0 6px;letter-spacing:0.3px;}
+.login-card .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--gold-deep);text-transform:uppercase;margin-bottom:14px;}
+.login-card p{font-size:0.93rem;line-height:1.55;color:var(--ink-soft);}
+.login-card input{
+  width:100%;padding:12px 14px;margin:18px 0 6px;border:1.5px solid var(--paper-line);
+  border-radius:3px;background:#fffdf7;font-size:1rem;color:var(--ink);font-family:var(--sans);
+}
+.hint-err{color:var(--alert);font-size:0.8rem;min-height:18px;text-align:left;margin-bottom:4px;}
+.btn-primary{
+  background:var(--ink);color:var(--paper);border:none;border-radius:3px;
+  padding:13px 22px;font-size:0.95rem;font-weight:600;letter-spacing:0.4px;
+  width:100%;margin-top:10px;transition:transform .15s ease, background .15s ease;
+}
+.btn-primary:hover{background:#000;transform:translateY(-1px);}
+
+/* ---------- SCREEN 1: BRIEFING / EMAIL ---------- */
+#screen-brief{align-items:center;justify-content:center;padding:24px;}
+.mail-window{
+  background:var(--paper);color:var(--ink);width:100%;max-width:560px;border-radius:4px;
+  box-shadow:0 30px 60px rgba(0,0,0,0.5);overflow:hidden;
+}
+.mail-titlebar{
+  background:linear-gradient(#2c2318,#1a150d);color:var(--gold);
+  padding:10px 14px;font-family:var(--mono);font-size:12px;letter-spacing:1px;
+  display:flex;align-items:center;gap:8px;
+}
+.mail-titlebar .dots{display:flex;gap:6px;}
+.mail-titlebar .dots span{width:9px;height:9px;border-radius:50%;background:#665a3a;}
+.mail-body{padding:24px 26px 28px;}
+.mail-meta{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);border-bottom:1px dashed var(--paper-line);padding-bottom:12px;margin-bottom:16px;}
+.mail-meta b{color:var(--ink);}
+.mail-subject{font-family:var(--slab);font-size:1.25rem;margin:0 0 14px;}
+#typewriter{font-size:0.96rem;line-height:1.7;white-space:pre-wrap;min-height:210px;}
+#typewriter .cursor{display:inline-block;width:8px;background:var(--ink);animation:blink 1s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+.mail-actions{display:flex;justify-content:flex-end;margin-top:8px;}
+.btn-primary.small{width:auto;padding:11px 22px;opacity:0;pointer-events:none;transition:opacity .4s ease;}
+.btn-primary.small.show{opacity:1;pointer-events:auto;}
+
+/* ---------- SCREEN 2: DESKTOP ---------- */
+#screen-desktop{padding:0;}
+.taskbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px;padding-top:calc(10px + env(safe-area-inset-top));
+  background:rgba(10,13,20,0.9);border-bottom:1px solid rgba(201,162,39,0.25);
+  font-family:var(--mono);font-size:12.5px;color:var(--gold);position:sticky;top:0;z-index:5;
+  backdrop-filter:blur(6px);flex-wrap:wrap;row-gap:4px;
+}
+.taskbar .tb-left{display:flex;align-items:center;gap:10px;}
+.taskbar .tb-left .dot{width:8px;height:8px;border-radius:50%;background:var(--alert);animation:pulse 1.8s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.taskbar .tb-right{color:var(--paper);opacity:.75;}
+
+.case-strip{padding:22px 24px 6px;max-width:980px;margin:0 auto;}
+.case-strip h2{font-family:var(--slab);font-size:1.2rem;margin:0 0 4px;}
+.case-strip p{margin:0 0 14px;color:#cbd0da;font-size:0.88rem;max-width:640px;}
+.progress-track{
+  display:flex;height:10px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,0.06);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+.progress-seg{height:100%;transition:width .5s ease;}
+.progress-label{font-family:var(--mono);font-size:11px;color:#9aa3b2;margin-top:6px;}
+
+.desktop-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:22px;max-width:980px;margin:22px auto 40px;padding:0 24px;
+}
+.folder-icon{
+  background:transparent;border:none;color:var(--paper);text-align:center;
+  padding:14px 10px 12px;border-radius:8px;transition:transform .15s ease, background .15s ease;position:relative;
+}
+.folder-icon:hover{background:rgba(255,255,255,0.05);transform:translateY(-2px);}
+.folder-shape{
+  width:78px;height:58px;margin:0 auto 10px;position:relative;
+}
+.folder-shape .tab{position:absolute;top:0;left:6px;width:34px;height:10px;border-radius:3px 3px 0 0;}
+.folder-shape .body{position:absolute;top:8px;left:0;width:78px;height:50px;border-radius:3px;box-shadow:0 6px 14px rgba(0,0,0,0.35);}
+.folder-icon .name{font-size:0.85rem;font-weight:600;}
+.folder-icon .count{font-family:var(--mono);font-size:11px;color:#a7afbd;margin-top:2px;}
+.badge-circle{
+  position:absolute;top:2px;right:14px;background:var(--verified);color:#fff;
+  font-family:var(--mono);font-size:10px;border-radius:10px;padding:2px 6px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.4);
+}
+.badge-circle.zero{background:#3a4150;}
+
+.report-icon{opacity:0.35;pointer-events:none;transition:opacity .4s ease;}
+.report-icon.unlocked{opacity:1;pointer-events:auto;}
+.report-icon .doc-shape{
+  width:56px;height:70px;margin:0 auto 10px;background:var(--paper);border-radius:2px;
+  position:relative;box-shadow:0 6px 14px rgba(0,0,0,0.35);
+}
+.report-icon .doc-shape::before{content:"";position:absolute;top:10px;left:8px;right:8px;height:2px;background:var(--paper-line);box-shadow:0 8px 0 var(--paper-line),0 16px 0 var(--paper-line),0 24px 0 var(--paper-line);}
+.report-icon.unlocked .doc-shape{animation:glow 2.2s ease-in-out infinite;}
+@keyframes glow{0%,100%{box-shadow:0 6px 14px rgba(0,0,0,0.35);}50%{box-shadow:0 6px 22px rgba(201,162,39,0.65);}}
+
+/* ---------- MODAL / WINDOW ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(4,6,10,0.72);display:none;
+  align-items:center;justify-content:center;z-index:50;
+  padding:18px;padding:calc(18px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));
+  overscroll-behavior:contain;
+}
+.overlay.active{display:flex;}
+.win{
+  background:var(--paper);color:var(--ink);width:100%;max-width:680px;
+  max-height:88vh;max-height:88svh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  border-radius:5px;box-shadow:0 30px 70px rgba(0,0,0,0.55);
+}
+.win-titlebar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;color:#fff;font-family:var(--mono);font-size:12.5px;letter-spacing:0.5px;
+  position:sticky;top:0;z-index:2;
+}
+.win-titlebar .close-x{background:rgba(255,255,255,0.18);border:none;color:#fff;width:32px;height:32px;min-width:32px;border-radius:50%;font-size:14px;line-height:1;flex-shrink:0;}
+.win-titlebar .close-x:hover{background:rgba(255,255,255,0.32);}
+.win-body{padding:18px 20px 22px;}
+.win-body h3{font-family:var(--slab);margin:0 0 10px;font-size:1.08rem;}
+.win-body .desc{font-size:0.86rem;color:var(--ink-soft);line-height:1.55;margin-bottom:14px;}
+
+.sheet-wrap{overflow-x:auto;border:1px solid var(--paper-line);border-radius:4px;margin-bottom:18px;background:#fffdf7;}
+table.sheet{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12px;min-width:520px;}
+table.sheet th, table.sheet td{border:1px solid var(--paper-line);padding:6px 9px;text-align:left;white-space:nowrap;}
+table.sheet thead tr.colheads th{background:#2c2318;color:var(--gold);font-weight:600;text-align:center;}
+table.sheet thead tr.fieldnames th{background:var(--paper-dark);}
+table.sheet tbody tr:nth-child(even){background:#f8f3e4;}
+.sheet-note{font-family:var(--mono);font-size:11.5px;color:var(--alert);padding:8px 12px;border-top:1px dashed var(--paper-line);background:#fbeceb;}
+
+.case-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+.case-item{
+  display:flex;align-items:center;gap:12px;border:1.5px solid var(--paper-line);
+  border-radius:4px;padding:12px;min-height:44px;background:#fffdf7;text-align:left;width:100%;
+  font-size:0.88rem;color:var(--ink);transition:border-color .15s ease, background .15s ease;
+}
+.case-item:hover{border-color:var(--gold-deep);background:#fff8e6;}
+.case-item .check{
+  flex:0 0 auto;width:22px;height:22px;border-radius:50%;border:2px solid var(--paper-line);
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;
+}
+.case-item.solved .check{background:var(--verified);border-color:var(--verified);color:#fff;}
+.case-item.solved{opacity:0.75;}
+
+/* question modal */
+.q-options{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;}
+.q-opt{
+  border:1.5px solid var(--paper-line);border-radius:4px;padding:12px 13px;min-height:44px;
+  background:#fffdf7;text-align:left;font-size:0.9rem;color:var(--ink);width:100%;
+  transition:border-color .12s ease, background .12s ease, transform .12s ease;
+}
+.q-opt:hover:not(:disabled){border-color:var(--gold-deep);background:#fff8e6;}
+.q-opt:disabled{cursor:default;}
+.q-opt.correct{background:var(--verified-soft);border-color:var(--verified);font-weight:600;}
+.q-opt.wrong{background:var(--alert-soft);border-color:var(--alert);}
+.q-opt.shake{animation:shake .35s ease;}
+@keyframes shake{25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+.q-feedback{margin-top:14px;padding:12px 14px;border-radius:4px;font-size:0.87rem;line-height:1.5;display:none;}
+.q-feedback.show{display:block;}
+.q-feedback.ok{background:var(--verified-soft);color:#153b34;border:1px solid var(--verified);}
+.q-feedback.no{background:#fdf3e4;color:#5b4300;border:1px dashed var(--gold-deep);}
+.q-footer{display:flex;justify-content:flex-end;margin-top:16px;}
+
+/* report */
+#report-textarea{
+  width:100%;min-height:150px;border:1.5px solid var(--paper-line);border-radius:4px;
+  padding:12px 14px;font-family:var(--sans);font-size:0.92rem;color:var(--ink);
+  resize:vertical;background:#fffdf7;
+}
+.char-count{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-top:4px;text-align:right;}
+.verdict-badge{
+  text-align:center;margin:6px 0 18px;padding:20px 14px;border-radius:6px;
+  border:2px dashed var(--gold-deep);background:#fff8e6;
+}
+.verdict-badge .title{font-family:var(--slab);font-size:1.3rem;margin-bottom:4px;}
+.verdict-badge .score{font-family:var(--mono);font-size:13px;color:var(--ink-soft);}
+.official-box{background:#eef7f4;border:1px solid var(--verified);border-radius:4px;padding:14px 16px;font-size:0.88rem;line-height:1.6;margin-bottom:16px;}
+.official-box b{color:#153b34;}
+.btn-secondary{
+  background:transparent;border:1.5px solid var(--ink);color:var(--ink);border-radius:3px;
+  padding:11px 18px;font-size:0.88rem;font-weight:600;
+}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:6px;}
+
+.folder-title-abs{background:linear-gradient(#5c78f7,#3454dd);}
+.folder-title-inv{background:linear-gradient(#f39a2e,#d46f00);}
+.folder-title-keu{background:linear-gradient(#4dbd6a,#237a37);}
+.folder-title-mail{background:linear-gradient(#2c2318,#1a150d);}
+.folder-title-report{background:linear-gradient(#8f7015,#5c4c0f);}
+
+@media(max-width:520px){
+  .win-body{padding:14px;}
+  .desktop-grid{gap:14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= SCREEN 0: LOGIN ================= -->
+<section id="screen-login" class="screen active">
+  <div>
+    <div class="badge-stamp">DIVISI<br>AUDIT<br>INTERNAL</div>
+    <div class="login-card">
+      <div class="eyebrow">Akses Sistem Investigasi</div>
+      <h1>Berkas Rahasia: Kasus Anggaran Bengkak</h1>
+      <p>Sebelum masuk ke sistem, catatkan identitasmu sebagai detektif yang ditugaskan oleh Direktur untuk menyelidiki kasus ini.</p>
+      <input type="text" id="input-name" placeholder="Tulis nama detektifmu di sini..." maxlength="30" autocomplete="off">
+      <div class="hint-err" id="name-err"></div>
+      <button class="btn-primary" id="btn-start-login">Masuk sebagai Detektif →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SCREEN 1: BRIEFING EMAIL ================= -->
+<section id="screen-brief" class="screen">
+  <div class="mail-window">
+    <div class="mail-titlebar">
+      <span class="dots"><span></span><span></span><span></span></span>
+      INBOX — DIREKTUR.KANTOR@internal.co.id
+    </div>
+    <div class="mail-body">
+      <div class="mail-meta">
+        <div><b>Dari:</b> Ratna Wibisono, Direktur Operasional</div>
+        <div><b>Kepada:</b> <span id="mail-to-name"></span></div>
+        <div><b>Perihal:</b> PENUGASAN RAHASIA — Investigasi Anggaran & Kinerja</div>
+      </div>
+      <div class="mail-subject">Selamat datang, Detektif.</div>
+      <div id="typewriter"></div>
+      <div class="mail-actions">
+        <button class="btn-primary small" id="btn-open-desktop">Buka Sistem Desktop Kantor →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SCREEN 2: DESKTOP ================= -->
+<section id="screen-desktop" class="screen">
+  <div class="taskbar">
+    <div class="tb-left"><span class="dot"></span> KASUS AKTIF — AKSES TERBATAS</div>
+    <div class="tb-right" id="tb-name"></div>
+  </div>
+
+  <div class="case-strip">
+    <h2>Meja Kerja Investigasi</h2>
+    <p>Buka tiap folder untuk memeriksa data dan memecahkan berkas kasus di dalamnya. Kumpulkan cukup bukti dari ketiga folder sebelum menutup kasus dengan laporan akhir.</p>
+    <div class="progress-track">
+      <div class="progress-seg" id="seg-abs" style="background:var(--f-abs);width:0%"></div>
+      <div class="progress-seg" id="seg-inv" style="background:var(--f-inv);width:0%"></div>
+      <div class="progress-seg" id="seg-keu" style="background:var(--f-keu);width:0%"></div>
+    </div>
+    <div class="progress-label" id="progress-label">Total bukti terungkap: 0/18</div>
+  </div>
+
+  <div class="desktop-grid">
+    <button class="folder-icon" data-folder="absensi">
+      <span class="badge-circle zero" id="badge-absensi">0/6</span>
+      <div class="folder-shape"><div class="tab" style="background:var(--f-abs)"></div><div class="body" style="background:var(--f-abs)"></div></div>
+      <div class="name">Folder Absensi</div>
+      <div class="count">Data kehadiran karyawan</div>
+    </button>
+    <button class="folder-icon" data-folder="inventaris">
+      <span class="badge-circle zero" id="badge-inventaris">0/6</span>
+      <div class="folder-shape"><div class="tab" style="background:var(--f-inv)"></div><div class="body" style="background:var(--f-inv)"></div></div>
+      <div class="name">Folder Inventaris</div>
+      <div class="count">Stok & pembelian ATK</div>
+    </button>
+    <button class="folder-icon" data-folder="keuangan">
+      <span class="badge-circle zero" id="badge-keuangan">0/6</span>
+      <div class="folder-shape"><div class="tab" style="background:var(--f-keu)"></div><div class="body" style="background:var(--f-keu)"></div></div>
+      <div class="name">Folder Keuangan</div>
+      <div class="count">Rekap pengeluaran kantor</div>
+    </button>
+    <button class="folder-icon report-icon" id="btn-open-report">
+      <div class="doc-shape"></div>
+      <div class="name">Laporan Akhir</div>
+      <div class="count">Terkunci — selesaikan folder dulu</div>
+    </button>
+  </div>
+</section>
+
+<!-- ============ OVERLAY: FOLDER WINDOW ============ -->
+<div class="overlay" id="overlay-folder">
+  <div class="win">
+    <div class="win-titlebar" id="folder-titlebar">
+      <span id="folder-titletext">Folder</span>
+      <button class="close-x" data-close="overlay-folder">✕</button>
+    </div>
+    <div class="win-body">
+      <h3 id="folder-heading"></h3>
+      <p class="desc" id="folder-desc"></p>
+      <div class="sheet-wrap">
+        <table class="sheet" id="folder-table"></table>
+        <div class="sheet-note" id="folder-note" style="display:none;"></div>
+      </div>
+      <ul class="case-list" id="folder-caselist"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============ OVERLAY: QUESTION WINDOW ============ -->
+<div class="overlay" id="overlay-question">
+  <div class="win">
+    <div class="win-titlebar" id="q-titlebar">
+      <span id="q-titletext">Berkas Kasus</span>
+      <button class="close-x" data-close="overlay-question">✕</button>
+    </div>
+    <div class="win-body">
+      <h3 id="q-prompt"></h3>
+      <ul class="q-options" id="q-options"></ul>
+      <div class="q-feedback" id="q-feedback"></div>
+      <div class="q-footer"><button class="btn-secondary" id="btn-close-question" style="display:none;">Tutup Berkas</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ OVERLAY: REPORT WINDOW ============ -->
+<div class="overlay" id="overlay-report">
+  <div class="win">
+    <div class="win-titlebar folder-title-report">
+      <span>Ruang Laporan Akhir</span>
+      <button class="close-x" data-close="overlay-report">✕</button>
+    </div>
+    <div class="win-body" id="report-body">
+      <div id="report-form-wrap">
+        <h3>Tulis Kesimpulan Investigasi</h3>
+        <p class="desc">Berdasarkan seluruh bukti dari Folder Absensi, Inventaris, dan Keuangan, jelaskan menurutmu mengapa pengeluaran kantor membengkak dan kinerja karyawan tampak menurun dalam 3 bulan terakhir — serta apa rekomendasimu untuk Direktur.</p>
+        <textarea id="report-textarea" placeholder="Tulis analisis dan kesimpulanmu di sini (minimal sekitar 40 karakter)..."></textarea>
+        <div class="char-count" id="char-count">0 karakter</div>
+        <div class="btn-row"><button class="btn-primary" style="width:auto;" id="btn-submit-report">Kirim Laporan ke Direktur →</button></div>
+      </div>
+      <div id="report-result-wrap" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= DATA: SPREADSHEET TABLES ================= */
+const TABLES = {
+  absensi: {
+    headers: ["Nama","Jabatan","Bulan","Hari Wajib","Hari Hadir","Terlambat"],
+    rows: [
+      ["Rian Saputra","Staf ATK","April","22","21","1"],
+      ["Rian Saputra","Staf ATK","Mei","22","20","3"],
+      ["Rian Saputra","Staf ATK","Juni","22","19","6"],
+      ["Dewi Anggraini","Staf Umum","Juni","22","22","0"],
+      ["Bagus Prasetyo","Staf Umum","Juni","22","15","2"]
+    ],
+    note: null
+  },
+  inventaris: {
+    headers: ["Kode","Nama Barang","Kategori","Stok Awal","Pembelian","Stok Akhir","Bulan"],
+    rows: [
+      ["ATK-01","Kertas A4","ATK","12","20","7","April"],
+      ["ATK-01","kertas A4","ATK","7","25","4","Mei"],
+      ["ATK-01","Kertas A-4","ATK","4","30","2","Juni"],
+      ["ATK-07","Tinta Printer","ATK","5","8","3","Juni"],
+      ["ATK-12","Map Plastik","ATK","","15","10","Juni"]
+    ],
+    note: "⚠ Sistem gudang mencatat 'Kertas A4' sebagai 3 barang berbeda akibat penulisan nama yang tidak seragam."
+  },
+  keuangan: {
+    headers: ["Kategori Pengeluaran","April","Mei","Juni"],
+    rows: [
+      ["Alat Tulis Kantor (ATK)","4.100.000","6.750.000","9.300.000"],
+      ["Konsumsi Rapat","2.000.000","1.800.000","1.950.000"],
+      ["Listrik & Internet","3.200.000","3.150.000","3.300.000"],
+      ["Cetak & Fotokopi","N/A","1.100.000","1.450.000"],
+      ["Lain-lain","","900.000","1.050.000"]
+    ],
+    note: "⚠ Memo Tim IT: Total pengeluaran Juni versi Sistem Pusat = Rp15.780.000, versi Spreadsheet Kantor = Rp16.850.000. Selisih belum terjelaskan."
+  }
+};
+
+/* ================= DATA: QUESTION BANK ================= */
+const BANK = {
+  absensi: [
+    { id:"abs1",
+      prompt:"Berkas kepegawaian mencatat Rian Saputra memiliki kehadiran tinggi selama 3 bulan terakhir, namun jumlah pekerjaan yang ia selesaikan tergolong rendah. Staf HRD langsung menyimpulkan Rian tidak produktif. Bagaimana penilaian paling tepat terhadap kesimpulan itu?",
+      options:["Tepat, karena kehadiran selalu menentukan produktivitas","Tepat, karena jumlah pekerjaan adalah satu-satunya ukuran kinerja","Kurang tepat, karena produktivitas memerlukan indikator tambahan selain kehadiran","Salah total, karena data absensi tidak boleh digunakan sama sekali","Salah, karena produktivitas hanya ditentukan oleh jam kerja"],
+      correctIndex:2,
+      explanation:"Kehadiran fisik hanyalah satu variabel. Untuk menilai produktivitas sesungguhnya, dibutuhkan indikator lain seperti output kerja, kualitas, dan target yang tercapai." },
+    { id:"abs2",
+      prompt:"Grafik absensi 6 bulan terakhir menunjukkan pola aneh: keterlambatan selalu melonjak setiap hari Senin. Langkah paling tepat yang bisa kamu ambil terhadap temuan ini adalah...",
+      options:["Menghapus data hari Senin karena dianggap anomali","Membandingkan pola absensi antarhari untuk mencari penyebabnya","Mengurangi jumlah hari kerja dalam seminggu","Mengganti sistem penggajian karyawan","Mengabaikan data keterlambatan tersebut"],
+      correctIndex:1,
+      explanation:"Pola berulang adalah petunjuk, bukan gangguan. Membandingkan absensi antarhari akan membantu mengungkap penyebab di balik lonjakan keterlambatan setiap Senin." },
+    { id:"abs3",
+      prompt:"Kepala kantor meminta daftar '10 pegawai dengan kehadiran terbaik'. Staf administrasi hanya menggunakan fungsi MAX dan mengambil satu nilai kehadiran tertinggi. Apakah metode itu sudah tepat?",
+      options:["Ya, karena MAX menemukan data terbaik","Ya, karena hanya nilai terbesar yang diperlukan","Tidak, dibutuhkan pengurutan atau fungsi yang bisa menampilkan beberapa pegawai dengan nilai tertinggi","Tidak, karena MAX hanya bekerja pada data teks","Ya, selama jumlah pegawai kurang dari 10"],
+      correctIndex:2,
+      explanation:"MAX hanya menunjuk satu nilai tunggal. Untuk daftar 10 besar, dibutuhkan pengurutan (sort) atau fungsi lain yang mampu menampilkan beberapa nilai tertinggi sekaligus." },
+    { id:"abs4",
+      prompt:"Seorang staf junior menunjuk sebuah sel di lembar absensi sebagai 'C5' dan menyebutnya sebagai 'alamat kolom'. Apakah pernyataan itu benar?",
+      options:["Benar, C menunjukkan kolom","Benar, angka 5 menunjukkan kolom","Salah, C5 menunjukkan satu cell (pertemuan kolom C dan baris 5)","Salah, C5 menunjukkan satu baris","Salah, C5 menunjukkan satu range"],
+      correctIndex:2,
+      explanation:"C5 adalah alamat cell — hasil pertemuan kolom C dan baris 5, bukan alamat kolom atau baris saja." },
+    { id:"abs5",
+      prompt:"Di lembar rekap absensi, kamu perlu menunjuk data pada kolom F baris ke-8 saat melapor ke Direktur. Alamat cell yang benar untuk lokasi tersebut adalah...",
+      options:["8F","F8","F-8","F:8","8-F"],
+      correctIndex:1,
+      explanation:"Notasi standar spreadsheet menulis huruf kolom lebih dulu diikuti angka baris, sehingga menjadi F8." },
+    { id:"abs6",
+      prompt:"Pada kolom 'Keterangan Izin', kamu menemukan banyak sel kosong. Salah satu staf langsung mengisi semua sel kosong itu dengan angka 0 agar tabel terlihat rapi. Tindakan itu sebaiknya...",
+      options:["Dipertahankan, karena kosong berarti nol","Dilanjutkan agar seluruh tabel terisi penuh","Diganti dengan angka acak untuk sementara","Dihapus bersama seluruh baris pegawai terkait","Diperiksa lebih dulu, karena kosong belum tentu berarti nol"],
+      correctIndex:4,
+      explanation:"Sel kosong bisa berarti banyak hal — belum diinput, tidak berlaku, atau memang tidak ada data. Mengisi paksa dengan 0 bisa mengaburkan fakta sebenarnya." }
+  ],
+  inventaris: [
+    { id:"inv1",
+      prompt:"Berkas inventaris ATK berisi banyak baris kosong dan beberapa baris yang muncul dua kali (duplikat) untuk barang yang sama. Tindakan paling tepat terhadap data ini adalah...",
+      options:["Menyalin semua data ganda ke baris yang kosong","Menghapus data ganda dan memeriksa nilai yang kosong","Memeriksa data kosong lalu menyalin data yang ganda","Menghapus semua baris yang memiliki record kosong","Membuat grafik sebelum membereskan data ganda"],
+      correctIndex:1,
+      explanation:"Data ganda perlu dihapus agar tidak menggandakan jumlah, sementara data kosong perlu diperiksa dulu sebelum diputuskan bagaimana mengisinya." },
+    { id:"inv2",
+      prompt:"Nama barang yang sama tercatat berbeda-beda: 'Kertas A4', 'kertas A4', 'Kertas A-4'. Sistem menghitungnya sebagai 3 barang berbeda, padahal itu barang yang sama. Apa masalah utama pada data ini?",
+      options:["Data tidak memiliki nomor identitas","Format penulisan belum konsisten","Jumlah data tidak mencukupi","Tipe data seluruhnya berupa angka","Struktur tabel belum memiliki grafik"],
+      correctIndex:1,
+      explanation:"Ketidakkonsistenan format penulisan membuat sistem menganggap satu barang sebagai beberapa barang berbeda, sehingga jumlah pembelian tampak lebih besar dari kenyataan." },
+    { id:"inv3",
+      prompt:"Rata-rata penggunaan kertas kantor adalah 20 rim per bulan. Stok tersisa saat ini hanya 5 rim, sementara pemesanan ke pemasok butuh beberapa hari. Keputusan administrasi paling rasional adalah...",
+      options:["Mempertimbangkan pemesanan stok berikutnya sekarang juga","Menunggu sampai stok benar-benar habis","Mengurangi pencatatan penggunaan kertas","Mengganti seluruh dokumen menjadi digital saat itu juga","Menghapus data penggunaan bulan sebelumnya"],
+      correctIndex:0,
+      explanation:"Dengan tren penggunaan dan waktu tunggu pemesanan yang diketahui, pemesanan ulang perlu dipertimbangkan lebih awal agar stok tidak benar-benar habis." },
+    { id:"inv4",
+      prompt:"Dari puluhan jenis barang di gudang, kamu hanya ingin menampilkan barang berkategori 'ATK' saja, tanpa menghapus data kategori lain dari sumbernya. Fungsi spreadsheet yang paling sesuai adalah...",
+      options:["MAX","SUM","FILTER","MIN","COUNTA"],
+      correctIndex:2,
+      explanation:"FILTER menampilkan subset data sesuai kriteria tertentu tanpa mengubah atau menghapus data aslinya." },
+    { id:"inv5",
+      prompt:"Tabel transaksi pembelian ATK hanya mencatat Kode Barang, sedangkan Nama Barang tersimpan di tabel referensi terpisah yang tersusun vertikal berdasarkan kode. Cara paling sesuai untuk mengisi Nama Barang secara otomatis adalah...",
+      options:["Menggunakan VLOOKUP berdasarkan kode","Menggunakan SUM berdasarkan kode","Menggunakan MAX berdasarkan kode","Menggunakan AVERAGE berdasarkan kode","Menggunakan FILTER untuk menjumlahkan kode"],
+      correctIndex:0,
+      explanation:"VLOOKUP mencari nilai berdasarkan kunci (Kode Barang) pada tabel referensi vertikal dan menampilkan data terkait, seperti Nama Barang." },
+    { id:"inv6",
+      prompt:"Kamu ingin membuat VLOOKUP agar Kode Barang otomatis menampilkan Nama Barang dari tabel referensi. Agar VLOOKUP bekerja dengan benar, tabel referensi sebaiknya disusun dengan...",
+      options:["Kode Barang pada kolom pertama","Nama Barang pada kolom pertama","Jumlah transaksi pada kolom pertama","Total transaksi pada kolom pertama","Harga Barang pada kolom pertama"],
+      correctIndex:0,
+      explanation:"VLOOKUP mencari nilai kunci pada kolom paling kiri tabel referensi, sehingga Kode Barang harus berada di kolom pertama." }
+  ],
+  keuangan: [
+    { id:"keu1",
+      prompt:"Staf keuangan menghitung total pembelian ATK dengan rumus =SUM(B2:B10). Namun beberapa sel dalam rentang itu kosong dan ada pula yang berisi teks 'N/A'. Staf khawatir hasilnya menjadi salah. Analisis paling tepat adalah...",
+      options:["SUM selalu menghasilkan error jika ada teks","SUM hanya menghitung nilai numerik sehingga teks diabaikan","SUM tidak dapat digunakan pada data yang memiliki sel kosong","SUM mengubah semua teks menjadi nol secara permanen","SUM hanya menghitung angka pada baris pertama"],
+      correctIndex:1,
+      explanation:"SUM secara otomatis mengabaikan sel kosong dan teks non-angka, dan hanya menjumlahkan nilai numerik dalam rentang tersebut." },
+    { id:"keu2",
+      prompt:"Kamu menemukan kejanggalan: total pengeluaran menurut spreadsheet kantor adalah Rp16.850.000, sedangkan laporan Sistem Pusat menunjukkan Rp15.780.000. Langkah pertama yang paling ilmiah sebelum menuduh salah satu laporan keliru adalah...",
+      options:["Memilih angka yang lebih besar sebagai yang benar","Memeriksa sumber data, periode, duplikasi, filter, dan formula yang digunakan","Menghapus salah satu spreadsheet","Menggunakan angka sistem pusat begitu saja tanpa pemeriksaan","Mengubah semua data agar sama"],
+      correctIndex:1,
+      explanation:"Sebelum menyimpulkan mana yang benar, investigasi harus memeriksa sumber data, periode pencatatan, kemungkinan duplikasi, filter yang aktif, dan formula yang dipakai." },
+    { id:"keu3",
+      prompt:"Tabel Pengeluaran Bulanan memiliki kolom Bulan (H) dan kolom Nominal ATK (K). Staf menggunakan rumus =SUM(H2:K5) untuk menghitung total pengeluaran ATK, tapi hasilnya melenceng jauh. Rumus yang seharusnya digunakan adalah...",
+      options:["=SUM(H2:H5)","=SUMPRODUCT(H2:H5)","=PRODUCT(K2:K5)","=SUM(K2:K5)","=AVERAGE(H2:K5)"],
+      correctIndex:3,
+      explanation:"Rentang yang dijumlahkan harus tepat pada kolom nominal (K), bukan menggabungkan kolom lain yang tidak relevan seperti H hingga K sekaligus." },
+    { id:"keu4",
+      prompt:"Direktur ingin tahu pos pengeluaran mana yang paling besar agar bisa mengevaluasi anggaran kantor. Data mana yang paling membantu untuk kebutuhan investigasi ini?",
+      options:["Nama pegawai dan jabatannya","Jenis pengeluaran dan jumlahnya","Nomor surat dan tanggal surat","Alamat kantor dan nomor telepon","Nama pemasok dan alamat pemasok"],
+      correctIndex:1,
+      explanation:"Untuk mengevaluasi pos anggaran, data yang relevan adalah jenis pengeluaran beserta jumlah nominalnya per kategori." },
+    { id:"keu5",
+      prompt:"Kantor memiliki ribuan baris transaksi dengan kolom Tanggal, Kategori, dan Nominal. Direktur meminta ringkasan total pengeluaran per kategori tanpa menghitung transaksi satu per satu. Fitur spreadsheet paling sesuai adalah...",
+      options:["Find","Sort","Pivot Table","Spell Check","Page Layout"],
+      correctIndex:2,
+      explanation:"Pivot Table dapat meringkas ribuan baris data menjadi total per kategori secara otomatis tanpa perhitungan manual satu per satu." },
+    { id:"keu6",
+      prompt:"Dulu staf keuangan butuh tiga jam setiap akhir bulan untuk membuat rekap pengeluaran secara manual. Setelah memakai spreadsheet dengan rumus dan template otomatis, pekerjaan itu selesai dalam 30 menit. Kesimpulan paling tepat dari perubahan ini adalah...",
+      options:["Spreadsheet menggantikan seluruh pekerjaan staf","Keputusan perusahaan dapat dibuat tanpa analisis","Data keuangan tidak perlu diperiksa kembali lagi","Semua laporan dapat dibuat tanpa sumber data","Otomatisasi dapat mengurangi pekerjaan yang berulang"],
+      correctIndex:4,
+      explanation:"Template dan rumus otomatis mempercepat pekerjaan berulang, sehingga staf punya lebih banyak waktu untuk analisis, bukan sekadar mengetik ulang." }
+  ]
+};
+
+const FOLDER_META = {
+  absensi: {title:"Folder Absensi", cls:"folder-title-abs", color:"var(--f-abs)",
+    heading:"Data Kehadiran Karyawan", desc:"Rekap kehadiran tiga bulan terakhir. Periksa polanya sebelum menarik kesimpulan tentang kinerja."},
+  inventaris: {title:"Folder Inventaris", cls:"folder-title-inv", color:"var(--f-inv)",
+    heading:"Stok & Pembelian ATK", desc:"Catatan gudang untuk alat tulis kantor. Perhatikan baik-baik penulisan nama barangnya."},
+  keuangan: {title:"Folder Keuangan", cls:"folder-title-keu", color:"var(--f-keu)",
+    heading:"Rekap Pengeluaran Operasional", desc:"Ringkasan biaya bulanan kantor beserta memo internal dari Tim IT."}
+};
+
+/* ================= UTIL ================= */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function buildFolderQuestions(list){
+  return shuffle(list).map(q=>{
+    const withFlag = q.options.map((text,i)=>({text, correct:i===q.correctIndex}));
+    const shuffledOpts = shuffle(withFlag);
+    return {
+      id:q.id,
+      prompt:q.prompt,
+      explanation:q.explanation,
+      options:shuffledOpts.map(o=>o.text),
+      correctIndex:shuffledOpts.findIndex(o=>o.correct),
+      solved:false
+    };
+  });
+}
+
+/* ================= STATE ================= */
+let state = null;
+
+function newGame(){
+  state = {
+    name:"",
+    folders:{
+      absensi: buildFolderQuestions(BANK.absensi),
+      inventaris: buildFolderQuestions(BANK.inventaris),
+      keuangan: buildFolderQuestions(BANK.keuangan)
+    },
+    currentFolder:null,
+    currentQuestion:null
+  };
+}
+newGame();
+
+function totalSolved(){
+  return Object.values(state.folders).reduce((sum,list)=>sum+list.filter(q=>q.solved).length,0);
+}
+function totalCount(){
+  return Object.values(state.folders).reduce((sum,list)=>sum+list.length,0);
+}
+
+/* ================= SCREEN NAV ================= */
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+function updateModalOpenState(){
+  const anyActive = document.querySelectorAll(".overlay.active").length > 0;
+  document.body.classList.toggle("modal-open", anyActive);
+}
+function openOverlay(id){
+  document.getElementById(id).classList.add("active");
+  updateModalOpenState();
+}
+function closeOverlay(id){
+  document.getElementById(id).classList.remove("active");
+  updateModalOpenState();
+}
+
+document.querySelectorAll("[data-close]").forEach(btn=>{
+  btn.addEventListener("click", ()=> closeOverlay(btn.getAttribute("data-close")));
+});
+document.querySelectorAll(".overlay").forEach(ov=>{
+  ov.addEventListener("click", (e)=>{ if(e.target === ov) closeOverlay(ov.id); });
+});
+
+/* ================= SCREEN 0: LOGIN ================= */
+document.getElementById("btn-start-login").addEventListener("click", ()=>{
+  const val = document.getElementById("input-name").value.trim();
+  const err = document.getElementById("name-err");
+  if(val.length < 2){
+    err.textContent = "Nama minimal 2 karakter ya.";
+    return;
+  }
+  err.textContent = "";
+  state.name = val;
+  startBriefing();
+});
+document.getElementById("input-name").addEventListener("keydown", (e)=>{
+  if(e.key === "Enter") document.getElementById("btn-start-login").click();
+});
+
+/* ================= SCREEN 1: BRIEFING ================= */
+function startBriefing(){
+  document.getElementById("mail-to-name").textContent = state.name;
+  showScreen("screen-brief");
+  const msg = "Selamat bergabung di Divisi Audit Internal, Detektif " + state.name + ".\n\n"
+    + "Dalam tiga bulan terakhir, pengeluaran operasional kantor kita membengkak, sementara kinerja beberapa karyawan justru dilaporkan menurun. Saya butuh jawaban yang berbasis data, bukan dugaan.\n\n"
+    + "Saya sudah membuka akses tiga folder digital untuk Anda: Folder Absensi, Folder Inventaris, dan Folder Keuangan. Periksa setiap data, pecahkan berkas kasus di dalamnya, lalu susun kesimpulan investigasi untuk saya.\n\n"
+    + "Waktu Anda terbatas. Semoga berhasil.\n\n— Ratna Wibisono, Direktur Operasional";
+  typewrite(msg);
+}
+
+function typewrite(text){
+  const el = document.getElementById("typewriter");
+  el.innerHTML = "";
+  const btn = document.getElementById("btn-open-desktop");
+  btn.classList.remove("show");
+  let i = 0;
+  const cursor = document.createElement("span");
+  cursor.className = "cursor";
+  cursor.textContent = " ";
+  function step(){
+    if(i <= text.length){
+      el.textContent = text.slice(0,i);
+      el.appendChild(cursor);
+      i += 3;
+      requestAnimationFrame(()=> setTimeout(step, 8));
+    } else {
+      el.textContent = text;
+      btn.classList.add("show");
+    }
+  }
+  step();
+}
+
+document.getElementById("btn-open-desktop").addEventListener("click", ()=>{
+  document.getElementById("tb-name").textContent = "Detektif: " + state.name;
+  showScreen("screen-desktop");
+  renderDesktop();
+});
+
+/* ================= SCREEN 2: DESKTOP ================= */
+function renderDesktop(){
+  ["absensi","inventaris","keuangan"].forEach(key=>{
+    const list = state.folders[key];
+    const solved = list.filter(q=>q.solved).length;
+    const badge = document.getElementById("badge-"+key);
+    badge.textContent = solved + "/" + list.length;
+    badge.classList.toggle("zero", solved === 0);
+  });
+  const segAbs = document.getElementById("seg-abs");
+  const segInv = document.getElementById("seg-inv");
+  const segKeu = document.getElementById("seg-keu");
+  const tot = totalCount();
+  segAbs.style.width = (state.folders.absensi.filter(q=>q.solved).length/tot*100) + "%";
+  segInv.style.width = (state.folders.inventaris.filter(q=>q.solved).length/tot*100) + "%";
+  segKeu.style.width = (state.folders.keuangan.filter(q=>q.solved).length/tot*100) + "%";
+  document.getElementById("progress-label").textContent = "Total bukti terungkap: " + totalSolved() + "/" + tot;
+
+  const reportIcon = document.getElementById("btn-open-report");
+  const allDone = totalSolved() === tot;
+  reportIcon.classList.toggle("unlocked", allDone);
+  reportIcon.querySelector(".count").textContent = allDone
+    ? "Terbuka — siap ditulis"
+    : "Terkunci — selesaikan folder dulu";
+}
+
+document.querySelectorAll(".folder-icon[data-folder]").forEach(btn=>{
+  btn.addEventListener("click", ()=> openFolder(btn.getAttribute("data-folder")));
+});
+
+function openFolder(key){
+  state.currentFolder = key;
+  const meta = FOLDER_META[key];
+  const titlebar = document.getElementById("folder-titlebar");
+  titlebar.className = "win-titlebar " + meta.cls;
+  document.getElementById("folder-titletext").textContent = meta.title;
+  document.getElementById("folder-heading").textContent = meta.heading;
+  document.getElementById("folder-desc").textContent = meta.desc;
+
+  const t = TABLES[key];
+  const table = document.getElementById("folder-table");
+  const letters = t.headers.map((_,i)=> String.fromCharCode(65+i));
+  let html = "<thead><tr class='colheads'><th></th>";
+  letters.forEach(l=> html += "<th>"+l+"</th>");
+  html += "</tr><tr class='fieldnames'><th>#</th>";
+  t.headers.forEach(h=> html += "<th>"+h+"</th>");
+  html += "</tr></thead><tbody>";
+  t.rows.forEach((row,ri)=>{
+    html += "<tr><td>"+(ri+2)+"</td>";
+    row.forEach(cell=> html += "<td>"+(cell === "" ? "&nbsp;" : cell)+"</td>");
+    html += "</tr>";
+  });
+  html += "</tbody>";
+  table.innerHTML = html;
+
+  const noteEl = document.getElementById("folder-note");
+  if(t.note){ noteEl.style.display = "block"; noteEl.textContent = t.note; }
+  else { noteEl.style.display = "none"; }
+
+  const caselist = document.getElementById("folder-caselist");
+  caselist.innerHTML = "";
+  state.folders[key].forEach((q, idx)=>{
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.className = "case-item" + (q.solved ? " solved" : "");
+    b.innerHTML = "<span class='check'>" + (q.solved ? "✓" : "") + "</span><span>Kasus " + (idx+1) + " — " + (q.solved ? "Sudah terpecahkan" : "Klik untuk memeriksa berkas") + "</span>";
+    b.addEventListener("click", ()=> openQuestion(key, q.id));
+    li.appendChild(b);
+    caselist.appendChild(li);
+  });
+
+  openOverlay("overlay-folder");
+}
+
+document.getElementById("btn-open-report").addEventListener("click", ()=>{
+  if(!document.getElementById("btn-open-report").classList.contains("unlocked")) return;
+  openReport();
+});
+
+/* ================= QUESTION OVERLAY ================= */
+function openQuestion(folderKey, qId){
+  const q = state.folders[folderKey].find(item=>item.id === qId);
+  state.currentQuestion = {folderKey, qId};
+  const meta = FOLDER_META[folderKey];
+  document.getElementById("q-titlebar").className = "win-titlebar " + meta.cls;
+  document.getElementById("q-titletext").textContent = meta.title + " — Berkas Kasus";
+  document.getElementById("q-prompt").textContent = q.prompt;
+
+  const optsWrap = document.getElementById("q-options");
+  optsWrap.innerHTML = "";
+  const feedback = document.getElementById("q-feedback");
+  feedback.className = "q-feedback";
+  feedback.textContent = "";
+  document.getElementById("btn-close-question").style.display = "none";
+
+  q.options.forEach((optText, idx)=>{
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.className = "q-opt";
+    b.textContent = optText;
+    if(q.solved) b.disabled = true;
+    b.addEventListener("click", ()=> answerQuestion(folderKey, qId, idx, b));
+    li.appendChild(b);
+    optsWrap.appendChild(li);
+  });
+
+  if(q.solved){
+    feedback.className = "q-feedback ok show";
+    feedback.textContent = "✓ Berkas ini sudah kamu pecahkan. Catatan investigasi: " + q.explanation;
+    optsWrap.querySelectorAll(".q-opt").forEach((btn,idx)=>{
+      if(idx === q.correctIndex) btn.classList.add("correct");
+    });
+    document.getElementById("btn-close-question").style.display = "inline-block";
+  }
+
+  openOverlay("overlay-question");
+}
+
+function answerQuestion(folderKey, qId, chosenIdx, btnEl){
+  const q = state.folders[folderKey].find(item=>item.id === qId);
+  if(q.solved) return;
+  const allBtns = document.querySelectorAll("#q-options .q-opt");
+  const feedback = document.getElementById("q-feedback");
+
+  if(chosenIdx === q.correctIndex){
+    allBtns.forEach(b=>b.disabled = true);
+    btnEl.classList.add("correct");
+    feedback.className = "q-feedback ok show";
+    feedback.textContent = "✓ Tepat! " + q.explanation;
+    q.solved = true;
+    document.getElementById("btn-close-question").style.display = "inline-block";
+    renderDesktop();
+  } else {
+    btnEl.classList.add("wrong","shake");
+    setTimeout(()=> btnEl.classList.remove("shake"), 350);
+    feedback.className = "q-feedback no show";
+    feedback.textContent = "Belum tepat. Periksa lagi data di spreadsheet, lalu coba opsi lain.";
+  }
+}
+
+document.getElementById("btn-close-question").addEventListener("click", ()=>{
+  closeOverlay("overlay-question");
+  if(state.currentFolder) openFolder(state.currentFolder);
+});
+
+/* ================= REPORT OVERLAY ================= */
+const THEMES = [
+  { keys:["produktiv","indikator","kehadiran tidak"], label:"Kehadiran tidak sama dengan produktivitas" },
+  { keys:["duplikat","kosong","konsisten","tidak seragam","data kotor","akurat","valid"], label:"Kualitas data (duplikat/kosong/tidak konsisten)" },
+  { keys:["atk","kertas","verifikasi","audit","sumber data","periode","cek ulang"], label:"Perlu verifikasi sumber pengeluaran ATK" },
+  { keys:["otomatis","template","pivot","efisien"], label:"Rekomendasi otomatisasi & Pivot Table" }
+];
+
+function openReport(){
+  document.getElementById("report-form-wrap").style.display = "block";
+  document.getElementById("report-result-wrap").style.display = "none";
+  document.getElementById("report-textarea").value = "";
+  document.getElementById("char-count").textContent = "0 karakter";
+  openOverlay("overlay-report");
+}
+
+document.getElementById("report-textarea").addEventListener("input", (e)=>{
+  document.getElementById("char-count").textContent = e.target.value.length + " karakter";
+});
+
+document.getElementById("btn-submit-report").addEventListener("click", ()=>{
+  const text = document.getElementById("report-textarea").value.trim();
+  if(text.length < 40){
+    alert("Tulis kesimpulanmu sedikit lebih lengkap dulu ya (minimal sekitar 40 karakter) sebelum dikirim ke Direktur.");
+    return;
+  }
+  const lower = text.toLowerCase();
+  const matched = THEMES.filter(t => t.keys.some(k => lower.includes(k)));
+  const score = matched.length;
+
+  let title, tone;
+  if(score >= 3){ title = "Master Detektif — Kasus Ditutup Sempurna"; tone="#153b34"; }
+  else if(score >= 1){ title = "Investigator Andal"; tone="#5b4300"; }
+  else { title = "Detektif Junior — Perlu Investigasi Lanjutan"; tone="#7a2b1e"; }
+
+  const correctAnswers = totalSolved();
+  const totalQ = totalCount();
+
+  let matchedListHtml = matched.length
+    ? "<ul style='margin:6px 0 0;padding-left:18px;'>" + matched.map(m=>"<li>"+m.label+"</li>").join("") + "</ul>"
+    : "<p style='margin:6px 0 0;'>Belum ada tema kunci yang tersentuh — coba kaitkan dengan data absensi, kualitas data, dan pengeluaran ATK.</p>";
+
+  const resultHtml = `
+    <div class="verdict-badge">
+      <div class="title" style="color:${tone}">${title}</div>
+      <div class="score">Berkas terpecahkan: ${correctAnswers}/${totalQ} &nbsp;•&nbsp; Aspek kesimpulan tersentuh: ${score}/4</div>
+    </div>
+    <h3>Aspek yang Terdeteksi dalam Laporanmu</h3>
+    ${matchedListHtml}
+    <div class="official-box">
+      <b>Kesimpulan Resmi Tim Audit:</b><br>
+      Kenaikan pengeluaran ATK ternyata bukan cerminan langsung dari menurunnya kinerja karyawan. Tiga faktor utama ditemukan: (1) penilaian kinerja keliru karena hanya mengandalkan data kehadiran tanpa indikator produktivitas lain; (2) data inventaris mengandung duplikasi dan penulisan nama barang yang tidak konsisten, sehingga jumlah pembelian ATK tampak lebih besar dari kenyataan; dan (3) tidak ada verifikasi rutin antara laporan spreadsheet kantor dan Sistem Pusat. Rekomendasi: menerapkan validasi data (hapus duplikat, samakan format), memakai Pivot Table untuk ringkasan otomatis, dan menyusun indikator kinerja yang lebih menyeluruh.
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" id="btn-close-report">Tutup Laporan</button>
+      <button class="btn-primary" style="width:auto;" id="btn-play-again">Selesaikan Kasus Baru →</button>
+    </div>
+  `;
+  document.getElementById("report-form-wrap").style.display = "none";
+  const resultWrap = document.getElementById("report-result-wrap");
+  resultWrap.innerHTML = resultHtml;
+  resultWrap.style.display = "block";
+
+  document.getElementById("btn-close-report").addEventListener("click", ()=> closeOverlay("overlay-report"));
+  document.getElementById("btn-play-again").addEventListener("click", ()=>{
+    closeOverlay("overlay-report");
+    restartGame();
+  });
+});
+
+function restartGame(){
+  const keepName = state.name;
+  newGame();
+  state.name = keepName;
+  document.getElementById("tb-name").textContent = "Detektif: " + state.name;
+  renderDesktop();
+}
+
+})();
+</script>
+</body>
+</html>
