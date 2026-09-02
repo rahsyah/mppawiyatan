@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b0e14">
-<title>Berkas Rahasia: Audit Anggaran Kantor Pawiyatan</title>
+<title>Berkas Rahasia: Investigasi Anggaran Kantor</title>
 <style>
 :root{
   --void:#0b0e14;
@@ -251,6 +251,20 @@ table.sheet tbody tr:nth-child(even){background:#f8f3e4;}
 }
 .verdict-badge .title{font-family:var(--slab);font-size:1.3rem;margin-bottom:4px;}
 .verdict-badge .score{font-family:var(--mono);font-size:13px;color:var(--ink-soft);}
+.speed-box{background:#fff8e6;border:1.5px solid var(--gold-deep);border-radius:6px;padding:16px 18px;margin-bottom:16px;}
+.speed-box .speed-score{font-family:var(--slab);font-size:1.15rem;margin-bottom:8px;color:var(--ink);}
+.speed-box .speed-score span{font-size:0.78rem;color:var(--ink-soft);font-family:var(--sans);margin-left:3px;}
+.speed-box p{margin:0 0 12px;font-size:0.85rem;color:var(--ink-soft);line-height:1.55;}
+.speed-gauge-track{height:11px;border-radius:6px;background:#e8dfc4;overflow:hidden;box-shadow:inset 0 0 0 1px var(--paper-line);}
+.speed-gauge-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--alert),var(--gold),var(--verified));transition:width .6s ease;}
+.speed-gauge-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);margin-top:5px;}
+.btn-screenshot{
+  background:var(--gold-deep);color:#fff;border:none;border-radius:3px;
+  padding:11px 18px;font-size:0.88rem;font-weight:600;display:inline-flex;align-items:center;gap:7px;
+}
+.btn-screenshot:hover{background:#7a5e10;}
+.screenshot-note{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);margin-top:6px;text-align:right;display:none;}
+.screenshot-note.show{display:block;}
 .official-box{background:#eef7f4;border:1px solid var(--verified);border-radius:4px;padding:14px 16px;font-size:0.88rem;line-height:1.6;margin-bottom:16px;}
 .official-box b{color:#153b34;}
 .btn-secondary{
@@ -591,6 +605,8 @@ let state = null;
 function newGame(){
   state = {
     name:"",
+    gameStartTime:null,
+    lastResult:null,
     folders:{
       absensi: buildFolderQuestions(BANK.absensi),
       inventaris: buildFolderQuestions(BANK.inventaris),
@@ -686,6 +702,7 @@ function typewrite(text){
 
 document.getElementById("btn-open-desktop").addEventListener("click", ()=>{
   document.getElementById("tb-name").textContent = "Detektif: " + state.name;
+  state.gameStartTime = Date.now();
   showScreen("screen-desktop");
   renderDesktop();
 });
@@ -835,6 +852,188 @@ document.getElementById("btn-close-question").addEventListener("click", ()=>{
   if(state.currentFolder) openFolder(state.currentFolder);
 });
 
+/* ================= SKOR KECEPATAN ================= */
+const SPEED_FAST_MIN = 6;   // menit atau lebih cepat -> skor 90
+const SPEED_SLOW_MIN = 22;  // menit atau lebih lambat -> skor 60
+
+function computeSpeedScore(elapsedMs){
+  const minutes = elapsedMs / 60000;
+  let score;
+  if(minutes <= SPEED_FAST_MIN) score = 90;
+  else if(minutes >= SPEED_SLOW_MIN) score = 60;
+  else score = 90 - ((minutes - SPEED_FAST_MIN) / (SPEED_SLOW_MIN - SPEED_FAST_MIN)) * 30;
+  return Math.round(score);
+}
+
+function formatDuration(ms){
+  const totalSec = Math.max(0, Math.floor(ms / 1000));
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return m > 0 ? (m + " menit " + s + " detik") : (s + " detik");
+}
+
+/* ================= SCREENSHOT HASIL (CANVAS, TANPA LIBRARY LUAR) ================= */
+function drawRoundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function wrapCanvasText(ctx, text, maxWidth){
+  const words = text.split(" ");
+  const lines = [];
+  let current = "";
+  words.forEach(w=>{
+    const test = current ? current + " " + w : w;
+    if(ctx.measureText(test).width > maxWidth && current){
+      lines.push(current);
+      current = w;
+    } else {
+      current = test;
+    }
+  });
+  if(current) lines.push(current);
+  return lines;
+}
+
+async function shareOrDownloadCanvas(canvas, filename){
+  canvas.toBlob(async (blob)=>{
+    if(!blob) return;
+    let shared = false;
+    try{
+      if(navigator.canShare && typeof File !== "undefined"){
+        const file = new File([blob], filename, {type:"image/png"});
+        if(navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title:"Hasil Investigasi", text:"Hasil investigasi korporatku"});
+          shared = true;
+        }
+      }
+    }catch(e){ /* dibatalkan pengguna atau tidak didukung — lanjut ke unduhan biasa */ }
+    if(!shared){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=> URL.revokeObjectURL(url), 4000);
+      const note = document.getElementById("screenshot-note");
+      if(note){ note.classList.add("show"); note.textContent = "Gambar tersimpan/terunduh. Di iPhone, jika terbuka di tab baru, tekan lama gambar lalu pilih \"Simpan ke Foto\"."; }
+    }
+  }, "image/png");
+}
+
+function generateResultImage(payload){
+  const scale = Math.min(3, window.devicePixelRatio || 2);
+  const W = 960, H = 700;
+  const canvas = document.createElement("canvas");
+  canvas.width = W * scale;
+  canvas.height = H * scale;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(scale, scale);
+
+  ctx.fillStyle = "#0b0e14";
+  ctx.fillRect(0, 0, W, H);
+
+  const pad = 26;
+  drawRoundRect(ctx, pad, pad, W - pad*2, H - pad*2, 14);
+  ctx.fillStyle = "#f3ecd9";
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#c9a227";
+  ctx.stroke();
+
+  const x = pad + 40;
+  const rightEdge = W - pad - 40;
+  let y = pad + 54;
+
+  ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = "#8f7015";
+  ctx.font = "700 13px 'SFMono-Regular', Consolas, monospace";
+  ctx.fillText("DIVISI AUDIT INTERNAL — LAPORAN HASIL INVESTIGASI", x, y);
+
+  y += 42;
+  ctx.fillStyle = "#241f14";
+  ctx.font = "700 30px Georgia, 'Times New Roman', serif";
+  ctx.fillText("Detektif: " + payload.name, x, y);
+
+  y += 28;
+  ctx.strokeStyle = "#cdbf94";
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(rightEdge, y);
+  ctx.stroke();
+
+  y += 40;
+  ctx.fillStyle = "#8f7015";
+  ctx.font = "700 21px Georgia, 'Times New Roman', serif";
+  ctx.fillText(payload.title, x, y);
+
+  y += 36;
+  ctx.fillStyle = "#241f14";
+  ctx.font = "700 18px -apple-system, 'Segoe UI', sans-serif";
+  ctx.fillText("Skor Kecepatan: " + payload.speedScore + " / 90", x, y);
+
+  y += 16;
+  const gaugeX = x, gaugeY = y + 8, gaugeW = rightEdge - x, gaugeH = 14;
+  drawRoundRect(ctx, gaugeX, gaugeY, gaugeW, gaugeH, 7);
+  ctx.fillStyle = "#e8dfc4";
+  ctx.fill();
+  const pct = Math.max(0, Math.min(1, (payload.speedScore - 60) / 30));
+  if(pct > 0){
+    drawRoundRect(ctx, gaugeX, gaugeY, Math.max(gaugeH, gaugeW * pct), gaugeH, 7);
+    const grad = ctx.createLinearGradient(gaugeX, 0, gaugeX + gaugeW, 0);
+    grad.addColorStop(0, "#b3261e");
+    grad.addColorStop(0.5, "#c9a227");
+    grad.addColorStop(1, "#2f7a6f");
+    ctx.fillStyle = grad;
+    ctx.fill();
+  }
+  y = gaugeY + gaugeH + 22;
+  ctx.fillStyle = "#5b543f";
+  ctx.font = "400 12.5px 'SFMono-Regular', Consolas, monospace";
+  ctx.fillText("60 (lambat)", gaugeX, y);
+  const rl = "90 (tercepat)";
+  ctx.fillText(rl, gaugeX + gaugeW - ctx.measureText(rl).width, y);
+
+  y += 36;
+  ctx.fillStyle = "#241f14";
+  ctx.font = "400 15px -apple-system, 'Segoe UI', sans-serif";
+  ctx.fillText("Waktu pengerjaan: " + payload.durationText, x, y);
+  y += 25;
+  ctx.fillText("Berkas terpecahkan: " + payload.correctAnswers + "/" + payload.totalQ, x, y);
+  y += 25;
+  ctx.fillText("Aspek kesimpulan tersentuh: " + payload.matched.length + "/4", x, y);
+
+  y += 32;
+  ctx.fillStyle = "#8f7015";
+  ctx.font = "700 13px 'SFMono-Regular', Consolas, monospace";
+  ctx.fillText("ASPEK YANG TERDETEKSI DALAM LAPORAN:", x, y);
+  y += 22;
+  ctx.font = "400 14px -apple-system, 'Segoe UI', sans-serif";
+  ctx.fillStyle = "#241f14";
+  if(payload.matched.length){
+    payload.matched.forEach(label=>{
+      wrapCanvasText(ctx, "• " + label, rightEdge - x).forEach(line=>{ ctx.fillText(line, x, y); y += 20; });
+    });
+  } else {
+    ctx.fillText("Belum ada aspek kunci yang tersentuh dalam laporan.", x, y);
+    y += 20;
+  }
+
+  ctx.fillStyle = "#5b543f";
+  ctx.font = "400 11px 'SFMono-Regular', Consolas, monospace";
+  ctx.fillText("Dibuat otomatis oleh Sistem Investigasi Korporat — " + payload.dateStr, x, H - pad - 22);
+
+  const safeName = (payload.name || "detektif").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  shareOrDownloadCanvas(canvas, "hasil-investigasi-" + safeName + ".png");
+}
+
 /* ================= REPORT OVERLAY ================= */
 const THEMES = [
   { keys:["produktiv","indikator","kehadiran tidak"], label:"Kehadiran tidak sama dengan produktivitas" },
@@ -873,14 +1072,36 @@ document.getElementById("btn-submit-report").addEventListener("click", ()=>{
   const correctAnswers = totalSolved();
   const totalQ = totalCount();
 
+  const elapsedMs = Date.now() - (state.gameStartTime || Date.now());
+  const speedScore = computeSpeedScore(elapsedMs);
+  const durationText = formatDuration(elapsedMs);
+  const speedPct = Math.max(0, Math.min(100, ((speedScore - 60) / 30) * 100));
+
   let matchedListHtml = matched.length
     ? "<ul style='margin:6px 0 0;padding-left:18px;'>" + matched.map(m=>"<li>"+m.label+"</li>").join("") + "</ul>"
     : "<p style='margin:6px 0 0;'>Belum ada tema kunci yang tersentuh — coba kaitkan dengan data absensi, kualitas data, dan pengeluaran ATK.</p>";
+
+  state.lastResult = {
+    name: state.name,
+    title: title,
+    speedScore: speedScore,
+    durationText: durationText,
+    correctAnswers: correctAnswers,
+    totalQ: totalQ,
+    matched: matched.map(m=>m.label),
+    dateStr: new Date().toLocaleString("id-ID", {dateStyle:"long", timeStyle:"short"})
+  };
 
   const resultHtml = `
     <div class="verdict-badge">
       <div class="title" style="color:${tone}">${title}</div>
       <div class="score">Berkas terpecahkan: ${correctAnswers}/${totalQ} &nbsp;•&nbsp; Aspek kesimpulan tersentuh: ${score}/4</div>
+    </div>
+    <div class="speed-box">
+      <div class="speed-score">Skor Kecepatan: ${speedScore}<span>/90</span></div>
+      <div class="speed-gauge-track"><div class="speed-gauge-fill" style="width:${speedPct}%"></div></div>
+      <div class="speed-gauge-labels"><span>60 (lambat)</span><span>90 (tercepat)</span></div>
+      <p style="margin-top:12px;">Kamu menyelesaikan seluruh investigasi (18 berkas kasus + laporan akhir) dalam <b>${durationText}</b>. Skor kecepatan berkisar 60–90 — semakin cepat kasus terpecahkan, skornya semakin mendekati 90; semakin lama waktu yang dipakai, skornya semakin turun mendekati 60. Skor ini murni mengukur kecepatan, bukan ketepatan jawaban.</p>
     </div>
     <h3>Aspek yang Terdeteksi dalam Laporanmu</h3>
     ${matchedListHtml}
@@ -888,10 +1109,14 @@ document.getElementById("btn-submit-report").addEventListener("click", ()=>{
       <b>Kesimpulan Resmi Tim Audit:</b><br>
       Kenaikan pengeluaran ATK ternyata bukan cerminan langsung dari menurunnya kinerja karyawan. Tiga faktor utama ditemukan: (1) penilaian kinerja keliru karena hanya mengandalkan data kehadiran tanpa indikator produktivitas lain; (2) data inventaris mengandung duplikasi dan penulisan nama barang yang tidak konsisten, sehingga jumlah pembelian ATK tampak lebih besar dari kenyataan; dan (3) tidak ada verifikasi rutin antara laporan spreadsheet kantor dan Sistem Pusat. Rekomendasi: menerapkan validasi data (hapus duplikat, samakan format), memakai Pivot Table untuk ringkasan otomatis, dan menyusun indikator kinerja yang lebih menyeluruh.
     </div>
-    <div class="btn-row">
-      <button class="btn-secondary" id="btn-close-report">Tutup Laporan</button>
-      <button class="btn-primary" style="width:auto;" id="btn-play-again">Selesaikan Kasus Baru →</button>
+    <div class="btn-row" style="justify-content:space-between;">
+      <button class="btn-screenshot" id="btn-screenshot-result">📸 Screenshot Hasil</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+        <button class="btn-secondary" id="btn-close-report">Tutup Laporan</button>
+        <button class="btn-primary" style="width:auto;" id="btn-play-again">Selesaikan Kasus Baru →</button>
+      </div>
     </div>
+    <div class="screenshot-note" id="screenshot-note"></div>
   `;
   document.getElementById("report-form-wrap").style.display = "none";
   const resultWrap = document.getElementById("report-result-wrap");
@@ -903,12 +1128,16 @@ document.getElementById("btn-submit-report").addEventListener("click", ()=>{
     closeOverlay("overlay-report");
     restartGame();
   });
+  document.getElementById("btn-screenshot-result").addEventListener("click", ()=>{
+    if(state.lastResult) generateResultImage(state.lastResult);
+  });
 });
 
 function restartGame(){
   const keepName = state.name;
   newGame();
   state.name = keepName;
+  state.gameStartTime = Date.now();
   document.getElementById("tb-name").textContent = "Detektif: " + state.name;
   renderDesktop();
 }
