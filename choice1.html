@@ -38,140 +38,61 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
+        /* INIT SCREEN (Untuk mengizinkan Audio Autoplay di Browser) */
+        #init-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 200; text-align: center; padding: 20px;
+        }
+
         /* SCREEN: OPENING */
-        #opening-screen {
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .title-box {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .title-box h1 {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 2.5rem;
-            color: var(--accent-red);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
+        #opening-screen { padding: 40px 20px; display: none; flex-direction: column; justify-content: center; height: 100vh; }
+        .title-box { text-align: center; margin-bottom: 30px; }
+        .title-box h1 { font-family: 'Rajdhani', sans-serif; font-size: 2.5rem; color: var(--accent-red); text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);}
         .title-box p { color: var(--text-muted); font-size: 1.1rem; }
 
-        .chat-container {
-            background: #000;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #333;
-        }
-
-        .message {
-            background: #2563eb;
-            padding: 15px;
-            border-radius: 10px 10px 10px 0;
-            margin-bottom: 15px;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideUp 0.5s forwards;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .message:nth-child(2) { animation-delay: 1.5s; background: #dc2626;}
-        .message:nth-child(3) { animation-delay: 3s; background: transparent; border: 1px solid var(--accent-yellow); color: var(--accent-yellow); text-align: center; border-radius: 10px;}
-
-        @keyframes slideUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        .chat-container { background: #000; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }
+        .message { background: #2563eb; padding: 15px; border-radius: 10px 10px 10px 0; margin-bottom: 15px; display: none; font-size: 0.95rem; line-height: 1.5; }
+        
         .btn {
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Rajdhani', sans-serif;
-            text-transform: uppercase;
-            width: 100%;
+            background: var(--accent-blue); color: white; border: none; padding: 15px 30px;
+            font-size: 1.2rem; font-weight: bold; border-radius: 5px; cursor: pointer;
+            transition: all 0.3s; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
-
         .btn:hover { background: #2563eb; transform: scale(1.02); }
-        .btn:disabled { background: #555; cursor: not-allowed; transform: none; }
         .btn-red { background: var(--accent-red); }
-        .btn-red:hover { background: #dc2626; }
+        .btn-red:hover { background: #dc2626; box-shadow: 0 0 15px var(--accent-red); }
 
         /* SCREEN: GAME */
         #game-screen { display: none; flex-direction: column; height: 100vh; }
-        
-        .dashboard {
-            background: #0f172a;
-            padding: 15px 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            border-bottom: 2px solid #334155;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.1rem;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
+        .dashboard { background: #0f172a; padding: 15px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-bottom: 2px solid #334155; font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; position: sticky; top: 0; z-index: 10; }
         .stat-box { display: flex; align-items: center; justify-content: space-between; background: #1e293b; padding: 10px; border-radius: 5px; }
         .trust-bar-bg { width: 100px; height: 10px; background: #333; border-radius: 5px; overflow: hidden; margin-left: 10px;}
         .trust-bar-fill { height: 100%; background: var(--accent-green); transition: width 0.3s, background 0.3s; }
-
+        
         .question-area { padding: 20px; flex-grow: 1; overflow-y: auto; }
         .level-badge { background: var(--accent-blue); display: inline-block; padding: 5px 10px; border-radius: 3px; font-size: 0.8rem; font-weight: bold; margin-bottom: 15px; letter-spacing: 1px;}
         .context-box { background: #334155; padding: 15px; border-left: 4px solid var(--accent-blue); margin-bottom: 15px; font-size: 0.95rem; line-height: 1.6;}
         .question-text { font-size: 1.1rem; font-weight: 500; margin-bottom: 20px; line-height: 1.5;}
-
+        
         .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
-        .option-btn {
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: var(--text-main);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: left;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            display: flex;
-            align-items: flex-start;
-        }
+        .option-btn { background: #0f172a; border: 1px solid #334155; color: var(--text-main); padding: 15px; border-radius: 8px; text-align: left; cursor: pointer; transition: 0.2s; font-size: 0.95rem; line-height: 1.4; display: flex; align-items: flex-start; }
         .option-btn:hover { background: #1e293b; border-color: var(--accent-blue); }
         .option-label { font-weight: bold; margin-right: 10px; color: var(--accent-blue); }
 
         /* CRISIS MODE */
-        .crisis-mode { animation: pulseRed 2s infinite; }
-        @keyframes pulseRed { 0% { box-shadow: inset 0 0 0px var(--accent-red); } 50% { box-shadow: inset 0 0 20px var(--accent-red); } 100% { box-shadow: inset 0 0 0px var(--accent-red); } }
-        
-        .timer-box { display: none; text-align: center; font-size: 2rem; font-family: 'Rajdhani', sans-serif; color: var(--accent-red); font-weight: bold; margin-bottom: 15px; }
+        .crisis-mode { animation: pulseRed 1s infinite; }
+        @keyframes pulseRed { 0% { box-shadow: inset 0 0 0px var(--accent-red); } 50% { box-shadow: inset 0 0 30px var(--accent-red); } 100% { box-shadow: inset 0 0 0px var(--accent-red); } }
+        .timer-box { display: none; text-align: center; font-size: 3rem; font-family: 'Rajdhani', sans-serif; color: var(--accent-red); font-weight: bold; margin-bottom: 15px; text-shadow: 0 0 10px var(--accent-red); }
 
         /* MODAL FEEDBACK */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none; justify-content: center; align-items: center; z-index: 100;
-        }
-        .modal-content {
-            background: var(--panel-bg); padding: 30px; border-radius: 10px; width: 90%; max-width: 500px;
-            text-align: center; border: 2px solid;
-        }
-        .modal-content.correct { border-color: var(--accent-green); }
-        .modal-content.wrong { border-color: var(--accent-red); }
-        .modal-title { font-family: 'Rajdhani', sans-serif; font-size: 2rem; margin-bottom: 15px; text-transform: uppercase; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: var(--panel-bg); padding: 30px; border-radius: 10px; width: 90%; max-width: 500px; text-align: center; border: 2px solid; }
+        .modal-content.correct { border-color: var(--accent-green); box-shadow: 0 0 20px rgba(34, 197, 94, 0.4); }
+        .modal-content.wrong { border-color: var(--accent-red); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
+        .modal-title { font-family: 'Rajdhani', sans-serif; font-size: 2.5rem; margin-bottom: 15px; text-transform: uppercase; }
         .correct .modal-title { color: var(--accent-green); }
         .wrong .modal-title { color: var(--accent-red); }
         .modal-explanation { font-size: 1rem; line-height: 1.6; margin-bottom: 20px; color: var(--text-muted); text-align: left; }
@@ -187,7 +108,22 @@
 </head>
 <body>
 
+<!-- AUDIO ELEMENTS (Bisa diganti dengan file mp3 lokal misal: src="suara-benar.mp3") -->
+<audio id="sfx-ting" src="https://actions.google.com/sounds/v1/alarms/message_alert_indicator.ogg"></audio>
+<audio id="sfx-bgm" src="https://actions.google.com/sounds/v1/human_voices/heartbeat.ogg" loop></audio>
+<audio id="sfx-tick" src="https://actions.google.com/sounds/v1/alarms/mechanical_clock_tick.ogg"></audio>
+<audio id="sfx-correct" src="https://actions.google.com/sounds/v1/ui/coins_handle.ogg"></audio>
+<audio id="sfx-wrong" src="https://actions.google.com/sounds/v1/alarms/buzzer_alarm.ogg"></audio>
+<audio id="sfx-siren" src="https://actions.google.com/sounds/v1/alarms/digital_siren.ogg"></audio>
+
 <div id="app">
+    <!-- INITIAL SCREEN UNTUK MENGAKAL AUTOPLAY BROWSER -->
+    <div id="init-screen">
+        <h1 style="font-family: 'Rajdhani'; color: white; font-size: 3rem; margin-bottom: 20px;">PR UNDER PRESSURE</h1>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Harap nyalakan volume perangkat Anda.</p>
+        <button class="btn btn-red" onclick="initGame()">[ MASUK KE SISTEM ]</button>
+    </div>
+
     <!-- OPENING SCREEN -->
     <div id="opening-screen">
         <div class="title-box">
@@ -196,12 +132,12 @@
         </div>
         
         <div class="chat-container" id="chat-box">
-            <div class="message">📱 <b>06.15 WIB - CEO</b><br><br>"Ada video viral di Twitter pagi ini. Konsumen mengklaim produk terbaru kita membahayakan kulitnya. Wartawan sudah mulai menelepon kantor."</div>
-            <div class="message" style="display: none;" id="msg-2">📱 <b>06.17 WIB - CEO</b><br><br>"Sentimen publik memburuk. Saham kita bisa anjlok saat bursa buka. Tangani media dan siapkan strategi komunikasi segera. Reputasi perusahaan ada di tanganmu!"</div>
-            <div class="message" style="display: none;" id="msg-3">🚨 <b>MISSION START</b><br>Waktu terus berjalan. Publik menunggu pernyataan resmi Anda.</div>
+            <div class="message" id="msg-1">📱 <b>06.15 WIB - CEO</b><br><br>"Ada video viral di Twitter pagi ini. Konsumen mengklaim produk terbaru kita membahayakan kulitnya. Wartawan sudah mulai menelepon kantor."</div>
+            <div class="message" id="msg-2" style="background: #dc2626;">📱 <b>06.17 WIB - CEO</b><br><br>"Sentimen publik memburuk. Saham kita bisa anjlok saat bursa buka. Tangani media dan siapkan strategi komunikasi segera. Reputasi perusahaan ada di tanganmu!"</div>
+            <div class="message" id="msg-3" style="background: transparent; border: 1px solid var(--accent-yellow); color: var(--accent-yellow); text-align: center;">🚨 <b>MISSION START</b><br>Waktu terus berjalan. Publik menunggu pernyataan resmi Anda.</div>
         </div>
 
-        <button class="btn" id="btn-start" style="display: none;" onclick="startGame()">Mulai Misi</button>
+        <button class="btn btn-red" id="btn-start" style="display: none; animation: pulseRed 1s infinite;" onclick="startGame()">Mulai Penyelamatan</button>
     </div>
 
     <!-- GAME SCREEN -->
@@ -214,7 +150,7 @@
             </div>
             <div class="stat-box"><span>🏆 SCORE</span> <span id="ui-score">0</span></div>
             <div class="stat-box"><span>⏱️ TIME</span> <span id="ui-time">00:00</span></div>
-            <div class="stat-box"><span>🎯 LEVEL</span> <span id="ui-level">1/30</span></div>
+            <div class="stat-box"><span>🎯 LEVEL</span> <span id="ui-level">1/10</span></div>
         </div>
 
         <div class="question-area" id="app-body">
@@ -243,7 +179,7 @@
 
     <!-- RESULT SCREEN -->
     <div id="result-screen">
-        <h1 style="font-family: 'Rajdhani'; color: white; margin-bottom: 20px;">MISSION COMPLETE</h1>
+        <h1 style="font-family: 'Rajdhani'; color: white; margin-bottom: 20px;" id="res-title">MISSION COMPLETE</h1>
         <div class="result-card">
             <h2 class="rank-title" id="res-rank">EXECUTIVE PR</h2>
             <div class="stat-row"><span>Skor Akhir:</span> <b id="res-score">0 / 1000</b></div>
@@ -257,8 +193,21 @@
 </div>
 
 <script>
-    // --- DATABASE SOAL (10 Soal Representatif dari Level 1-Final Boss) ---
-    // Guru dapat menambahkan soal ke dalam array ini hingga 30 soal.
+    // Audio Player Helper
+    const playSound = (id) => {
+        let sound = document.getElementById(id);
+        if(sound) {
+            sound.currentTime = 0; 
+            sound.play().catch(e => console.log("Audio play blocked by browser", e));
+        }
+    }
+
+    const stopSound = (id) => {
+        let sound = document.getElementById(id);
+        if(sound) { sound.pause(); sound.currentTime = 0; }
+    }
+
+    // --- DATABASE SOAL ---
     const questions = [
         {
             level: "LEVEL 1 — PR INTELLIGENCE",
@@ -271,43 +220,43 @@
                 "Memo internal yang diteruskan ke email wartawan",
                 "Proposal sponsorship kepada stasiun televisi"
             ],
-            answer: 1, // Index of B
-            explanation: "Press release adalah media komunikasi humas tertulis yang dirancang khusus untuk memberikan informasi bernilai berita kepada jurnalis, sehingga media bersedia menerbitkannya secara organik.",
+            answer: 1, 
+            explanation: "Press release adalah media komunikasi humas tertulis yang dirancang khusus untuk memberikan informasi bernilai berita kepada jurnalis.",
             isCrisis: false
         },
         {
             level: "LEVEL 2 — MEDIA SELECTION CRISIS",
-            context: "Sebuah kebijakan pemotongan bonus tahunan karyawan bocor ke akun gosip anonim di Instagram sebelum diumumkan resmi. Karyawan mulai panik dan mogok kerja.",
+            context: "Kebijakan pemotongan bonus karyawan bocor ke akun gosip Instagram sebelum diumumkan resmi. Karyawan mulai panik dan mogok kerja.",
             question: "Langkah komunikasi pertama yang paling tepat sasaran adalah...",
             options: [
-                "Mengunggah video klarifikasi CEO di TikTok dan YouTube perusahaan",
+                "Mengunggah video klarifikasi CEO di TikTok",
                 "Mengadakan konferensi pers dengan wartawan nasional",
-                "Mengabaikan rumor tersebut sampai jadwal pengumuman resmi bulan depan",
+                "Mengabaikan rumor tersebut sampai jadwal pengumuman resmi",
                 "Mengirimkan Internal Memo dan segera mengadakan Townhall Meeting darurat",
-                "Membayar influencer untuk membuat opini tandingan di Instagram"
+                "Membayar influencer untuk membuat opini tandingan"
             ],
-            answer: 3, // Index of D
-            explanation: "Krisis ini melibatkan pihak internal (karyawan). Menggunakan media eksternal (sosmed/wartawan) justru akan memperluas masalah. Komunikasi internal langsung adalah langkah pertama yang tepat.",
+            answer: 3, 
+            explanation: "Krisis ini melibatkan pihak internal. Menggunakan media eksternal justru memperluas masalah. Komunikasi internal langsung adalah langkah pertama yang tepat.",
             isCrisis: false
         },
         {
             level: "LEVEL 3 — PUBLIC REACTION",
-            context: "Seorang pelanggan setia dengan 100 ribu followers memposting keluhan di Twitter (X) karena pelayanan kasir yang kasar. Postingan mendapat 5.000 retweet dalam 1 jam.",
+            context: "Pelanggan setia dengan 100 ribu followers memposting keluhan kasar di Twitter (X). Postingan mendapat 5.000 retweet dalam 1 jam.",
             question: "Tindakan paling tepat sebagai PR adalah...",
             options: [
-                "Menghapus komentar negatif dan memblokir akun pelanggan tersebut",
+                "Menghapus komentar negatif dan memblokir akun tersebut",
                 "Membalas secara publik dengan nada marah karena pencemaran nama baik",
-                "Merespons publik dengan empati, meminta maaf, dan mengarahkan ke DM untuk penyelesaian",
-                "Mengancam pelanggan dengan UU ITE jika tidak menghapus postingan",
+                "Merespons publik dengan empati, meminta maaf, lalu mengarahkan ke DM",
+                "Mengancam pelanggan dengan UU ITE",
                 "Menutup sementara akun sosial media perusahaan"
             ],
             answer: 2, 
-            explanation: "Dalam komunikasi medsos, PR harus menunjukkan kepada publik bahwa perusahaan responsif dan berempati. Pemindahan ke DM dilakukan agar detail diselesaikan secara privat.",
+            explanation: "Humas harus menunjukkan responsif dan empati di ruang publik, lalu memindahkan perdebatan detail ke ruang privat (DM).",
             isCrisis: false
         },
         {
             level: "LEVEL 4 — PR DECISION",
-            context: "Perusahaan akan mengadakan Konferensi Pers terkait akuisisi perusahaan baru. Anda harus memilih media yang diundang.\n- Media A: Rating tinggi, suka clickbait.\n- Media B: Portal bisnis kredibel, audiens eksekutif.\n- Media C: Media hiburan Gen Z.",
+            context: "Konferensi Pers terkait akuisisi perusahaan baru. \n- Media A: Rating tinggi, suka clickbait.\n- Media B: Portal bisnis kredibel.\n- Media C: Media hiburan Gen Z.",
             question: "Keputusan humas yang paling strategis adalah...",
             options: [
                 "Mengundang Media A agar langsung viral",
@@ -317,12 +266,12 @@
                 "Membayar warga sekitar pura-pura menjadi wartawan"
             ],
             answer: 1,
-            explanation: "Isu akuisisi adalah isu finansial. Target audiens utamanya adalah investor. Oleh karena itu, media bisnis/ekonomi adalah saluran komunikasi yang paling kredibel dan relevan.",
+            explanation: "Isu akuisisi adalah isu finansial. Target audiens utamanya adalah investor dan eksekutif (Media B).",
             isCrisis: false
         },
         {
             level: "LEVEL 5 — ERROR DETECTOR",
-            context: "Draf Press Release dari staf junior: \n'Telah terjadi kebakaran di gudang kami pada pukul 08.00. Ini bukan salah manajemen, tapi murni kelalaian pekerja pabrik yang bodoh. Beruntung api sudah padam.'",
+            context: "Draf Press Release: 'Telah terjadi kebakaran di gudang pukul 08.00. Ini murni kelalaian pekerja pabrik yang bodoh. Beruntung api sudah padam.'",
             question: "Apa masalah utama dalam draf tersebut dari kacamata Humas?",
             options: [
                 "Terlalu pendek dan tidak detail",
@@ -332,108 +281,111 @@
                 "Tidak melampirkan foto api"
             ],
             answer: 2,
-            explanation: "Naskah Humas harus objektif dan profesional. Menyalahkan karyawan ('bodoh') akan memicu krisis baru terkait hak pekerja dan menunjukkan arogansi.",
+            explanation: "Menyalahkan karyawan ('bodoh') akan memicu krisis baru terkait ketenagakerjaan dan menunjukkan arogansi manajemen.",
             isCrisis: false
         },
         {
             level: "🚨 RANDOM CRISIS",
-            context: "Sekelompok wartawan investigasi tiba-tiba doorstop (mencegat) CEO Anda di lobi kantor menanyakan isu korupsi. CEO terlihat panik dan tidak siap.",
+            context: "Wartawan investigasi tiba-tiba doorstop (mencegat) CEO Anda di lobi kantor menanyakan isu korupsi. CEO terlihat panik dan tidak siap.",
             question: "Apa tindakan cepat Anda?",
             options: [
                 "Ikut lari meninggalkan wartawan",
                 "Marah dan mengusir wartawan secara fisik",
-                "Menempatkan diri di depan CEO, dengan tenang berjanji akan menjadwalkan wawancara resmi nanti sore",
+                "Menempatkan diri di depan CEO, dengan tenang berjanji menjadwalkan wawancara resmi nanti",
                 "Membiarkan CEO menjawab asal-asalan",
                 "Menyuruh satpam merampas kamera wartawan"
             ],
             answer: 2,
-            explanation: "Tugas PR adalah melindungi juru bicara (CEO) dari blunder. Mengambil alih kontrol situasi dengan diplomatis dan memberikan kepastian waktu wawancara adalah cara terbaik meredam doorstop.",
-            isCrisis: true // Aktifkan timer 15 detik
+            explanation: "Tugas PR melindungi juru bicara. Mengambil alih kontrol situasi secara diplomatis adalah cara meredam doorstop dadakan.",
+            isCrisis: true // Timer 15 Detik
         },
         {
-            level: "FINAL BOSS — THE MEGA CRISIS (1/4)",
-            context: "BREAKING NEWS: Produk makanan keluaran perusahaan dituduh mengandung bahan berbahaya setelah seorang influencer masuk rumah sakit. BPOM turun tangan. Saham turun 5%.",
-            question: "Apa pesan utama (Key Message) yang harus segera dirilis di media sosial perusahaan dalam 1 jam pertama?",
+            level: "FINAL BOSS (1/4)",
+            context: "BREAKING NEWS: Produk perusahaan dituduh beracun setelah influencer masuk RS. Saham turun 5%.",
+            question: "Apa pesan utama (Key Message) di media sosial dalam 1 jam pertama?",
             options: [
                 "Influencer tersebut berbohong dan kami akan menuntutnya!",
                 "Produk kami aman, kejadian itu hanya kebetulan.",
-                "Kami prihatin atas kejadian ini. Kami sedang melakukan investigasi internal dan bekerja sama penuh dengan pihak berwenang.",
+                "Kami prihatin atas kejadian ini. Kami sedang investigasi dan kooperatif dengan BPOM.",
                 "Kami menarik semua produk dari pasaran selamanya.",
                 "Diam saja sampai BPOM mengeluarkan hasil resmi 2 minggu lagi."
             ],
             answer: 2,
-            explanation: "Golden rule krisis: Tunjukkan empati, akui ada masalah (tanpa langsung mengakui kesalahan teknis sebelum ada bukti), dan tunjukkan komitmen untuk investigasi.",
+            explanation: "Golden rule krisis: Tunjukkan empati, akui ada insiden, dan tunjukkan komitmen investigasi sebelum membantah mentah-mentah.",
             isCrisis: false
         },
         {
-            level: "FINAL BOSS — THE MEGA CRISIS (2/4)",
-            context: "Setelah rilis pertama, muncul video hoax di grup WhatsApp yang memperlihatkan pabrik Anda terlihat kotor (padahal itu video pabrik perusahaan lain di luar negeri).",
+            level: "FINAL BOSS (2/4)",
+            context: "Muncul video hoax di WhatsApp yang memperlihatkan pabrik Anda terlihat kotor (padahal itu pabrik perusahaan lain).",
             question: "Langkah humas untuk melawan hoax tersebut adalah...",
             options: [
                 "Mengabaikan karena itu hanya di WhatsApp",
-                "Membuat Press Release bantahan disertai foto dan video asli kondisi pabrik yang higienis dan bersertifikat",
+                "Membuat Press Release bantahan disertai foto dan video asli kondisi pabrik yang bersih",
                 "Menantang pembuat video berkelahi",
                 "Menutup sementara pabrik",
-                "Menyebarkan hoax balik tentang perusahaan pesaing"
+                "Menyebarkan hoax balik"
             ],
             answer: 1,
-            explanation: "Hoax visual harus dilawan dengan fakta visual. Transparansi (menunjukkan kondisi pabrik asli) akan mengembalikan kepercayaan publik.",
+            explanation: "Hoax visual harus dilawan dengan fakta visual transparan agar publik kembali percaya.",
             isCrisis: false
         },
         {
-            level: "FINAL BOSS — THE MEGA CRISIS (3/4)",
-            context: "BPOM merilis hasil resmi: Produk Anda TERBUKTI AMAN. Influencer ternyata alergi terhadap kacang yang mana sudah tertera di label komposisi produk.",
+            level: "FINAL BOSS (3/4)",
+            context: "BPOM merilis hasil resmi: Produk Anda TERBUKTI AMAN. Influencer ternyata alergi kacang yang sudah tertera di kemasan.",
             question: "Bagaimana Anda memframing kemenangan ini tanpa terlihat arogan?",
             options: [
                 "Merilis pernyataan 'KAMI MENANG, INFLUENCER BODOH!'",
-                "Menuntut ganti rugi 1 Triliun Rupiah kepada influencer di depan media",
-                "Menyebarkan rilis BPOM, menegaskan kembali komitmen perusahaan pada keamanan, dan mengedukasi konsumen untuk membaca label alergen",
-                "Memboikot media yang sebelumnya memberitakan negatif",
-                "Tidak melakukan apa-apa karena sudah terbukti aman"
+                "Menuntut ganti rugi 1 Triliun Rupiah",
+                "Menyebarkan rilis BPOM, menegaskan keamanan produk, dan mengedukasi pembacaan label alergen",
+                "Memboikot media yang memberitakan negatif",
+                "Tidak melakukan apa-apa"
             ],
             answer: 2,
-            explanation: "Pasca-krisis (Post-Crisis), tujuannya adalah pemulihan citra dan edukasi, bukan balas dendam. Menghancurkan influencer hanya akan membuat perusahaan terlihat sebagai 'korporat jahat'.",
+            explanation: "Tujuan Post-Crisis adalah pemulihan dan edukasi. Arogan setelah menang justru merusak simpati publik yang baru pulih.",
             isCrisis: false
         },
         {
-            level: "FINAL BOSS — THE MEGA CRISIS (4/4)",
-            context: "Krisis telah berakhir, namun sentimen publik masih sedikit ragu. CEO meminta Anda merancang program Humas untuk pemulihan jangka panjang (Post-Crisis Recovery).",
+            level: "FINAL BOSS (4/4)",
+            context: "Krisis berakhir. CEO meminta Anda merancang program pemulihan jangka panjang (Post-Crisis Recovery).",
             question: "Program PR apa yang paling strategis untuk mengembalikan Trust 100%?",
             options: [
-                "Membuat pesta besar-besaran untuk karyawan",
+                "Pesta besar-besaran untuk karyawan",
                 "Kampanye diskon 90% cuci gudang",
-                "Mengadakan 'Factory Tour' (kunjungan pabrik) terbuka untuk wartawan, ibu-ibu PKK, dan mahasiswa untuk melihat langsung kebersihan pabrik",
+                "Mengadakan 'Factory Tour' terbuka untuk wartawan & masyarakat melihat kebersihan pabrik",
                 "Mengubah logo dan nama perusahaan",
                 "Berhenti berproduksi selama setahun"
             ],
             answer: 2,
-            explanation: "Factory Tour adalah bentuk PR Experiential Event. Membiarkan pihak ketiga melihat sendiri (transparansi) adalah cara paling kuat untuk memulihkan kepercayaan secara organik.",
+            explanation: "Factory Tour (PR Experiential Event) adalah transparansi tertinggi. Membiarkan pihak ketiga melihat sendiri adalah cara paling kuat mengembalikan kepercayaan.",
             isCrisis: false
         }
     ];
 
-    // --- GAME STATE ---
-    let currentQ = 0;
-    let score = 0;
-    let trust = 100;
-    let correctAnswers = 0;
-    let timerSec = 0;
-    let gameInterval;
-    let crisisTimeout;
-    let isAnswered = false;
-
+    let currentQ = 0; let score = 0; let trust = 100; let correctAnswers = 0;
+    let timerSec = 0; let gameInterval; let crisisTimeout; let isAnswered = false;
     const labels = ["A", "B", "C", "D", "E"];
 
-    // --- INITIALIZATION ---
-    setTimeout(() => { document.getElementById('msg-2').style.display = 'block'; }, 1500);
-    setTimeout(() => { 
-        document.getElementById('msg-3').style.display = 'block'; 
-        document.getElementById('btn-start').style.display = 'block';
-    }, 3000);
+    // Flow 1: Hilangkan overlay dan mulai suara efek notif perlahan
+    function initGame() {
+        document.getElementById('init-screen').style.display = 'none';
+        document.getElementById('opening-screen').style.display = 'flex';
+        
+        // Animasi Chat & Suara
+        setTimeout(() => { document.getElementById('msg-1').style.display = 'block'; playSound('sfx-ting'); }, 500);
+        setTimeout(() => { document.getElementById('msg-2').style.display = 'block'; playSound('sfx-ting'); }, 2500);
+        setTimeout(() => { 
+            document.getElementById('msg-3').style.display = 'block'; playSound('sfx-ting'); 
+            document.getElementById('btn-start').style.display = 'block';
+        }, 4500);
+    }
 
+    // Flow 2: Mulai BGM (Heartbeat Tegang) dan masuk ke game
     function startGame() {
         document.getElementById('opening-screen').style.display = 'none';
         document.getElementById('game-screen').style.display = 'flex';
+        
+        playSound('sfx-bgm'); // Background Music On
+        
         gameInterval = setInterval(() => { timerSec++; updateTimeUI(); }, 1000);
         loadQuestion();
     }
@@ -449,7 +401,7 @@
         const txt = document.getElementById('ui-trust-txt');
         bar.style.width = trust + '%';
         txt.innerText = trust + '%';
-
+        
         if(trust > 70) bar.style.backgroundColor = 'var(--accent-green)';
         else if (trust > 40) bar.style.backgroundColor = 'var(--accent-yellow)';
         else bar.style.backgroundColor = 'var(--accent-red)';
@@ -469,7 +421,6 @@
 
         const opts = document.getElementById('q-options');
         opts.innerHTML = '';
-        
         q.options.forEach((optText, index) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
@@ -478,11 +429,12 @@
             opts.appendChild(btn);
         });
 
-        // Crisis Mode Mechanics
+        // Crisis Mode
         const appBody = document.getElementById('app-body');
         const timerBox = document.getElementById('crisis-timer');
         
         if (q.isCrisis) {
+            playSound('sfx-siren');
             appBody.classList.add('crisis-mode');
             timerBox.style.display = 'block';
             let timeLeft = 15;
@@ -492,10 +444,9 @@
                 if(isAnswered) { clearInterval(crisisTimeout); return; }
                 timeLeft--;
                 timerBox.innerText = timeLeft;
-                if(timeLeft <= 0) {
-                    clearInterval(crisisTimeout);
-                    handleTimeout();
-                }
+                playSound('sfx-tick'); // Suara detak waktu
+                
+                if(timeLeft <= 0) { clearInterval(crisisTimeout); handleTimeout(); }
             }, 1000);
         } else {
             appBody.classList.remove('crisis-mode');
@@ -506,12 +457,10 @@
     function handleTimeout() {
         if(isAnswered) return;
         isAnswered = true;
-        trust -= 15; // Penalty berat
-        score -= 50;
+        playSound('sfx-wrong');
+        trust -= 15; score -= 50;
         if(score < 0) score = 0;
-        updateTrustUI();
-        document.getElementById('ui-score').innerText = score;
-        
+        updateTrustUI(); document.getElementById('ui-score').innerText = score;
         showModal(false, "TIME OUT!", "Dalam krisis media, keterlambatan merespons membuat publik mengambil kesimpulan sendiri. (Trust -15%)", questions[currentQ].explanation);
     }
 
@@ -521,78 +470,55 @@
         clearInterval(crisisTimeout);
 
         const q = questions[currentQ];
-        const isCorrect = (selectedIndex === q.answer);
-
-        if (isCorrect) {
-            score += 100;
-            trust += 5;
-            if (trust > 100) trust = 100;
-            correctAnswers++;
+        if (selectedIndex === q.answer) {
+            playSound('sfx-correct');
+            score += 100; trust += 5; if(trust > 100) trust = 100; correctAnswers++;
             showModal(true, "CORRECT!", "+100 POINT | +5% TRUST", q.explanation);
         } else {
-            score -= 50;
-            if(score < 0) score = 0;
-            trust -= 15; // Keputusan salah humas sangat fatal
-            
-            let badMsg = "-50 POINT | -15% TRUST<br><br>🚨 DECISION ERROR: Keputusan ini memicu sentimen negatif publik.";
-            showModal(false, "WRONG DECISION!", badMsg, q.explanation);
+            playSound('sfx-wrong');
+            score -= 50; if(score < 0) score = 0; trust -= 15;
+            showModal(false, "WRONG DECISION!", "-50 POINT | -15% TRUST<br><br>🚨 Keputusan ini memicu sentimen negatif publik.", q.explanation);
         }
-
-        updateTrustUI();
-        document.getElementById('ui-score').innerText = score;
+        updateTrustUI(); document.getElementById('ui-score').innerText = score;
     }
 
     function showModal(isCorrect, title, pointsMsg, explanation) {
         const modal = document.getElementById('feedback-modal');
         const box = document.getElementById('modal-box');
-        
         box.className = 'modal-content ' + (isCorrect ? 'correct' : 'wrong');
         document.getElementById('modal-title').innerText = title;
         document.getElementById('modal-points').innerHTML = pointsMsg;
         document.getElementById('modal-desc').innerText = explanation;
-        
         modal.style.display = 'flex';
     }
 
     function nextQuestion() {
         document.getElementById('feedback-modal').style.display = 'none';
-        
-        if(trust <= 0) return; // Sudah ditangani gameOverFailed
-
+        if(trust <= 0) return; 
         currentQ++;
-        if (currentQ < questions.length) {
-            loadQuestion();
-        } else {
-            endGame();
-        }
+        if (currentQ < questions.length) loadQuestion();
+        else endGame();
     }
 
     function gameOverFailed() {
-        clearInterval(gameInterval);
-        clearInterval(crisisTimeout);
+        clearInterval(gameInterval); clearInterval(crisisTimeout); stopSound('sfx-bgm'); playSound('sfx-wrong');
         document.getElementById('game-screen').style.display = 'none';
         document.getElementById('feedback-modal').style.display = 'none';
-        
         const res = document.getElementById('result-screen');
         res.style.display = 'flex';
-        res.querySelector('h1').innerText = "MISSION FAILED";
-        res.querySelector('h1').style.color = "var(--accent-red)";
+        document.getElementById('res-title').innerText = "MISSION FAILED";
+        document.getElementById('res-title').style.color = "var(--accent-red)";
         document.getElementById('res-rank').innerText = "CANCELLED BY PUBLIC";
         document.getElementById('res-rank').style.color = "var(--accent-red)";
-        
         fillResultStats();
     }
 
     function endGame() {
-        clearInterval(gameInterval);
+        clearInterval(gameInterval); stopSound('sfx-bgm'); playSound('sfx-correct');
         document.getElementById('game-screen').style.display = 'none';
-        
-        const res = document.getElementById('result-screen');
-        res.style.display = 'flex';
-        
+        const res = document.getElementById('result-screen'); res.style.display = 'flex';
         let acc = Math.round((correctAnswers / questions.length) * 100);
         let rank = "";
-        
         if (acc >= 90) rank = "👑 CHIEF COMMUNICATIONS OFFICER";
         else if (acc >= 80) rank = "💼 PR MANAGER";
         else if (acc >= 70) rank = "⭐ PR SPECIALIST";
@@ -601,32 +527,17 @@
 
         document.getElementById('res-rank').innerText = rank;
         fillResultStats();
-        saveScore();
     }
 
     function fillResultStats() {
-        let acc = Math.round((correctAnswers / questions.length) * 100);
         document.getElementById('res-score').innerText = `${score} / ${questions.length * 100}`;
         document.getElementById('res-correct').innerText = `${correctAnswers} / ${questions.length}`;
-        document.getElementById('res-acc').innerText = `${acc}%`;
+        document.getElementById('res-acc').innerText = `${Math.round((correctAnswers / questions.length) * 100)}%`;
         document.getElementById('res-trust').innerText = `${trust}%`;
-        
         let m = Math.floor(timerSec / 60).toString().padStart(2, '0');
         let s = (timerSec % 60).toString().padStart(2, '0');
         document.getElementById('res-time').innerText = `${m}:${s}`;
     }
-
-    function saveScore() {
-        // Menyimpan ke LocalStorage agar siswa/guru bisa melihat riwayat terakhir
-        const gameData = {
-            score: score,
-            accuracy: Math.round((correctAnswers / questions.length) * 100),
-            trust: trust,
-            date: new Date().toLocaleString('id-ID')
-        };
-        localStorage.setItem('pr_game_last_score', JSON.stringify(gameData));
-    }
 </script>
-
 </body>
 </html>
