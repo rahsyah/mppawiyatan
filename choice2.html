@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PR CRISIS ROOM - Save The Reputation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .tech-font {
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* Glitch & Blink Effects for Crisis */
+        @keyframes blink-red {
+            0%, 100% { background-color: rgba(220, 38, 38, 0.1); }
+            50% { background-color: rgba(220, 38, 38, 0.4); }
+        }
+        .crisis-blink {
+            animation: blink-red 1s infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+        .scanline {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(56, 189, 248, 0.3);
+            opacity: 0.5;
+            animation: scanline 6s linear infinite;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .typing-effect {
+            border-right: 2px solid #38bdf8;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 2s steps(40, end), blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #38bdf8; } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        .dashboard-panel {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover {
+            transform: translateX(5px);
+            border-color: #38bdf8;
+            background-color: rgba(56, 189, 248, 0.1);
+        }
+        .option-selected {
+            border-color: #f59e0b;
+            background-color: rgba(245, 158, 11, 0.2);
+        }
+    </style>
+</head>
+<body class="text-gray-200 min-h-screen flex flex-col antialiased">
+    <div class="scanline"></div>
+
+    <!-- AUDIO (Generated via Web Audio API in JS, no external files needed) -->
+
+    <!-- SCREEN 1: LOGIN/REGISTER -->
+    <div id="screen-login" class="min-h-screen flex items-center justify-center p-4">
+        <div class="dashboard-panel p-8 rounded-xl max-w-md w-full text-center border-t-4 border-t-blue-500">
+            <h1 class="text-4xl font-bold mb-2 tech-font text-blue-400">PR CRISIS ROOM</h1>
+            <h2 class="text-xl font-bold mb-6 text-red-500 tracking-wider">"SAVE THE REPUTATION"</h2>
+            <p class="text-sm text-gray-400 mb-6 italic">"Satu unggahan bisa menjadi viral. Satu kalimat bisa menyelamatkan atau menghancurkan reputasi."</p>
+            
+            <div class="mb-6 text-left">
+                <label class="block text-sm text-gray-400 mb-2">NAMA OFFICER:</label>
+                <input type="text" id="playerName" class="w-full bg-slate-800 border border-slate-600 rounded p-3 text-white focus:outline-none focus:border-blue-500" placeholder="Masukkan nama Anda..." autocomplete="off">
+            </div>
+            
+            <button onclick="startOpening()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded transition shadow-lg shadow-blue-500/30">
+                [ LOGIN & TERIMA MISI ]
+            </button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: CINEMATIC OPENING -->
+    <div id="screen-opening" class="hidden fixed inset-0 bg-black z-40 flex flex-col items-center justify-center p-4 text-center">
+        <div id="opening-sequence" class="max-w-2xl w-full">
+            <p id="op-time" class="text-2xl tech-font text-gray-500 mb-4 opacity-0 transition-opacity duration-1000">08.03 WIB</p>
+            <div id="op-alert" class="hidden mb-6">
+                <p class="text-3xl font-bold text-red-500 mb-2"><i class="fas fa-bell animate-bounce"></i> TING!</p>
+                <p class="tech-font text-xl text-yellow-400 border border-yellow-400 inline-block px-4 py-1 rounded">SOCIAL MEDIA ALERT</p>
+            </div>
+            <p id="op-text1" class="text-xl mb-4 hidden">"Sebuah unggahan negatif tentang organisasi mulai viral."</p>
+            <div id="op-comments" class="text-2xl font-bold text-red-400 tech-font mb-8 hidden">
+                <span id="comment-count">127</span> KOMENTAR NEGATIF
+            </div>
+            <div id="op-crisis" class="hidden mb-8">
+                <p class="text-4xl font-black text-red-600 crisis-blink p-4 border-4 border-red-600">🚨 CRISIS LEVEL: HIGH</p>
+            </div>
+            <p id="op-text2" class="text-lg mb-8 hidden text-blue-300">"Anda adalah Public Relations Officer. Direktur meminta Anda menangani situasi ini."</p>
+            
+            <button id="btn-start-mission" onclick="enterDashboard()" class="hidden bg-red-600 hover:bg-red-500 text-white font-bold py-4 px-8 rounded text-xl animate-pulse">
+                [ TERIMA MISI ]
+            </button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: MAIN DASHBOARD -->
+    <div id="screen-game" class="hidden flex-1 flex flex-col lg:flex-row h-screen overflow-hidden">
+        
+        <!-- Sidebar / Status Panel -->
+        <div class="w-full lg:w-1/4 dashboard-panel p-4 flex flex-col border-r border-slate-700 overflow-y-auto">
+            <h2 class="text-xl tech-font font-bold text-blue-400 mb-4 border-b border-slate-700 pb-2"><i class="fas fa-desktop"></i> PR CONTROL ROOM</h2>
+            
+            <div class="space-y-4 flex-1">
+                <!-- Profile -->
+                <div class="bg-slate-800 p-3 rounded border border-slate-600">
+                    <p class="text-xs text-gray-400 uppercase">Officer in Charge</p>
+                    <p class="font-bold text-lg" id="ui-player-name">NAME</p>
+                </div>
+
+                <!-- Mission Status -->
+                <div class="bg-slate-800 p-3 rounded border border-slate-600">
+                    <p class="text-xs text-gray-400 uppercase">Current Mission</p>
+                    <p class="font-bold text-blue-300" id="ui-mission-name">M1: PR FUNDAMENTALS</p>
+                    <p class="text-sm text-gray-400">Soal <span id="ui-question-num">1</span>/40</p>
+                </div>
+
+                <!-- Public Trust -->
+                <div class="bg-slate-800 p-3 rounded border border-slate-600">
+                    <p class="text-xs text-gray-400 uppercase flex justify-between">
+                        <span>Public Trust</span>
+                        <span id="ui-trust-pct">100%</span>
+                    </p>
+                    <div class="w-full bg-slate-700 rounded-full h-4 mt-2 overflow-hidden">
+                        <div id="ui-trust-bar" class="bg-green-500 h-4 rounded-full transition-all duration-500" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <!-- Crisis Level -->
+                <div class="bg-slate-800 p-3 rounded border border-slate-600 text-center">
+                    <p class="text-xs text-gray-400 uppercase mb-1">Crisis Level</p>
+                    <p id="ui-crisis-level" class="font-bold text-xl text-green-400 tech-font p-1 rounded bg-green-900/30">🟢 STABLE</p>
+                </div>
+
+                <!-- Budget & Score -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-slate-800 p-2 rounded border border-slate-600 text-center">
+                        <p class="text-xs text-gray-400 uppercase">Score</p>
+                        <p class="font-bold tech-font text-yellow-400" id="ui-score">0</p>
+                    </div>
+                    <div class="bg-slate-800 p-2 rounded border border-slate-600 text-center">
+                        <p class="text-xs text-gray-400 uppercase">Budget (Rp)</p>
+                        <p class="font-bold tech-font text-green-400 text-sm" id="ui-budget">10M</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 p-4 lg:p-8 flex flex-col relative overflow-y-auto" id="game-area">
+            
+            <!-- Random Event / Timer Alert -->
+            <div id="alert-banner" class="hidden bg-red-900/80 border border-red-500 text-white p-4 rounded-lg mb-6 shadow-lg crisis-blink flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-xl tech-font"><i class="fas fa-exclamation-triangle"></i> <span id="alert-title">BREAKING NEWS</span></h3>
+                    <p id="alert-desc" class="text-sm">Media mulai meliput kasus ini!</p>
+                </div>
+                <div id="timer-container" class="hidden text-center">
+                    <p class="text-xs">TIME LEFT</p>
+                    <p class="text-3xl tech-font font-bold" id="ui-timer">20</p>
+                </div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="dashboard-panel p-6 lg:p-8 rounded-xl flex-1 flex flex-col">
+                <div class="mb-6">
+                    <span id="ui-q-category" class="text-xs font-bold bg-blue-900 text-blue-200 px-2 py-1 rounded uppercase tracking-wider">Humas</span>
+                    <h2 id="ui-question-text" class="text-xl lg:text-2xl mt-4 font-semibold leading-relaxed">
+                        Loading...
+                    </h2>
+                </div>
+
+                <!-- Options -->
+                <div id="options-container" class="space-y-3 mt-auto">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- SCREEN 4: FEEDBACK MODAL -->
+    <div id="screen-feedback" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="dashboard-panel p-6 md:p-8 rounded-xl max-w-2xl w-full">
+            <h2 class="text-2xl font-bold mb-4 border-b border-slate-600 pb-2 tech-font">DECISION ANALYSIS</h2>
+            
+            <div class="mb-4">
+                <p class="text-sm text-gray-400">Keputusan Anda:</p>
+                <p id="fb-player-choice" class="text-lg font-semibold mt-1 p-3 rounded bg-slate-800 border"></p>
+            </div>
+
+            <div class="mb-4">
+                <p class="text-sm text-gray-400">Dampak:</p>
+                <p id="fb-impact" class="font-bold text-lg flex items-center gap-2 mt-1"></p>
+            </div>
+
+            <div class="mb-6">
+                <p class="text-sm text-gray-400">Mengapa?</p>
+                <p id="fb-rationale" class="mt-1 text-slate-300 leading-relaxed"></p>
+            </div>
+
+            <div id="fb-best-decision-box" class="mb-6 p-4 bg-green-900/30 border border-green-700 rounded hidden">
+                <p class="text-sm text-green-400 font-bold mb-1">BEST DECISION:</p>
+                <p id="fb-best-decision" class="text-sm text-green-100"></p>
+            </div>
+
+            <button onclick="nextQuestion()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded transition">
+                LANJUTKAN MISI <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- SCREEN 5: END GAME REPORT -->
+    <div id="screen-end" class="hidden min-h-screen flex items-center justify-center p-4 py-8">
+        <div class="dashboard-panel p-8 rounded-xl max-w-3xl w-full border-t-4 border-t-blue-500">
+            <div class="text-center mb-8">
+                <h1 id="end-title" class="text-4xl font-bold mb-2 tech-font text-blue-400">MISSION COMPLETE</h1>
+                <p class="text-xl" id="end-subtitle">PUBLIC RELATIONS PERFORMANCE REPORT</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="space-y-4">
+                    <div class="bg-slate-800 p-4 rounded border border-slate-600 flex justify-between items-center">
+                        <span class="text-gray-400">Nama Officer:</span>
+                        <span class="font-bold text-lg" id="end-name">-</span>
+                    </div>
+                    <div class="bg-slate-800 p-4 rounded border border-slate-600 flex justify-between items-center">
+                        <span class="text-gray-400">Skor Akhir:</span>
+                        <span class="font-bold text-2xl text-yellow-400" id="end-score">0 / 1000</span>
+                    </div>
+                    <div class="bg-slate-800 p-4 rounded border border-slate-600 flex justify-between items-center">
+                        <span class="text-gray-400">Akurasi:</span>
+                        <span class="font-bold text-lg" id="end-accuracy">0%</span>
+                    </div>
+                    <div class="bg-slate-800 p-4 rounded border border-slate-600 flex justify-between items-center">
+                        <span class="text-gray-400">Public Trust Akhir:</span>
+                        <span class="font-bold text-lg text-green-400" id="end-trust">0%</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 p-4 rounded border border-slate-600">
+                    <h3 class="text-gray-400 mb-3 uppercase text-sm font-bold">Analisis Kemampuan</h3>
+                    <div class="space-y-2 text-sm" id="end-analytics">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 p-6 rounded-lg border border-slate-700 mb-8 text-center">
+                <h3 class="text-gray-400 mb-2 uppercase text-sm font-bold">Pangkat Akhir Anda:</h3>
+                <p id="end-rank" class="text-3xl font-black text-white mb-2">CHIEF PR OFFICER</p>
+                <p id="end-rank-desc" class="text-slate-400 italic">"..."</p>
+            </div>
+
+            <div class="bg-blue-900/20 p-6 rounded-lg border border-blue-800 mb-8">
+                <h3 class="text-blue-400 mb-2 uppercase text-sm font-bold"><i class="fas fa-brain"></i> WHAT DID YOU LEARN?</h3>
+                <p id="end-learning" class="text-sm text-slate-300 leading-relaxed"></p>
+            </div>
+
+            <button onclick="resetGame()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-4 rounded transition">
+                <i class="fas fa-redo mr-2"></i> RETRY MISSION
+            </button>
+        </div>
+    </div>
+
+<script>
+/* =========================================
+   GAME DATA (40 HOTS QUESTIONS)
+   ========================================= */
+const questions = [
+    // MISSION 1: PR FUNDAMENTALS (1-8)
+    {
+        mission: 1, category: 'Humas',
+        text: "Sebuah sekolah mendapat komentar negatif dari orang tua siswa di media sosial. Komentar tersebut menyatakan bahwa pelayanan administrasi sekolah sangat lambat dan berbelit-belit. Sebagai staf Humas, tindakan pertama yang paling tepat adalah...",
+        options: [
+            { text: "Menghapus komentar tersebut agar tidak dilihat oleh calon siswa baru.", isCorrect: false, impact: -15, rationale: "Menghapus komentar tanpa penyelesaian akan memicu kemarahan publik yang lebih besar dan merusak transparansi." },
+            { text: "Membalas komentar dengan menyalahkan petugas administrasi secara terbuka.", isCorrect: false, impact: -15, rationale: "Menyalahkan pihak internal di ruang publik menunjukkan kelemahan manajemen dan melanggar etika institusi." },
+            { text: "Mengabaikan komentar karena hal itu wajar dan hanya dari satu orang.", isCorrect: false, impact: -10, rationale: "Mengabaikan keluhan dapat membuat masalah kecil menjadi besar (snowball effect)." },
+            { text: "Memverifikasi informasi ke bagian administrasi, merespons orang tua secara profesional, dan mengajak diskusi via DM/offline.", isCorrect: true, impact: 5, rationale: "Humas harus memverifikasi fakta internal dahulu, merespons dengan empati, dan memindahkan percakapan ke saluran privat untuk resolusi." },
+            { text: "Membuat postingan baru yang memuji-muji kecepatan layanan administrasi sekolah.", isCorrect: false, impact: -10, rationale: "Ini adalah pengalihan isu yang tidak menyelesaikan keluhan spesifik pelanggan dan terlihat defensif." }
+        ]
+    },
+    {
+        mission: 1, category: 'Humas',
+        text: "Humas sebuah perusahaan startup memiliki hubungan yang sangat baik dengan jurnalis media massa. Namun, hasil survei internal menunjukkan bahwa karyawan merasa perusahaan tidak transparan terkait kebijakan baru. Kesimpulan yang paling tepat dari situasi ini adalah...",
+        options: [
+            { text: "Humas sudah berhasil karena tugas utama Humas hanyalah membangun relasi dengan jurnalis (media relations).", isCorrect: false, impact: -10, rationale: "Tugas Humas tidak hanya eksternal, tetapi juga internal." },
+            { text: "Humas perlu memperbaiki hubungan internal karena karyawan (internal public) juga merupakan stakeholder kunci pembentuk citra.", isCorrect: true, impact: 5, rationale: "Karyawan adalah duta pertama perusahaan. Hubungan internal yang buruk dapat bocor keluar dan merusak reputasi." },
+            { text: "Karyawan tidak memiliki pengaruh terhadap reputasi perusahaan di mata publik eksternal.", isCorrect: false, impact: -15, rationale: "Karyawan sangat berpengaruh; mereka adalah sumber informasi yang dipercaya publik." },
+            { text: "Manajemen harus memecat karyawan yang merasa tidak puas agar citra tetap positif.", isCorrect: false, impact: -15, rationale: "Keputusan otoriter yang melanggar etika dan akan memicu krisis ketenagakerjaan." },
+            { text: "Humas harus membayar media lebih banyak untuk menutupi keluhan karyawan.", isCorrect: false, impact: -15, rationale: "Menutupi masalah internal dengan menyuap/membayar media melanggar etika PR (Public Relations)." }
+        ]
+    },
+    {
+        mission: 1, category: 'Humas',
+        text: "Perusahaan XYZ baru saja memenangkan penghargaan lingkungan. Humas ingin memanfaatkan momentum ini. Strategi komunikasi publik yang paling sesuai dengan prinsip Humas untuk membangun reputasi jangka panjang adalah...",
+        options: [
+            { text: "Membeli iklan di semua stasiun TV yang menyatakan XYZ perusahaan terbaik.", isCorrect: false, impact: -5, rationale: "Iklan berbayar (advertising) berbeda dengan PR. Iklan kurang memiliki kredibilitas dibandingkan pemberitaan organik." },
+            { text: "Menyelenggarakan press conference dan membagikan press release tentang program keberlanjutan yang mengantarkan kemenangan tersebut.", isCorrect: true, impact: 5, rationale: "Ini adalah strategi PR organik yang membangun kredibilitas (earned media) dan memberikan informasi substansial." },
+            { text: "Menyombongkan diri di media sosial dengan merendahkan perusahaan kompetitor yang tidak menang.", isCorrect: false, impact: -15, rationale: "Melanggar etika komunikasi bisnis dan dapat menimbulkan sentimen negatif (backfire)." },
+            { text: "Menyimpan piala dan tidak melakukan publikasi karena reputasi akan terbentuk dengan sendirinya.", isCorrect: false, impact: -10, rationale: "Humas proaktif; prestasi harus dikomunikasikan secara strategis agar publik mengetahuinya." },
+            { text: "Membagikan uang tunai kepada masyarakat agar mereka percaya perusahaan peduli lingkungan.", isCorrect: false, impact: -15, rationale: "Tindakan manipulatif yang tidak mendidik dan tidak relevan dengan esensi pelestarian lingkungan." }
+        ]
+    },
+    {
+        mission: 1, category: 'Humas',
+        text: "Seorang PR Officer menemukan bahwa citra (image) perusahaan di mata masyarakat saat ini sangat inovatif, namun reputasi perusahaan di kalangan investor menurun karena laporan keuangan yang kurang stabil. Analisis yang tepat membedakan citra dan reputasi dalam kasus ini adalah...",
+        options: [
+            { text: "Citra dan reputasi adalah hal yang sama, sehingga PR officer tidak perlu khawatir.", isCorrect: false, impact: -10, rationale: "Citra (kesan sesaat) berbeda dengan reputasi (rekam jejak jangka panjang)." },
+            { text: "Citra dibentuk oleh kampanye pemasaran sesaat, sedangkan reputasi dibangun dari pengalaman, perilaku, dan kinerja nyata dari waktu ke waktu.", isCorrect: true, impact: 5, rationale: "Citra adalah apa yang publik pikirkan saat ini, reputasi adalah bukti konsistensi tindakan organisasi." },
+            { text: "Investor tidak peduli pada reputasi, mereka hanya peduli pada citra inovatif.", isCorrect: false, impact: -10, rationale: "Investor sangat bergantung pada reputasi manajerial dan stabilitas finansial." },
+            { text: "Reputasi dapat diperbaiki dalam satu hari melalui satu unggahan viral di Instagram.", isCorrect: false, impact: -10, rationale: "Reputasi membutuhkan waktu lama untuk dibangun dan dijaga, tidak bisa instan." },
+            { text: "PR hanya bertanggung jawab pada citra konsumen, sedangkan reputasi urusan divisi keuangan semata.", isCorrect: false, impact: -15, rationale: "PR bertanggung jawab mengelola komunikasi ke semua stakeholder, termasuk komunikasi finansial (Investor Relations)." }
+        ]
+    },
+    {
+        mission: 1, category: 'Etika Komunikasi',
+        text: "Sebuah pabrik makanan diduga membuang limbah ke sungai. Masyarakat desa berdemonstrasi. Direktur meminta Anda sebagai Humas untuk menyangkal tuduhan tersebut di depan wartawan, padahal Anda tahu bukti internal menunjukkan pabrik memang bersalah. Tindakan Anda berdasarkan etika Humas adalah...",
+        options: [
+            { text: "Menuruti direktur untuk berbohong demi menjaga citra perusahaan.", isCorrect: false, impact: -15, rationale: "Berbohong melanggar kode etik PR dan dapat menghancurkan kredibilitas permanen saat kebenaran terungkap." },
+            { text: "Memberikan dokumen rahasia kepada media secara diam-diam agar perusahaan hancur.", isCorrect: false, impact: -10, rationale: "Membocorkan rahasia perusahaan tanpa prosedur whistleblower yang benar melanggar loyalitas." },
+            { text: "Mundur (resign) secara sepihak dan langsung berbicara buruk tentang perusahaan di media sosial.", isCorrect: false, impact: -10, rationale: "Tindakan ini tidak profesional dan lari dari tanggung jawab mengelola krisis." },
+            { text: "Menyarankan direktur untuk mengakui kelalaian, menyiapkan rencana pemulihan lingkungan, dan mengkomunikasikan tanggung jawab perusahaan kepada publik.", isCorrect: true, impact: 5, rationale: "Humas berfungsi sebagai penasihat etis manajemen (boundary spanner). Transparansi dan perbaikan adalah solusi terbaik." },
+            { text: "Menyewa preman untuk membubarkan demonstrasi masyarakat agar wartawan tidak meliput.", isCorrect: false, impact: -15, rationale: "Tindakan kriminal, sangat tidak etis, dan akan memperparah krisis hukum serta reputasi." }
+        ]
+    },
+    { mission: 1, category: 'Humas', text: "Manakah dari berikut ini yang BUKAN merupakan karakteristik komunikasi dua arah (two-way communication) dalam praktik Humas?", options: [ { text: "Humas hanya mendengarkan publik tanpa memberikan respons balik.", isCorrect: true, impact: 5, rationale: "Komunikasi dua arah harus melibatkan pertukaran informasi (mendengarkan dan merespons), bukan hanya satu sisi." }, { text: "Organisasi bersedia mengubah kebijakan berdasarkan feedback dari masyarakat.", isCorrect: false, impact: -5, rationale: "Ini adalah inti dari two-way symmetrical communication." }, { text: "Melakukan survei kepuasan pelanggan secara rutin.", isCorrect: false, impact: -5, rationale: "Survei adalah alat mendengarkan publik dalam komunikasi dua arah." }, { text: "Membuka kolom komentar dan forum diskusi dengan stakeholders.", isCorrect: false, impact: -5, rationale: "Forum memfasilitasi komunikasi dua arah." }, { text: "Mengadakan Town Hall meeting antara direksi dan karyawan.", isCorrect: false, impact: -5, rationale: "Town Hall adalah medium komunikasi internal dua arah." } ] },
+    { mission: 1, category: 'Humas', text: "Dalam teori stakeholder, siapakah yang diklasifikasikan sebagai publik primer bagi sebuah rumah sakit?", options: [ { text: "Pemasok alat tulis kantor.", isCorrect: false, impact: -5, rationale: "Pemasok ATK adalah sekunder/tersier, dampaknya kecil." }, { text: "Pasien dan tenaga medis (dokter/perawat).", isCorrect: true, impact: 5, rationale: "Publik primer adalah mereka yang berinteraksi langsung dan keberadaannya vital bagi institusi." }, { text: "Followers Instagram dari luar kota.", isCorrect: false, impact: -5, rationale: "Hanya audiens digital umum." }, { text: "Warga negara asing yang sedang berlibur di negara lain.", isCorrect: false, impact: -5, rationale: "Tidak memiliki irisan kepentingan." }, { text: "Komunitas pecinta otomotif di kota tersebut.", isCorrect: false, impact: -5, rationale: "Tidak relevan dengan pelayanan inti rumah sakit." } ] },
+    { mission: 1, category: 'Humas', text: "Tugas pokok Humas meliputi 'boundary spanning'. Apa makna peran tersebut dalam situasi organisasi yang sedang mengalami perubahan kebijakan radikal?", options: [ { text: "Humas membuat batas fisik antara kantor dan ruang publik.", isCorrect: false, impact: -5, rationale: "Boundary bukan batas fisik." }, { text: "Humas menutupi informasi dari pihak eksternal rapat-rapat.", isCorrect: false, impact: -10, rationale: "Ini bertentangan dengan asas keterbukaan." }, { text: "Humas berfungsi sebagai jembatan yang menghubungkan dan menerjemahkan kepentingan manajemen ke publik, dan aspirasi publik ke manajemen.", isCorrect: true, impact: 5, rationale: "Boundary spanner berarti berdiri di perbatasan organisasi dan lingkungan, memediasi arus informasi dua arah." }, { text: "Humas hanya membela kepentingan direktur dan mengabaikan masyarakat.", isCorrect: false, impact: -10, rationale: "Ini adalah propaganda satu arah." }, { text: "Humas menyensor semua berita media.", isCorrect: false, impact: -10, rationale: "Humas tidak memiliki hak penyensoran media (freedom of the press)." } ] },
+
+    // MISSION 2: CHOOSE THE RIGHT MEDIA (9-16)
+    {
+        mission: 2, category: 'Media Komunikasi',
+        text: "Sebuah sekolah ingin menyampaikan informasi resmi dan mendetail kepada orang tua siswa mengenai rincian perubahan biaya administrasi semester depan. Media yang paling efektif dan tepat sasaran adalah...",
+        options: [
+            { text: "Video hiburan (vlog) di YouTube resmi sekolah.", isCorrect: false, impact: -10, rationale: "Vlog tidak memiliki format resmi dan rincian biaya sulit dicerna lewat video hiburan." },
+            { text: "Surat edaran resmi yang dikirim langsung/via WhatsApp broadcast resmi ke orang tua.", isCorrect: true, impact: 5, rationale: "Surat resmi memberikan kepastian, legalitas, rincian yang jelas, dan tepat sampai ke audiens spesifik." },
+            { text: "Membuat tren/challenge TikTok tentang biaya sekolah.", isCorrect: false, impact: -15, rationale: "Tidak profesional untuk informasi administratif yang serius dan sensitif." },
+            { text: "Poster yang ditempel di mading kantin sekolah.", isCorrect: false, impact: -5, rationale: "Orang tua jarang pergi ke mading kantin sekolah." },
+            { text: "Status Instagram pribadi milik ketua OSIS.", isCorrect: false, impact: -10, rationale: "Bukan saluran komunikasi resmi institusi." }
+        ]
+    },
+    {
+        mission: 2, category: 'Media Komunikasi',
+        text: "[CASE] Humas perusahaan pertambangan ingin mengedukasi masyarakat luas tentang program CSR (penanaman mangrove) yang data teknisnya cukup kompleks. Pemilihan media yang paling komprehensif adalah...",
+        options: [
+            { text: "Hanya menyebarkan brosur berisi teks panjang tanpa gambar.", isCorrect: false, impact: -5, rationale: "Teks panjang sulit dipahami masyarakat umum." },
+            { text: "Mengunggah satu foto tanpa caption di Facebook.", isCorrect: false, impact: -10, rationale: "Tidak menjelaskan kompleksitas program CSR." },
+            { text: "Mendesain infografis visual dan video penjelasan singkat yang dipublikasikan melalui website dan media sosial resmi.", isCorrect: true, impact: 5, rationale: "Infografis dan video menyederhanakan data kompleks menjadi mudah dipahami (visual storytelling) dan menjangkau masyarakat luas." },
+            { text: "Mengirimkan memo internal kepada seluruh staf pemasaran.", isCorrect: false, impact: -5, rationale: "Salah audiens. Targetnya masyarakat luas, bukan hanya internal." },
+            { text: "Berdebat dengan aktivis lingkungan di kolom komentar Twitter/X.", isCorrect: false, impact: -15, rationale: "Ini menciptakan konflik, bukan mengedukasi masyarakat." }
+        ]
+    },
+    { mission: 2, category: 'Media Komunikasi', text: "Manakah dari berikut ini yang diklasifikasikan sebagai 'Media Internal' yang ditujukan untuk menjaga keterikatan (engagement) antar karyawan di suatu perusahaan besar?", options: [ { text: "Siaran Pers (Press Release) di koran nasional.", isCorrect: false, impact: -5, rationale: "Ini media eksternal." }, { text: "Newsletter/Buletin internal (In-house magazine) mingguan.", isCorrect: true, impact: 5, rationale: "Buletin internal dirancang khusus untuk audiens internal agar mengetahui update perusahaan." }, { text: "Papan reklame (Billboard) di jalan tol.", isCorrect: false, impact: -5, rationale: "Media eksternal untuk promosi massa." }, { text: "Brosur pendaftaran pelanggan baru.", isCorrect: false, impact: -5, rationale: "Media eksternal (marketing)." }, { text: "Konferensi pers bersama wartawan lokal.", isCorrect: false, impact: -5, rationale: "Media relations (eksternal)." } ] },
+    { mission: 2, category: 'Media Komunikasi', text: "Perusahaan fashion meluncurkan produk untuk target demografi remaja (Gen Z). Platform media digital manakah yang secara analitik paling optimal untuk kampanye visual produk tersebut?", options: [ { text: "Koran cetak harian bisnis.", isCorrect: false, impact: -10, rationale: "Gen Z sangat jarang membaca koran bisnis." }, { text: "Website korporat berbasis teks.", isCorrect: false, impact: -5, rationale: "Kurang menarik secara visual untuk fashion remaja." }, { text: "TikTok dan Instagram (Reels & Feeds).", isCorrect: true, impact: 5, rationale: "Platform ini sangat visual, memiliki fitur tren, dan didominasi oleh audiens Gen Z." }, { text: "Radio AM lokal.", isCorrect: false, impact: -10, rationale: "Tidak mendukung kampanye visual fashion." }, { text: "Email surat elektronik massal (cold email).", isCorrect: false, impact: -5, rationale: "Engagement rate sangat rendah untuk demografi remaja." } ] },
+    { mission: 2, category: 'Media Komunikasi', text: "Direktur ingin menyampaikan permintaan maaf secara langsung dan emosional kepada publik setelah insiden fatal yang melibatkan produk perusahaan. Format komunikasi apa yang paling tepat untuk menunjukkan keseriusan dan empati?", options: [ { text: "Sebuah tweet/X pendek berisi 140 karakter.", isCorrect: false, impact: -10, rationale: "Terlalu kasual dan tidak menunjukkan keseriusan untuk insiden fatal." }, { text: "Press Conference (Konferensi Pers) yang disiarkan langsung (Live) dengan kehadiran Direktur.", isCorrect: true, impact: 5, rationale: "Konferensi pers langsung menunjukkan keberanian, transparansi, body language empati, dan kesiapan menjawab pertanyaan." }, { text: "Membayar buzzer untuk menutupi isu.", isCorrect: false, impact: -15, rationale: "Tidak etis dan merusak reputasi jangka panjang." }, { text: "Menempelkan poster permintaan maaf di tiang listrik.", isCorrect: false, impact: -10, rationale: "Sangat tidak profesional dan jangkauannya tidak relevan." }, { text: "Menyuruh staf CS membalas otomatis dengan template robot.", isCorrect: false, impact: -10, rationale: "Tidak ada empati dan memicu kemarahan lanjutan." } ] },
+    { mission: 2, category: 'Media Komunikasi', text: "Dalam menyusun Press Release, struktur penulisan yang paling direkomendasikan oleh jurnalis adalah sistem 'Piramida Terbalik'. Apa esensi dari struktur ini?", options: [ { text: "Informasi paling penting dan krusial diletakkan di paragraf pertama (Lead).", isCorrect: true, impact: 5, rationale: "Piramida terbalik memastikan pembaca (dan editor) langsung mendapatkan inti berita 5W1H di awal." }, { text: "Inti berita disembunyikan di paragraf terakhir agar pembaca penasaran.", isCorrect: false, impact: -10, rationale: "Jurnalis akan mengabaikan rilis yang bertele-tele." }, { text: "Dimulai dengan sejarah perusahaan sejak berdiri 50 tahun lalu.", isCorrect: false, impact: -5, rationale: "Tidak memiliki 'news value' (nilai berita) aktual." }, { text: "Tidak menggunakan fakta, hanya opini dan klaim pujian diri.", isCorrect: false, impact: -10, rationale: "Rilis harus objektif, bukan iklan." }, { text: "Hanya berisi satu kalimat judul tanpa isi berita.", isCorrect: false, impact: -10, rationale: "Tidak komunikatif." } ] },
+    { mission: 2, category: 'Media Komunikasi', text: "Sebuah instansi pemerintah ingin mempublikasikan dokumentasi kegiatan bakti sosial harian secara cepat tanpa biaya besar. Media yang paling tepat adalah...", options: [ { text: "Mencetak buku eksklusif setebal 500 halaman setiap hari.", isCorrect: false, impact: -10, rationale: "Sangat mahal dan membuang waktu." }, { text: "Membeli jam tayang prime time di TV Nasional.", isCorrect: false, impact: -10, rationale: "Anggaran sangat besar, tidak efisien untuk dokumentasi harian." }, { text: "Menggunakan Instagram/Facebook Story dan Feed di akun resmi instansi.", isCorrect: true, impact: 5, rationale: "Media sosial tidak berbayar, sangat cepat, dan cocok untuk dokumentasi visual harian." }, { text: "Mengirimkan surat fisik ke setiap rumah warga.", isCorrect: false, impact: -10, rationale: "Mahal, lambat, dan tidak ramah lingkungan." }, { text: "Membuat spanduk di setiap perempatan jalan.", isCorrect: false, impact: -5, rationale: "Mengganggu estetika kota dan mahal." } ] },
+    { mission: 2, category: 'Media Komunikasi', text: "Apa kelemahan utama menggunakan Media Sosial sebagai saluran komunikasi tunggal bagi perusahaan?", options: [ { text: "Media sosial sepenuhnya kebal terhadap kritik dan krisis.", isCorrect: false, impact: -5, rationale: "Faktanya media sosial sangat rentan terhadap krisis viral." }, { text: "Informasi di media sosial sangat lambat menyebar.", isCorrect: false, impact: -5, rationale: "Penyebarannya justru paling cepat." }, { text: "Perusahaan kehilangan kendali penuh atas informasi jika terjadi misinterpretasi dan algoritma yang terus berubah.", isCorrect: true, impact: 5, rationale: "Humas tidak bisa mengontrol algoritma dan komentar netizen yang bisa membelokkan makna pesan." }, { text: "Media sosial selalu berbayar untuk setiap postingan.", isCorrect: false, impact: -5, rationale: "Organik sosial media itu gratis." }, { text: "Tidak ada audiens yang menggunakan media sosial saat ini.", isCorrect: false, impact: -5, rationale: "Pernyataan faktual yang salah." } ] },
+
+    // MISSION 3: PUBLIC CRISIS (17-24) - HAS TIMER
+    {
+        mission: 3, category: 'Krisis Komunikasi', hasTimer: true, timerSeconds: 15, event: "🚨 SEBUAH VIDEO VIRAL: Pelanggan menemukan serangga dalam makanan kemasan produk Anda!",
+        text: "Video pelanggan mengeluhkan produk makanan Anda viral di TikTok. Komentar hujatan terus bertambah. Sebagai Humas, tindakan pertama (First Response) dalam waktu 1 jam pertama adalah...",
+        options: [
+            { text: "Membalas dengan akun palsu untuk menyerang si pembuat video.", isCorrect: false, impact: -15, rationale: "Melanggar hukum ITE dan etika. Jika ketahuan, reputasi hancur total." },
+            { text: "Menghapus akun media sosial perusahaan sementara waktu.", isCorrect: false, impact: -10, rationale: "Terlihat seperti melarikan diri (guilty by omission)." },
+            { text: "Mengeluarkan Holding Statement (pernyataan awal) bahwa perusahaan sedang menginvestigasi masalah ini secara serius, dan menghubungi korban.", isCorrect: true, impact: 5, rationale: "Holding statement mengisi 'ruang kosong' informasi (vacuum of information) sambil mengumpulkan fakta, menunjukkan kepedulian." },
+            { text: "Langsung menyatakan bahwa video tersebut adalah hoaks buatan pesaing.", isCorrect: false, impact: -15, rationale: "Menyimpulkan tanpa bukti investigasi dapat memicu serangan hukum dan kemarahan publik jika terbukti benar." },
+            { text: "Memposting konten diskon besar-besaran untuk menutupi kasus.", isCorrect: false, impact: -10, rationale: "Tone-deaf (tidak peka). Publik akan marah karena perusahaan mengabaikan masalah inti." }
+        ]
+    },
+    {
+        mission: 3, category: 'Krisis Komunikasi', hasTimer: true, timerSeconds: 20, event: "⚠️ INFORMASI BOCOR: Karyawan membocorkan data gaji di Twitter.",
+        text: "Ada keributan internal yang bocor ke media sosial terkait keterlambatan gaji karyawan. Jurnalis mulai menelepon Anda. Sikap Anda saat merespons panggilan telepon jurnalis adalah...",
+        options: [
+            { text: "Mematikan telepon dan memblokir nomor semua jurnalis.", isCorrect: false, impact: -10, rationale: "Media relations yang buruk. Jurnalis akan menulis 'Perusahaan menolak berkomentar', yang berkonotasi negatif." },
+            { text: "Berteriak memarahi jurnalis karena mencampuri urusan internal perusahaan.", isCorrect: false, impact: -15, rationale: "Jurnalis hanya menjalankan tugasnya. Bersikap kasar akan melahirkan artikel opini yang menyerang perusahaan." },
+            { text: "Merespons profesional, meminta waktu untuk mengumpulkan data akurat dari divisi HR/Finance, lalu berjanji memberikan rilis resmi.", isCorrect: true, impact: 5, rationale: "Memberikan janji (dan menepatinya) menjaga hubungan baik dengan media dan mencegah penyebaran berita sepihak." },
+            { text: "Langsung menyalahkan divisi keuangan agar jurnalis tahu Humas tidak salah.", isCorrect: false, impact: -15, rationale: "Menyalahkan rekan kerja (finger-pointing) menunjukkan inkompetensi manajerial organisasi." },
+            { text: "Menyuap jurnalis dengan pulsa agar tidak menulis berita tersebut.", isCorrect: false, impact: -15, rationale: "Penyuapan melanggar etika jurnalistik dan PR." }
+        ]
+    },
+    { mission: 3, category: 'Krisis Komunikasi', hasTimer: true, timerSeconds: 20, text: "Dalam fase krisis, mengapa penting bagi perusahaan untuk memiliki 'Satu Pintu Komunikasi' (Single Spokesperson)?", options: [ { text: "Agar wartawan kesulitan mendapat informasi.", isCorrect: false, impact: -5, rationale: "Tujuannya bukan menyulitkan media, tapi menyelaraskan informasi." }, { text: "Untuk mencegah simpang siur informasi, memastikan pesan konsisten, dan meminimalkan misinterpretasi.", isCorrect: true, impact: 5, rationale: "Banyak sumber suara (multiple voices) saat krisis menyebabkan kebingungan dan spekulasi liar di masyarakat." }, { text: "Agar hanya satu orang yang dipecat jika terjadi kesalahan.", isCorrect: false, impact: -10, rationale: "Bukan tentang mencari kambing hitam." }, { text: "Karena pegawai lain tidak pandai berbicara.", isCorrect: false, impact: -5, rationale: "Bukan sekadar soal kemampuan bicara, tapi otoritas dan konsistensi pesan." }, { text: "Supaya direktur tidak perlu bekerja.", isCorrect: false, impact: -5, rationale: "Direktur justru sering menjadi spokesperson utama saat krisis besar." } ] },
+    { mission: 3, category: 'Krisis Komunikasi', hasTimer: true, timerSeconds: 15, text: "Beredar rumor hoaks di grup WhatsApp masyarakat bahwa produk minuman Anda mengandung racun. Apa strategi proaktif terbaik Humas?", options: [ { text: "Menunggu sampai penjualan turun drastis baru bertindak.", isCorrect: false, impact: -10, rationale: "Reaktif dan membiarkan kerugian terjadi." }, { text: "Bekerja sama dengan otoritas kesehatan (BPOM) untuk merilis hasil uji lab resmi bahwa produk aman di media digital dan massa.", isCorrect: true, impact: 5, rationale: "Klarifikasi yang didukung pihak ketiga (Third Party Endorsement) sangat kredibel untuk mematahkan hoaks." }, { text: "Menyebarkan hoaks tentang perusahaan lain sebagai balas dendam.", isCorrect: false, impact: -15, rationale: "Kriminal dan merusak." }, { text: "Mengganti nama produk keesokan harinya.", isCorrect: false, impact: -10, rationale: "Tidak menyelesaikan masalah inti dan menghilangkan brand value." }, { text: "Diam saja karena rumor pasti hilang sendiri.", isCorrect: false, impact: -10, rationale: "Di era digital, jejak digital rumor bisa menetap selamanya jika tidak diklarifikasi." } ] },
+    { mission: 3, category: 'Etika Komunikasi', hasTimer: true, timerSeconds: 20, text: "Sistem IT perusahaan Anda diretas dan data pelanggan bocor. Sesuai regulasi privasi dan etika komunikasi krisis, kepada siapa organisasi harus mengkomunikasikan hal ini PERTAMA KALI secara langsung?", options: [ { text: "Kepada pesaing bisnis.", isCorrect: false, impact: -5, rationale: "Tidak ada kewajiban etis mengabari pesaing." }, { text: "Langsung ke stasiun TV.", isCorrect: false, impact: -5, rationale: "Pemberitahuan harus ke pihak yang terdampak langsung dulu." }, { text: "Pelanggan yang datanya terdampak dan pihak berwenang (regulator).", isCorrect: true, impact: 5, rationale: "Korban memiliki hak utama untuk tahu segera agar bisa mengamankan akun mereka." }, { text: "Hanya kepada pemegang saham.", isCorrect: false, impact: -5, rationale: "Mengabaikan korban pelanggaran data adalah kesalahan fatal (breach of trust)." }, { text: "Tidak kepada siapapun, ditutup rapat-rapat.", isCorrect: false, impact: -15, rationale: "Tindakan ilegal menurut hukum perlindungan data." } ] },
+    { mission: 3, category: 'Krisis Komunikasi', hasTimer: true, timerSeconds: 20, text: "Dalam anatomi krisis, tahapan di mana peringatan awal mulai muncul namun belum meledak disebut...", options: [ { text: "Post-crisis (Pascakrisis).", isCorrect: false, impact: -5, rationale: "Ini setelah krisis selesai." }, { text: "Acute crisis (Krisis akut).", isCorrect: false, impact: -5, rationale: "Ini saat krisis sedang meledak/viral." }, { text: "Pre-crisis / Prodromal stage (Tahap peringatan).", isCorrect: true, impact: 5, rationale: "Tahap prodromal adalah saat gejolak mulai terlihat (misal: keluhan kecil di medsos) sebelum eskalasi." }, { text: "Crisis resolution (Resolusi).", isCorrect: false, impact: -5, rationale: "Ini saat solusi ditemukan." }, { text: "Chronic crisis (Krisis kronis).", isCorrect: false, impact: -5, rationale: "Ini saat krisis berlarut-larut paska ledakan." } ] },
+    { mission: 3, category: 'Media Komunikasi', hasTimer: true, timerSeconds: 15, text: "Anda akan melakukan siaran langsung (live streaming) untuk klarifikasi. Apa risiko terbesar yang harus diantisipasi Humas?", options: [ { text: "Live streaming terlalu murah biayanya.", isCorrect: false, impact: -5, rationale: "Biaya murah justru keuntungan, bukan risiko operasional." }, { text: "Tidak bisa diedit, kesalahan bicara (slip of tongue) atau pertanyaan tajam penonton tidak bisa disensor.", isCorrect: true, impact: 5, rationale: "Siaran langsung membutuhkan persiapan mental dan penguasaan materi tinggi karena tidak ada proses editing." }, { text: "Durasi live bisa sangat pendek.", isCorrect: false, impact: -5, rationale: "Bukan risiko utama." }, { text: "Video live otomatis terhapus.", isCorrect: false, impact: -5, rationale: "Platform menyediakan opsi menyimpan live stream." }, { text: "Tidak ada orang yang suka menonton live.", isCorrect: false, impact: -5, rationale: "Live stream sering memiliki engagement tertinggi." } ] },
+    { mission: 3, category: 'Krisis Komunikasi', hasTimer: true, timerSeconds: 20, text: "Apabila krisis disebabkan oleh kesalahan murni (human error) pegawai Anda, strategi komunikasi yang paling tepat memulihkan reputasi menurut Situational Crisis Communication Theory (SCCT) adalah...", options: [ { text: "Denial Strategy (Penyangkalan total).", isCorrect: false, impact: -15, rationale: "Menyangkal fakta yang sudah jelas justru menghancurkan integritas." }, { text: "Scapegoating Strategy (Menyalahkan pihak eksternal).", isCorrect: false, impact: -15, rationale: "Akan menjadi bumerang saat investigasi membuktikan sebaliknya." }, { text: "Rebuild Strategy (Minta maaf, kompensasi korban, janji perbaikan sistem).", isCorrect: true, impact: 5, rationale: "Untuk kesalahan yang disengaja/murni kesalahan institusi, permintaan maaf tulus dan kompensasi adalah satu-satunya jalan memulihkan trust." }, { text: "Attack the Accuser (Menyerang penuduh).", isCorrect: false, impact: -15, rationale: "Hanya berlaku jika tuduhan benar-benar hoaks 100%." }, { text: "Excuse Strategy (Mencari alasan).", isCorrect: false, impact: -10, rationale: "Publik tidak peduli alasan, mereka butuh solusi." } ] },
+
+    // MISSION 4: COMMUNICATION BATTLE (25-32)
+    {
+        mission: 4, category: 'Media Komunikasi',
+        text: "[STUDI KASUS] Humas membuat Press Release: \"Produk Sabun Bening kami sangat luar biasa hebat. Semua orang membicarakan kami. Tidak ada sabun lain yang lebih baik di dunia ini. Beli sekarang!\" Kesalahan utama rilis tersebut secara jurnalistik adalah...",
+        options: [
+            { text: "Terlalu panjang.", isCorrect: false, impact: -5, rationale: "Bukan masalah panjang, tapi isinya." },
+            { text: "Bahasanya terlalu akademis.", isCorrect: false, impact: -5, rationale: "Bahasa tersebut sangat hiperbolik, bukan akademis." },
+            { text: "Berupa iklan hard-selling (promosi) penuh klaim subjektif, bukan berita objektif yang mengandung fakta.", isCorrect: true, impact: 5, rationale: "Press release harus mengandung 'news value' dan ditulis secara faktual/objektif, bukan seperti brosur iklan." },
+            { text: "Lupa menyertakan logo perusahaan.", isCorrect: false, impact: -5, rationale: "Masalah logo teknis, masalah terbesarnya adalah isi." },
+            { text: "Terlalu banyak mengandung data angka.", isCorrect: false, impact: -5, rationale: "Tidak ada angka sama sekali di contoh." }
+        ]
+    },
+    {
+        mission: 4, category: 'Media Komunikasi',
+        text: "Humas akan merilis berita mengenai pergantian pucuk pimpinan direksi perusahaan kepada media bisnis. Kalimat pembuka (Lead) yang paling memenuhi kaidah 5W1H dan paling profesional adalah...",
+        options: [
+            { text: "\"Halo teman-teman media, kami punya kabar gembira yang pasti kalian tunggu-tunggu hari ini!\"", isCorrect: false, impact: -10, rationale: "Sangat tidak profesional dan membuang ruang." },
+            { text: "\"Direktur lama kami mundur. Silakan wawancara dia jika mau tau alasannya.\"", isCorrect: false, impact: -15, rationale: "Kasarkan, tidak informatif, dan memicu spekulasi krisis internal." },
+            { text: "\"PT Nusa Bangsa resmi menunjuk Bapak Budi Santoso sebagai Direktur Utama efektif per 1 November 2024 untuk mempercepat transformasi digital perusahaan.\"", isCorrect: true, impact: 5, rationale: "Menjawab Who (Bapak Budi), What (Ditunjuk jadi Dirut), When (1 November), Why (transformasi digital), dan Where (PT Nusa Bangsa)." },
+            { text: "\"Kami tidak tahu mengapa direktur lama diganti, tapi inilah direktur baru kita.\"", isCorrect: false, impact: -15, rationale: "Menunjukkan diskoordinasi Humas parah." },
+            { text: "\"Bapak Budi itu orang baik yang suka menolong. Dia kini direktur kami.\"", isCorrect: false, impact: -10, rationale: "Tidak objektif, tidak sesuai standar berita bisnis." }
+        ]
+    },
+    { mission: 4, category: 'Media Sosial', text: "Sebuah keluhan pelanggan di Twitter/X ditautkan (mention) langsung ke akun resmi perusahaan Anda dengan bahasa kasar. Bagaimana pedoman (SOP) membalas di media sosial yang baik?", options: [ { text: "Membalas dengan bahasa yang sama kasarnya.", isCorrect: false, impact: -15, rationale: "Humas mewakili institusi, harus menjaga profesionalitas." }, { text: "Membiarkannya karena bahasa kasar tidak pantas dibalas.", isCorrect: false, impact: -5, rationale: "Masalah tetap ada. Orang lain akan melihat perusahaan tidak peduli." }, { text: "Merespons dengan sopan, meminta maaf atas ketidaknyamanan, dan mengarahkan percakapan ke Direct Message (DM) agar masalah spesifik dapat diselesaikan.", isCorrect: true, impact: 5, rationale: "Taktik 'Take it Offline' menghindari drama publik sambil tetap melayani pelanggan." }, { text: "Mengancam akan melaporkan pelanggan ke polisi.", isCorrect: false, impact: -15, rationale: "Intimidasi konsumen adalah mimpi buruk PR." }, { text: "Meretweet tweet kasar tersebut agar followers lain mem-bully pelanggan itu.", isCorrect: false, impact: -15, rationale: "Sangat tidak etis dan bisa dituntut hukum." } ] },
+    { mission: 4, category: 'Media Komunikasi', text: "Anda mengadakan Media Gathering santai. Seorang jurnalis bertanya 'Off the record' (di luar rekaman berita) mengenai rencana perusahaan mengakuisisi pesaing. Tindakan Anda?", options: [ { text: "Membongkar rahasia akuisisi karena jurnalis sudah bilang off the record.", isCorrect: false, impact: -10, rationale: "Humas tidak boleh membeberkan rahasia perusahaan (material information) tanpa izin direksi, meskipun 'off the record'." }, { text: "Menjawab dengan sopan bahwa Anda belum bisa memberikan pernyataan mengenai hal tersebut saat ini.", isCorrect: true, impact: 5, rationale: "Teknik 'Bridge' atau penolakan halus yang profesional tanpa berbohong." }, { text: "Marah dan mengusir jurnalis dari acara.", isCorrect: false, impact: -15, rationale: "Merusak hubungan baik." }, { text: "Berbohong dan berkata perusahaan akan bangkrut.", isCorrect: false, impact: -15, rationale: "Berbohong melanggar etika dasar." }, { text: "Menantang jurnalis untuk mencari tahu sendiri.", isCorrect: false, impact: -10, rationale: "Sombong dan memancing liputan investigasi agresif." } ] },
+    { mission: 4, category: 'Etika Komunikasi', text: "Humas ingin membuat kampanye Hari Kemerdekaan. Desainer mengajukan ide poster yang menggunakan elemen budaya lokal namun dengan cara karikatur yang berpotensi menyinggung SARA (Suku, Agama, Ras, Antargolongan). Sikap Humas adalah...", options: [ { text: "Mengizinkan publikasi karena yakin desainnya unik dan akan viral.", isCorrect: false, impact: -15, rationale: "Viral negatif (cancel culture) karena isu SARA akan mematikan brand." }, { text: "Menyetujui asalkan ada logo perusahaan besar di sana.", isCorrect: false, impact: -15, rationale: "Logo malah mempertegas kesalahan." }, { text: "Menolak desain tersebut, mengedukasi desainer tentang kepekaan kultural, dan meminta revisi yang menghargai nilai keberagaman.", isCorrect: true, impact: 5, rationale: "Humas bertugas sebagai gatekeeper (penjaga gawang) reputasi dari segala bentuk komunikasi yang ofensif." }, { text: "Memecat desainer secara publik.", isCorrect: false, impact: -10, rationale: "Masalah internal tidak perlu dipermalukan secara publik." }, { text: "Mencuri desain kompetitor agar aman.", isCorrect: false, impact: -15, rationale: "Plagiarisme adalah pelanggaran hak cipta dan etika." } ] },
+    { mission: 4, category: 'Humas', text: "Apa fungsi utama dari kegiatan 'Media Monitoring' (Pemantauan Media) harian bagi seorang PR Officer?", options: [ { text: "Untuk mencari artikel hiburan saat jam istirahat.", isCorrect: false, impact: -5, rationale: "Bukan untuk hiburan." }, { text: "Untuk mengetahui isu/sentimen publik tentang organisasi, memantau kompetitor, dan mendeteksi potensi krisis sejak dini.", isCorrect: true, impact: 5, rationale: "Media monitoring adalah telinga organisasi untuk 'listening' pada ekosistem informasi." }, { text: "Hanya untuk menghitung berapa banyak uang yang dihabiskan untuk iklan.", isCorrect: false, impact: -5, rationale: "Itu tugas divisi pemasaran/keuangan." }, { text: "Untuk meretas website media berita.", isCorrect: false, impact: -15, rationale: "Tindakan kriminal (cybercrime)." }, { text: "Agar Humas terlihat sibuk di depan direktur.", isCorrect: false, impact: -5, rationale: "Alasan yang salah." } ] },
+    { mission: 4, category: 'Media Komunikasi', cost: 1000000, text: "Organisasi Anda diserang misinformasi besar. Anda punya anggaran Rp1.000.000. Langkah komunikasi paling efisien secara biaya dan dampak (Cost-Effective) adalah...", options: [ { text: "Membeli iklan TV satu halaman (butuh biaya milyaran).", isCorrect: false, impact: -10, rationale: "Tidak realistis dengan anggaran." }, { text: "Membayar influencer rahasia.", isCorrect: false, impact: -10, rationale: "Tidak transparan." }, { text: "Mengoptimalkan saluran Owned Media (Website & Medsos resmi) dengan rilis klarifikasi komprehensif, SEO artikel, dan menyebarkan ke grup komunitas jaringan media.", isCorrect: true, impact: 5, rationale: "Owned media biayanya sangat minim dan penyebarannya melalui earned media organik adalah langkah paling cerdas." }, { text: "Mencetak 10.000 brosur fisik dan membagikannya di perempatan.", isCorrect: false, impact: -10, rationale: "Kurang efektif melawan hoaks digital dan butuh biaya cetak." }, { text: "Mendiamkan misinformasi tersebut (Zero cost).", isCorrect: false, impact: -10, rationale: "Zero cost tapi risikonya reputasi hancur." } ] },
+    { mission: 4, category: 'Humas', text: "Dalam wawancara TV live, reporter memberikan pertanyaan jebakan: 'Apakah benar produk Anda mengandung zat berbahaya karena ingin memangkas biaya produksi?'. Jawaban teknik jembatan (bridging technique) yang tepat adalah...", options: [ { text: "'TIDAK BENAR! Anda menuduh sembarangan!' (Marah)", isCorrect: false, impact: -10, rationale: "Marah di TV menunjukkan sikap defensif dan kehilangan kontrol emosi." }, { text: "'No comment.'", isCorrect: false, impact: -10, rationale: "'No comment' sering diartikan publik sebagai pengakuan bersalah." }, { text: "'Tuduhan itu tidak berdasar. Fakta yang perlu digarisbawahi adalah produk kami telah lulus uji ketat BPOM dan keamanan konsumen adalah prioritas utama operasi kami.'", isCorrect: true, impact: 5, rationale: "Membantah singkat, lalu mem-bridge (menjembatani) pembicaraan ke pesan kunci (key message) tentang kualitas." }, { text: "'Ya, mungkin ada sedikit zat berbahaya, namanya juga produk murah.'", isCorrect: false, impact: -15, rationale: "Pengakuan fatal yang akan menutup perusahaan." }, { text: "'Tanya saja pada kompetitor kami, mereka lebih parah.'", isCorrect: false, impact: -10, rationale: "Whataboutism, tidak menjawab isu." } ] },
+
+    // MISSION 5: REPUTATION CRISIS (FINAL BOSS) (33-40) - ALL TIMED
+    {
+        mission: 5, category: 'Krisis Komunikasi', hasTimer: true, timerSeconds: 20, event: "⚫ CRITICAL ESCALATION: Kasus pelayanan meledak! #BoikotPerusahaan trending di nomor 1.",
+        text: "[FINAL BOSS 1] Direktur panik dan meminta Anda segera mengeluarkan pernyataan HARI INI JUGA untuk menenangkan massa di Twitter. Apa tindakan investigatif Humas yang harus diprioritaskan SEBELUM merilis pernyataan?",
+        options: [
+            { text: "Langsung copy-paste draft pernyataan dari Google.", isCorrect: false, impact: -10, rationale: "Draft umum tidak akan menjawab akar masalah yang spesifik." },
+            { text: "Memverifikasi fakta dari internal departemen operasional mengenai apa yang sebenarnya terjadi (Fact-finding).", isCorrect: true, impact: 5, rationale: "Golden rule PR: Never lie. Anda tidak bisa merilis pernyataan resmi jika faktanya salah." },
+            { text: "Menghapus akun Twitter perusahaan.", isCorrect: false, impact: -15, rationale: "Bunuh diri PR." },
+            { text: "Menyerang akun yang mempopulerkan hashtag boikot.", isCorrect: false, impact: -15, rationale: "Akan memperkuat alasan mereka memboikot." },
+            { text: "Membatalkan semua pertemuan direktur.", isCorrect: false, impact: -5, rationale: "Tidak menyelesaikan krisis komunikasi." }
+        ]
+    },
+    {
+        mission: 5, category: 'Humas', hasTimer: true, timerSeconds: 15,
+        text: "[FINAL BOSS 2] Setelah verifikasi fakta (fact-finding), ternyata keluhan pelanggan di Twitter MEMANG BENAR. Oknum pegawai telah melakukan kecurangan. Respons Humas yang memulihkan reputasi adalah...",
+        options: [
+            { text: "Membuat kebohongan baru untuk melindungi pegawai.", isCorrect: false, impact: -15, rationale: "Hancur kredibilitas jika terungkap." },
+            { text: "Menyebarkan identitas KTP pegawai tersebut di media sosial (doxing) untuk dipermalukan.", isCorrect: false, impact: -15, rationale: "Tindakan ilegal dan tidak manusiawi." },
+            { text: "Merilis pernyataan mengakui fakta transparan, meminta maaf kepada publik, dan menyampaikan sanksi tegas serta sistem baru agar tidak terulang.", isCorrect: true, impact: 5, rationale: "Transparansi, akuntabilitas, dan tindakan perbaikan (corrective action) adalah cara memadamkan krisis akibat kesalahan internal." },
+            { text: "Menyalahkan seluruh divisi HRD di depan media.", isCorrect: false, impact: -10, rationale: "Menciptakan kekacauan internal baru." },
+            { text: "Pura-pura website sedang maintenance agar tidak dikomentari.", isCorrect: false, impact: -10, rationale: "Menghindar dari tanggung jawab." }
+        ]
+    },
+    {
+        mission: 5, category: 'Media Komunikasi', hasTimer: true, timerSeconds: 20, cost: 3000000,
+        text: "[FINAL BOSS 3] Publik dan Media Nasional menuntut penjelasan langsung dari Direktur. Anda memiliki budget Rp3 Juta. Media apa yang dipilih?",
+        options: [
+            { text: "Membayar influencer kecil (Rp3 Juta) untuk membela perusahaan.", isCorrect: false, impact: -10, rationale: "Tidak akan dipercaya (astroturfing)." },
+            { text: "Membeli iklan koran (Rp3 Juta) ukuran kecil.", isCorrect: false, impact: -5, rationale: "Iklan tidak bisa digunakan untuk menjawab cecaran pertanyaan media." },
+            { text: "Menggelar Press Conference secara luring dan daring mengundang jurnalis kredibel (Biaya operasional Rp3 Juta), di mana Direktur menjelaskan dan tanya-jawab.", isCorrect: true, impact: 5, rationale: "Press conference memberikan ruang klarifikasi komprehensif, interaktif, dan diliput banyak media besar sekaligus." },
+            { text: "Membuat kuis berhadiah Rp3 Juta di Instagram.", isCorrect: false, impact: -10, rationale: "Bukan solusi krisis, sangat tidak empatik." },
+            { text: "Mengirim uang Rp3 Juta ke satu pelanggan yang marah agar diam.", isCorrect: false, impact: -15, rationale: "Penyuapan (bribery) dan tidak menyelesaikan opini publik luas." }
+        ]
+    },
+    { mission: 5, category: 'Media Sosial', hasTimer: true, timerSeconds: 15, text: "[FINAL BOSS 4] Di tengah press conference, seorang influencer besar dengan jutaan followers memposting video yang menyudutkan dengan 'informasi hoaks' tambahan. Strategi di media sosial adalah...", options: [ { text: "Membiarkannya tanpa respons.", isCorrect: false, impact: -10, rationale: "Hoaks dengan jutaan penonton akan dianggap kebenaran jika diam." }, { text: "Membuat akun anonim menyerang fisik influencer tersebut.", isCorrect: false, impact: -15, rationale: "Tidak etis." }, { text: "Menggunakan saluran resmi untuk membuat klarifikasi fakta berpoin (debunking) dengan sopan, men-tag influencer tersebut secara profesional untuk meluruskan konteks.", isCorrect: true, impact: 5, rationale: "Meluruskan fakta secara profesional dan terbuka (open clarification) mengedukasi followers influencer tersebut tanpa emosi." }, { text: "Menyuruh polisi menangkap influencer.", isCorrect: false, impact: -10, rationale: "Hanya akan menjadi isu represi kebebasan berpendapat (Streisand effect)." }, { text: "Menantang influencer duel di ring tinju.", isCorrect: false, impact: -15, rationale: "Konyol dan merusak image institusi profesional." } ] },
+    { mission: 5, category: 'Humas', hasTimer: true, timerSeconds: 20, text: "[FINAL BOSS 5] Saat konferensi pers, jurnalis bertanya di luar konteks krisis, yaitu rumor bahwa direktur perusahaan melakukan penggelapan pajak pribadi. Sebagai PR yang mendampingi, Anda...", options: [ { text: "Langsung memutus siaran langsung dan mengamuk.", isCorrect: false, impact: -10, rationale: "Mengesankan bersalah dan panik." }, { text: "Mempersilakan direktur memaki jurnalis.", isCorrect: false, impact: -15, rationale: "Menghancurkan citra pimpinan." }, { text: "Mengambil alih mik dengan sopan: 'Mohon maaf, sesi ini khusus berfokus pada resolusi insiden pelayanan. Untuk isu lain di luar ini, kami tidak memiliki komentar saat ini.'", isCorrect: true, impact: 5, rationale: "Humas bertugas mengatur alur (moderasi) dan menjaga topik agar tetap pada koridor agenda (agenda setting)." }, { text: "Menyuruh jurnalis keluar ruangan paksa.", isCorrect: false, impact: -10, rationale: "Memicu boikot media (blackout)." }, { text: "Menjawab, 'Kayaknya sih benar dia tidak bayar pajak'.", isCorrect: false, impact: -15, rationale: "Fitnah tanpa bukti, fatal." } ] },
+    { mission: 5, category: 'Etika Komunikasi', hasTimer: true, timerSeconds: 15, text: "[FINAL BOSS 6] Setelah press conference dan perbaikan operasional, sentimen negatif publik perlahan turun. Apa aktivitas 'Post-Crisis' yang Wajib dilakukan Humas?", options: [ { text: "Melupakan krisis dan kembali tidak peduli.", isCorrect: false, impact: -10, rationale: "Tidak ada pembelajaran organisasi." }, { text: "Memecat semua tim Humas karena krisis sempat terjadi.", isCorrect: false, impact: -10, rationale: "Krisis tidak selalu salah Humas (bisa masalah operasional)." }, { text: "Melakukan evaluasi (Post-mortem analysis), memonitor janji perbaikan, dan merancang SOP krisis baru agar institusi lebih tangguh (resilient).", isCorrect: true, impact: 5, rationale: "Fase post-crisis penting untuk organizational learning (belajar dari kesalahan) dan memulihkan trust sepenuhnya jangka panjang." }, { text: "Meminta media menghapus semua berita masa lalu di Google.", isCorrect: false, impact: -10, rationale: "Secara teknis mustahil dan melanggar sejarah jurnalistik." }, { text: "Merayakan krisis dengan pesta mewah.", isCorrect: false, impact: -15, rationale: "Sangat tidak peka (insensitive)." } ] },
+    { mission: 5, category: 'Humas', hasTimer: true, timerSeconds: 20, text: "[FINAL BOSS 7] Kesimpulan evaluasi menunjukkan krisis membesar karena birokrasi persetujuan pesan dari Direksi memakan waktu 3 hari (Too Late). Apa perbaikan SOP internal yang diajukan Humas?", options: [ { text: "Humas diizinkan menjawab sembarangan tanpa izin.", isCorrect: false, impact: -10, rationale: "Berbahaya jika pesan tidak sejalan dengan strategi korporat." }, { text: "Membentuk Tim Komunikasi Krisis (Crisis Center Team) dengan mandat 'Fast Track Approval' untuk merilis holding statement maksimal 2 jam setelah krisis terdeteksi.", isCorrect: true, impact: 5, rationale: "Kecepatan di era media sosial krusial. Tim krisis khusus dengan kewenangan (empowerment) menyelesaikan birokrasi." }, { text: "Menyerahkan masalah komunikasi ke bagian IT.", isCorrect: false, impact: -10, rationale: "Bukan kompetensi IT." }, { text: "Menetapkan aturan bahwa pelanggan tidak boleh komplain.", isCorrect: false, impact: -15, rationale: "Mustahil dan konyol." }, { text: "Meniadakan divisi Humas.", isCorrect: false, impact: -15, rationale: "Organisasi akan hancur tanpa pengendali komunikasi." } ] },
+    { mission: 5, category: 'Media Sosial', hasTimer: true, timerSeconds: 15, text: "[FINAL BOSS 8] Dua bulan setelah krisis, perusahaan akan meluncurkan program CSR baru. Bagaimana strategi 'Rebuilding Trust' di media komunikasi?", options: [ { text: "Menyombongkan diri bahwa perusahaan tidak pernah berbuat salah.", isCorrect: false, impact: -10, rationale: "Menghapus memori (gaslighting) publik akan diolok-olok." }, { text: "Fokus menggunakan publisitas dan kampanye digital yang menampilkan bukti-bukti nyata perbaikan layanan yang telah dijanjikan sebelumnya, dipadukan CSR.", isCorrect: true, impact: 5, rationale: "Trust pulih bukan dari kata-kata, tapi dari konsistensi tindakan (Walking the talk). Publikasi kinerja positif menutupi jejak negatif perlahan." }, { text: "Menyuap netizen agar memuji di kolom komentar.", isCorrect: false, impact: -10, rationale: "Manipulasi tidak etis." }, { text: "Tidak usah pakai media sosial sama sekali.", isCorrect: false, impact: -10, rationale: "Hilang kesempatan membangun citra (missed opportunity)." }, { text: "Memposting 100 foto produk setiap hari (Spam).", isCorrect: false, impact: -5, rationale: "Spam akan menurunkan jumlah follower (unfollow rate)." } ] }
+];
+
+/* =========================================
+   GAME STATE & LOGIC
+   ========================================= */
+let state = {
+    playerName: "",
+    currentIndex: 0,
+    score: 0,
+    trust: 100,
+    budget: 10000000,
+    stats: {
+        'Humas': { true:0, total:0 },
+        'Media Komunikasi': { true:0, total:0 },
+        'Krisis Komunikasi': { true:0, total:0 },
+        'Media Sosial': { true:0, total:0 },
+        'Etika Komunikasi': { true:0, total:0 }
+    },
+    timerInterval: null,
+    timeLeft: 0
+};
+
+// Shuffle questions (except keep missions grouped) - Simplified for strict 40 length.
+// To ensure integrity of Missions (1->5) and progressive difficulty, we won't fully random sort, 
+// just random sort the options inside each question.
+
+function initGame() {
+    questions.forEach(q => {
+        // Initialize stat trackers
+        if(!state.stats[q.category]) state.stats[q.category] = { true:0, total:0 };
+        state.stats[q.category].total++;
+        // Shuffle options
+        q.options.sort(() => Math.random() - 0.5);
+    });
+}
+
+function startOpening() {
+    const name = document.getElementById('playerName').value.trim();
+    if(name === "") return alert("Masukkan nama Officer Anda!");
+    
+    state.playerName = name;
+    initGame();
+    
+    document.getElementById('screen-login').classList.add('hidden');
+    document.getElementById('screen-opening').classList.remove('hidden');
+    
+    // Sequence
+    setTimeout(() => { document.getElementById('op-time').style.opacity = 1; playBeep(400); }, 500);
+    setTimeout(() => { document.getElementById('op-alert').classList.remove('hidden'); playBeep(600, 'square'); }, 2000);
+    setTimeout(() => { document.getElementById('op-text1').classList.remove('hidden'); document.getElementById('op-text1').classList.add('typing-effect'); }, 3500);
+    
+    setTimeout(() => { 
+        document.getElementById('op-comments').classList.remove('hidden');
+        let count = 127;
+        const ctr = setInterval(() => {
+            count += Math.floor(Math.random()*500);
+            if(count > 3890) { count = 3890; clearInterval(ctr); }
+            document.getElementById('comment-count').innerText = count.toLocaleString();
+        }, 100);
+    }, 5500);
+
+    setTimeout(() => { document.getElementById('op-crisis').classList.remove('hidden'); playBeep(300, 'sawtooth'); }, 7000);
+    setTimeout(() => { document.getElementById('op-text2').classList.remove('hidden'); }, 8500);
+    setTimeout(() => { document.getElementById('btn-start-mission').classList.remove('hidden'); }, 10000);
+}
+
+function enterDashboard() {
+    document.getElementById('screen-opening').classList.add('hidden');
+    document.getElementById('screen-game').classList.remove('hidden');
+    document.getElementById('ui-player-name').innerText = state.playerName;
+    
+    updateUI();
+    renderQuestion();
+}
+
+function updateUI() {
+    // Mission Text
+    let missionName = "";
+    const m = questions[state.currentIndex]?.mission;
+    if(m===1) missionName = "M1: PR FUNDAMENTALS";
+    if(m===2) missionName = "M2: CHOOSE THE MEDIA";
+    if(m===3) missionName = "M3: PUBLIC CRISIS";
+    if(m===4) missionName = "M4: COMM. BATTLE";
+    if(m===5) missionName = "M5: REPUTATION CRISIS";
+    
+    document.getElementById('ui-mission-name').innerText = missionName;
+    document.getElementById('ui-question-num').innerText = state.currentIndex + 1;
+    
+    // Score & Budget
+    document.getElementById('ui-score').innerText = state.score;
+    document.getElementById('ui-budget').innerText = "Rp" + (state.budget/1000000).toFixed(1) + "M";
+    
+    // Trust
+    document.getElementById('ui-trust-pct').innerText = state.trust + "%";
+    document.getElementById('ui-trust-bar').style.width = state.trust + "%";
+    let trustColor = state.trust > 70 ? 'bg-green-500' : (state.trust > 40 ? 'bg-yellow-500' : 'bg-red-600');
+    document.getElementById('ui-trust-bar').className = `h-4 rounded-full transition-all duration-500 ${trustColor}`;
+
+    // Crisis Level
+    let lvl = "🟢 STABLE", cColor = "text-green-400 bg-green-900/30";
+    if(state.trust <= 80) { lvl = "🟡 WARNING"; cColor = "text-yellow-400 bg-yellow-900/30"; }
+    if(state.trust <= 60) { lvl = "🟠 SERIOUS"; cColor = "text-orange-400 bg-orange-900/30"; }
+    if(state.trust <= 40) { lvl = "🔴 CRISIS"; cColor = "text-red-500 bg-red-900/30"; }
+    if(state.trust <= 20) { lvl = "⚫ CRITICAL"; cColor = "text-gray-900 bg-red-600 animate-pulse"; }
+    
+    const uiCrisis = document.getElementById('ui-crisis-level');
+    uiCrisis.innerText = lvl;
+    uiCrisis.className = `font-bold text-xl tech-font p-1 rounded ${cColor}`;
+}
+
+function renderQuestion() {
+    if(state.currentIndex >= questions.length) {
+        return handleGameOver(true);
+    }
+    
+    if(state.trust <= 0) {
+        return handleGameOver(false); // Fail state
+    }
+
+    const q = questions[state.currentIndex];
+    
+    // Alert logic
+    const alertBanner = document.getElementById('alert-banner');
+    if(q.event) {
+        alertBanner.classList.remove('hidden');
+        document.getElementById('alert-title').innerHTML = `<i class="fas fa-bolt"></i> CRISIS EVENT`;
+        document.getElementById('alert-desc').innerText = q.event;
+        playBeep(400, 'square');
+    } else {
+        alertBanner.classList.add('hidden');
+    }
+
+    // Timer logic
+    const timerContainer = document.getElementById('timer-container');
+    if(q.hasTimer) {
+        timerContainer.classList.remove('hidden');
+        alertBanner.classList.remove('hidden');
+        state.timeLeft = q.timerSeconds;
+        document.getElementById('ui-timer').innerText = state.timeLeft;
+        
+        clearInterval(state.timerInterval);
+        state.timerInterval = setInterval(() => {
+            state.timeLeft--;
+            document.getElementById('ui-timer').innerText = state.timeLeft;
+            if(state.timeLeft <= 0) {
+                clearInterval(state.timerInterval);
+                timeOutAnswer();
+            }
+        }, 1000);
+    } else {
+        timerContainer.classList.add('hidden');
+        clearInterval(state.timerInterval);
+    }
+
+    // Content
+    document.getElementById('ui-q-category').innerText = q.category;
+    document.getElementById('ui-question-text').innerText = q.text;
+    
+    const optsContainer = document.getElementById('options-container');
+    optsContainer.innerHTML = '';
+    
+    const letters = ['A', 'B', 'C', 'D', 'E'];
+    q.options.forEach((opt, idx) => {
+        let costLabel = (q.cost && opt.isCorrect) ? `<span class="float-right text-xs text-yellow-400 border border-yellow-700 px-1 rounded">-Rp${q.cost/1000000}M</span>` : '';
+        
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-4 rounded bg-slate-800 border border-slate-600 hover:border-blue-400 transition-all flex items-start gap-3 option-btn";
+        btn.innerHTML = `<span class="font-bold text-blue-400 mt-0.5">${letters[idx]}.</span> <div class="flex-1">${opt.text} ${costLabel}</div>`;
+        btn.onclick = () => selectOption(opt);
+        optsContainer.appendChild(btn);
+    });
+}
+
+function timeOutAnswer() {
+    state.trust = Math.max(0, state.trust - 15);
+    updateUI();
+    showFeedback({ text: "TIDAK MENJAWAB (WAKTU HABIS)", isCorrect: false, impact: -15, rationale: "Dalam situasi krisis, keterlambatan respons memperbesar ketidakpastian publik dan menghancurkan reputasi (Vacuum of Information)." }, true);
+}
+
+function selectOption(option) {
+    clearInterval(state.timerInterval);
+    const q = questions[state.currentIndex];
+    
+    // Logic update
+    let timeBonus = 0;
+    if(option.isCorrect) {
+        state.stats[q.category].true++;
+        state.score += 25;
+        if(q.hasTimer && state.timeLeft > q.timerSeconds/2) {
+            state.score += 10; // Speed bonus
+            timeBonus = 10;
+        }
+        if(q.mission === 3 || q.mission === 5) state.score += 20; // Crisis decision bonus
+    }
+    
+    state.trust = Math.max(0, Math.min(100, state.trust + option.impact));
+    if(q.cost && option.isCorrect) state.budget -= q.cost;
+    
+    updateUI();
+    showFeedback(option, false, timeBonus);
+}
+
+function showFeedback(option, isTimeout = false, timeBonus = 0) {
+    const screenGame = document.getElementById('screen-game');
+    const screenFb = document.getElementById('screen-feedback');
+    const q = questions[state.currentIndex];
+    
+    screenFb.classList.remove('hidden');
+    
+    document.getElementById('fb-player-choice').innerText = option.text;
+    
+    const impactEl = document.getElementById('fb-impact');
+    if(option.impact > 0) {
+        impactEl.innerHTML = `<span class="text-green-500"><i class="fas fa-arrow-up"></i> +${option.impact}% Kepercayaan | +25 Pts ${timeBonus>0 ? `(+${timeBonus} Speed Bonus)`:''}</span>`;
+    } else {
+        impactEl.innerHTML = `<span class="text-red-500"><i class="fas fa-arrow-down"></i> ${option.impact}% Kepercayaan (Risiko Reputasi)</span>`;
+    }
+    
+    document.getElementById('fb-rationale').innerText = option.rationale;
+    
+    if(!option.isCorrect && !isTimeout) {
+        const correctOpt = q.options.find(o => o.isCorrect);
+        document.getElementById('fb-best-decision-box').classList.remove('hidden');
+        document.getElementById('fb-best-decision').innerText = correctOpt.text;
+    } else {
+        document.getElementById('fb-best-decision-box').classList.add('hidden');
+    }
+}
+
+function nextQuestion() {
+    document.getElementById('screen-feedback').classList.add('hidden');
+    state.currentIndex++;
+    renderQuestion();
+}
+
+function handleGameOver(isWin) {
+    document.getElementById('screen-game').classList.add('hidden');
+    document.getElementById('screen-end').classList.remove('hidden');
+    
+    // Final bonuses
+    if(isWin && state.trust >= 90) state.score += 50;
+    if(isWin && state.trust > 0) state.score += 100; // Final boss survive bonus
+    
+    document.getElementById('end-name').innerText = state.playerName;
+    document.getElementById('end-score').innerText = state.score + " / 1000";
+    
+    let totalCorrect = Object.values(state.stats).reduce((a, b) => a + b.true, 0);
+    let acc = Math.round((totalCorrect / questions.length) * 100);
+    document.getElementById('end-accuracy').innerText = acc + "% (" + totalCorrect + " Benar)";
+    document.getElementById('end-trust').innerText = state.trust + "%";
+    
+    // Titles
+    if(!isWin) {
+        document.getElementById('end-title').innerText = "REPUTATION COLLAPSE 💥";
+        document.getElementById('end-title').className = "text-4xl font-bold mb-2 tech-font text-red-600 crisis-blink p-2";
+        document.getElementById('end-subtitle').innerText = "Krisis gagal ditangani.";
+        document.getElementById('end-rank').innerText = "PR TRAINEE";
+        document.getElementById('end-rank-desc').innerText = "Informasi yang tidak tepat dan respons lambat membuat reputasi perusahaan hancur.";
+    } else {
+        document.getElementById('end-title').innerText = "REPUTATION SAVED! 🛡️";
+        let rank = "", desc = "";
+        if(state.score >= 900) { rank = "👑 CHIEF PR OFFICER"; desc = "Anda mampu mengambil keputusan strategis luar biasa dalam situasi kompleks."; }
+        else if(state.score >= 800) { rank = "🔥 CRISIS COMM EXPERT"; desc = "Sangat baik dalam menganalisis masalah dan memilih media."; }
+        else if(state.score >= 700) { rank = "💼 PROFESSIONAL PR"; desc = "Mampu menangani sebagian besar situasi Humas."; }
+        else if(state.score >= 600) { rank = "📢 JUNIOR PR"; desc = "Cukup baik, tingkatkan lagi analisis strategis Anda."; }
+        else { rank = "🚨 PR TRAINEE"; desc = "Perlu banyak belajar analisis komunikasi."; }
+        
+        document.getElementById('end-rank').innerText = rank;
+        document.getElementById('end-rank-desc').innerText = desc;
+    }
+    
+    // Analytics
+    let htmlAnalytic = "";
+    let weakestCat = { name: "", pct: 100 };
+    for(let cat in state.stats) {
+        let s = state.stats[cat];
+        let pct = s.total > 0 ? Math.round((s.true / s.total) * 100) : 0;
+        let c = pct > 80 ? 'text-green-400' : (pct > 50 ? 'text-yellow-400' : 'text-red-400');
+        htmlAnalytic += `<div class="flex justify-between border-b border-slate-700 pb-1">
+            <span>${cat}</span> <span class="font-bold ${c}">${pct}%</span>
+        </div>`;
+        
+        if(pct < weakestCat.pct) { weakestCat.name = cat; weakestCat.pct = pct; }
+    }
+    document.getElementById('end-analytics').innerHTML = htmlAnalytic;
+    
+    // Learnings
+    let learn = "Secara umum Anda menguasai fundamental Humas.";
+    if(!isWin) learn = "Dalam krisis, kejujuran, kecepatan, dan akurasi (fact-finding) adalah kunci. Jangan bereaksi dengan emosi.";
+    else if(weakestCat.name === "Media Komunikasi") learn = "Perdalam lagi kemampuan memilih media yang tepat sasaran dengan mempertimbangkan Karakteristik Audiens dan Jenis Pesan.";
+    else if(weakestCat.name === "Krisis Komunikasi") learn = "Saat krisis, selalu prioritaskan Timetable, Holding Statement, dan Fact-Finding sebelum publikasi besar.";
+    else if(weakestCat.name === "Etika Komunikasi") learn = "Ingat bahwa Humas bertugas sebagai 'Conscience of Organization' (hati nurani institusi). Etika tidak boleh dikompromikan.";
+    document.getElementById('end-learning').innerText = learn;
+}
+
+function resetGame() {
+    state.currentIndex = 0;
+    state.score = 0;
+    state.trust = 100;
+    state.budget = 10000000;
+    state.timeLeft = 0;
+    for(let cat in state.stats) {
+        state.stats[cat] = { true:0, total:0 };
+    }
+    
+    document.getElementById('screen-end').classList.add('hidden');
+    document.getElementById('screen-login').classList.remove('hidden');
+    document.getElementById('playerName').value = '';
+}
+
+// Simple Web Audio API Synthesizer for alerts
+function playBeep(freq = 500, type = 'sine', duration = 200) {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + duration/1000);
+        setTimeout(() => osc.stop(), duration);
+    } catch(e) {} // ignore if blocked by browser policy
+}
+
+</script>
+</body>
+</html>
