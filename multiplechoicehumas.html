@@ -5,11 +5,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>PR Quiz Challenge</title>
+  
+  <!-- Optimasi Kecepatan Loading (Preconnect ke CDN) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+  
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+    /* SPLASH SCREEN CSS (Tampil Instan sebelum file berat terload) */
+    #splash-screen { position: fixed; inset: 0; background-color: #0f172a; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; font-family: sans-serif; }
+    .splash-spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: #6366f1; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     body { font-family: 'Poppins', sans-serif; background-color: #0f172a; color: white; overflow-x: hidden; }
     .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
     .btn-game { transition: all 0.2s; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
@@ -22,8 +35,6 @@
     .heart { color: #ef4444; font-size: 1.5rem; }
     .lost-heart { color: #475569; }
     #loader-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-    .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: #6366f1; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
     .correct-anim { animation: bounceIn 0.5s; }
     @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
     .progress-bar-inner { transition: width 0.3s ease; }
@@ -32,14 +43,21 @@
 </head>
 <body class="min-h-screen bg-gradient-to-br from-indigo-900 via-gray-900 to-purple-900 flex flex-col">
 
-  <!-- LOADER -->
+  <!-- INSTANT SPLASH SCREEN -->
+  <div id="splash-screen">
+    <div class="splash-spinner"></div>
+    <h2 style="font-size: 1.5rem; font-weight: bold; color: #818cf8; margin-bottom: 0.5rem;">PR QUIZ CHALLENGE</h2>
+    <p style="color: #94a3b8; font-size: 0.9rem;">Memuat Aset Game...</p>
+  </div>
+
+  <!-- LOADER TRANSAKSI DB -->
   <div id="loader-overlay" class="hidden">
-    <div class="spinner mb-4"></div>
+    <div class="splash-spinner mb-4"></div>
     <h3 id="loader-text" class="text-xl font-bold text-white">Memproses...</h3>
   </div>
 
   <!-- HEADER -->
-  <header class="p-4 flex justify-between items-center bg-gray-900 bg-opacity-50 border-b border-gray-700 relative z-10">
+  <header class="p-4 flex justify-between items-center bg-gray-900 bg-opacity-50 border-b border-gray-700 relative z-10 hidden" id="main-header">
     <div class="flex items-center gap-2">
       <i class="fas fa-headset text-indigo-400 text-2xl"></i>
       <h1 class="font-bold text-lg hidden sm:block">PR QUIZ CHALLENGE</h1>
@@ -54,7 +72,7 @@
     </div>
   </header>
 
-  <main class="flex-grow container mx-auto px-4 py-8 relative z-10">
+  <main class="flex-grow container mx-auto px-4 py-8 relative z-10 hidden" id="main-content">
     
     <!-- VIEW: HOME -->
     <div id="view-home" class="view-section max-w-2xl mx-auto text-center glass-card p-8">
@@ -126,8 +144,6 @@
 
     <!-- VIEW: GAME CORE -->
     <div id="view-game" class="view-section hidden max-w-3xl mx-auto glass-card p-6">
-      
-      <!-- Top Status Bar -->
       <div class="flex justify-between items-center mb-4">
         <div class="flex gap-4">
           <div class="bg-gray-800 px-3 py-1 rounded-full border border-gray-600 flex items-center gap-2">
@@ -142,7 +158,6 @@
         </div>
       </div>
 
-      <!-- Level & Timer -->
       <div class="flex justify-between items-end mb-2">
         <div>
           <span id="ui-level-badge" class="level-badge bg-indigo-600 text-white mb-1 inline-block">LEVEL 1 - PR BASIC</span>
@@ -154,18 +169,15 @@
         </div>
       </div>
 
-      <!-- Progress Bar -->
       <div class="w-full bg-gray-700 rounded-full h-2.5 mb-6">
         <div id="ui-progress" class="bg-indigo-500 h-2.5 rounded-full progress-bar-inner" style="width: 0%"></div>
       </div>
 
-      <!-- Question Box -->
       <div class="bg-gray-800 p-6 rounded-xl border border-gray-600 mb-6 relative">
         <div id="ui-case-badge" class="hidden absolute -top-3 left-4 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow"><i class="fas fa-siren-on"></i> CASE STUDY</div>
         <p id="ui-question" class="text-lg md:text-xl font-medium leading-relaxed"></p>
       </div>
 
-      <!-- Options Box -->
       <div id="ui-options" class="flex flex-col gap-3">
         <!-- Rendered by JS -->
       </div>
@@ -212,7 +224,6 @@
       <p class="text-gray-400 mb-6">Laporan Kinerja Junior PR Officer</p>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <!-- Stats -->
         <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 text-left">
           <div class="flex items-center gap-3 mb-4">
             <div class="bg-indigo-600 rounded-full w-10 h-10 flex items-center justify-center font-bold text-white">
@@ -253,7 +264,6 @@
           </div>
         </div>
         
-        <!-- Analisis -->
         <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 text-left">
           <h3 class="font-bold text-white mb-4"><i class="fas fa-chart-bar mr-2"></i> PROFIL KEMAMPUAN</h3>
           <div id="r-stats" class="space-y-3 mb-6">
@@ -336,17 +346,17 @@
 
   </main>
 
-  <footer class="text-center mt-auto py-4 relative z-10 border-t border-gray-800 bg-gray-900 bg-opacity-80">
+  <footer class="text-center mt-auto py-4 relative z-10 border-t border-gray-800 bg-gray-900 bg-opacity-80 hidden" id="main-footer">
     <small class="text-gray-500">
       Generated by <a href="https://andie.basuki.com" target="_blank" class="text-decoration-none text-gray-400 hover:text-white transition">GAS Apps</a> | PR Quiz Challenge
     </small>
   </footer>
 
   <script>
+    console.log("App generated using GAS WebApp Builder");
+    
     // --- 1. DATA & BANK SOAL (50 Soal) ---
-    // c: Kategori (1:Konsep, 2:Publik, 3:Media, 4:Aksi/Komunikasi, 5:Master/Krisis)
     const bankSoal = [
-      // KATEGORI 1: KONSEP (Level 1)
       {c:1, q:"Hubungan masyarakat pada dasarnya merupakan fungsi manajemen yang bertujuan untuk...", o:["A. meningkatkan jumlah penjualan semata","B. mengatur keuangan perusahaan","C. membangun dan memelihara hubungan baik antara organisasi dengan publik","D. mengatur kegiatan operasional","E. membuat desain promosi"], a:2, e:"Humas merupakan fungsi manajemen yang berperan membangun komunikasi dan hubungan yang baik antara organisasi dengan publiknya."},
       {c:1, q:"Menurut Frank Jefkins, tujuan utama Public Relations adalah...", o:["A. Menciptakan pemahaman publik yang menguntungkan organisasi","B. Menjual produk sebanyak mungkin","C. Mencari keuntungan pribadi","D. Menyembunyikan kelemahan perusahaan","E. Membayar pajak tepat waktu"], a:0, e:"Tujuan PR menurut Frank Jefkins adalah untuk mengubah situasi negatif menjadi positif atau menciptakan pemahaman publik."},
       {c:1, q:"Salah satu fungsi utama Humas dalam organisasi adalah sebagai...", o:["A. Kasir","B. Fasilitator komunikasi (Communication Fasilitator)","C. Auditor eksternal","D. Manajer produksi","E. Staf legal"], a:1, e:"Humas berfungsi sebagai jembatan komunikasi yang memfasilitasi pertukaran informasi dua arah antara organisasi dan publik."},
@@ -358,7 +368,6 @@
       {c:1, q:"Tugas Humas dalam menjaga 'Corporate Image' berarti menjaga...", o:["A. Keamanan gedung","B. Rahasia perusahaan dari karyawan","C. Citra atau persepsi masyarakat terhadap perusahaan secara keseluruhan","D. Harga saham di pasar modal","E. Merek produk tertentu saja"], a:2, e:"Corporate image adalah gambaran/persepsi komprehensif masyarakat mengenai identitas dan nilai sebuah perusahaan."},
       {c:1, q:"Apa bedanya Marketing dan Public Relations?", o:["A. Tidak ada bedanya","B. Marketing fokus pada pasar/konsumen dan profit, PR fokus pada relasi dengan semua publik dan citra","C. Marketing untuk internal, PR untuk eksternal","D. Marketing butuh modal, PR gratis","E. Marketing dilakukan atasan, PR bawahan"], a:1, e:"Marketing berorientasi pada pertukaran nilai ekonomi (penjualan), sedangkan PR berorientasi pada penerimaan sosial dan relasi jangka panjang."},
 
-      // KATEGORI 2: PUBLIK (Level 2)
       {c:2, q:"Dalam sebuah perusahaan, karyawan, pimpinan, dan manajemen termasuk kelompok...", o:["A. Publik eksternal","B. Publik umum","C. Publik internal","D. Media massa","E. Stakeholder eksternal"], a:2, e:"Publik internal adalah orang-orang yang berada atau tercakup di dalam struktur organisasi/perusahaan."},
       {c:2, q:"Mengapa menjaga hubungan baik dengan publik internal (Employee Relations) sangat penting?", o:["A. Agar gaji karyawan bisa ditekan","B. Karena karyawan adalah duta utama (ambassador) perusahaan di masyarakat","C. Agar karyawan takut pada atasan","D. Untuk formalitas administrasi","E. Agar tidak perlu ada divisi SDM"], a:1, e:"Karyawan yang puas dan paham tujuan perusahaan akan menjadi penyampai pesan (duta) yang positif bagi masyarakat luar."},
       {c:2, q:"Kelompok di luar organisasi yang memiliki pengaruh atau dipengaruhi oleh organisasi disebut...", o:["A. Publik internal","B. Publik eksternal","C. Publik primer","D. Publik pasif","E. Publik tertutup"], a:1, e:"Publik eksternal berada di luar organisasi, seperti konsumen, pemerintah, komunitas sekitar, dan pers."},
@@ -370,7 +379,6 @@
       {c:2, q:"Jika sebuah sekolah mengundang wali murid untuk sosialisasi program, maka wali murid dalam hal ini berposisi sebagai...", o:["A. Publik Internal","B. Publik Eksternal khusus (komunitas sekolah)","C. Media Massa","D. Government","E. Karyawan"], a:1, e:"Wali murid bukan pengelola operasional sekolah (internal), melainkan publik eksternal yang memiliki kepentingan langsung dengan sekolah."},
       {c:2, q:"Tujuan utama dari Customer Relations (Hubungan Pelanggan) adalah...", o:["A. Memaksa konsumen membeli barang rusak","B. Mempertahankan loyalitas dan kepuasan pelanggan","C. Mengurangi jumlah pelanggan agar tidak repot","D. Memboikot kompetitor","E. Membuat laporan keuangan bulanan"], a:1, e:"Customer relations berfokus pada kepuasan pelanggan agar mereka tetap loyal menggunakan produk/jasa perusahaan."},
 
-      // KATEGORI 3: MEDIA (Level 3)
       {c:3, q:"Sebuah sekolah ingin menyampaikan informasi resmi mengenai kegiatan kepada masyarakat luas secara digital. Media yang paling tepat adalah...", o:["A. Memo internal","B. Surat pribadi kepada satu orang","C. Website atau media sosial resmi sekolah","D. Catatan harian","E. Papan pengumuman di ruang guru"], a:2, e:"Website dan media sosial resmi merupakan saluran komunikasi digital publik yang jangkauannya luas dan mudah diakses masyarakat."},
       {c:3, q:"Naskah berita yang dibuat oleh Humas untuk dikirimkan kepada wartawan/media massa disebut...", o:["A. Press Release (Siaran Pers)","B. Majalah Dinding","C. Brosur promosi","D. Memo internal","E. Surat peringatan"], a:0, e:"Press Release adalah dokumen informasi resmi dari organisasi yang ditulis dengan gaya jurnalistik untuk dipublikasikan oleh media massa."},
       {c:3, q:"Kegiatan Humas mengundang wartawan untuk mengumumkan suatu peristiwa penting yang disertai sesi tanya jawab disebut...", o:["A. Press Release","B. Press Tour","C. Press Conference (Konferensi Pers)","D. Press Reception","E. Press Interview"], a:2, e:"Konferensi Pers (Press Conference) adalah acara khusus dimana narasumber memberikan pernyataan resmi lalu jurnalis diberi kesempatan bertanya secara langsung."},
@@ -382,7 +390,6 @@
       {c:3, q:"Kegiatan mengajak wartawan berkunjung ke pabrik/lokasi operasional perusahaan untuk melihat langsung proses kerja disebut...", o:["A. Press Conference","B. Press Release","C. Press Tour","D. Press Interview","E. Press Party"], a:2, e:"Press Tour adalah kunjungan wisata jurnalistik untuk memberikan pengalaman langsung kepada jurnalis tentang operasional perusahaan."},
       {c:3, q:"Sebuah video profil yang menampilkan sejarah, visi misi, dan fasilitas perusahaan disebut...", o:["A. Video dokumenter biasa","B. Corporate Video (Video Company Profile)","C. Video klip musik","D. Video tutorial","E. Video podcast"], a:1, e:"Corporate Video dibuat khusus oleh PR untuk merepresentasikan citra visual dan identitas perusahaan kepada publik."},
 
-      // KATEGORI 4: KOMUNIKASI / CASE (Level 4)
       {c:4, q:"🚨 CASE: Pelanggan marah di lobi kantor karena pelayanan lambat. Sikap awal staf Humas (Resepsionis/Frontliner) yang tepat adalah...", o:["A. Memarahi balik pelanggan","B. Pergi meninggalkan lobi","C. Mendengarkan keluhan dengan empati dan meminta maaf atas ketidaknyamanan","D. Menyalahkan staf divisi lain","E. Memanggil polisi langsung"], a:2, e:"Langkah pertama menangani keluhan adalah mendengarkan secara aktif (active listening), menunjukkan empati, dan meredakan emosi pelanggan."},
       {c:4, q:"Dalam etika komunikasi Humas, asas 'Disclosure of Information' berarti Humas harus...", o:["A. Membocorkan rahasia kompetitor","B. Menyampaikan informasi kepada publik dengan transparan, akurat, dan tidak menyesatkan","C. Menyembunyikan fakta yang merugikan","D. Memberikan informasi palsu agar citra baik","E. Menolak bicara pada wartawan"], a:1, e:"Humas harus jujur dan transparan dalam memberikan informasi yang berhak diketahui publik, tanpa melakukan manipulasi/kebohongan (spin doctoring)."},
       {c:4, q:"🚨 CASE: Ada kesalahan penulisan harga promo di poster resmi. Tindakan PR adalah...", o:["A. Pura-pura tidak tahu","B. Menghapus postingan diam-diam tanpa penjelasan","C. Segera membuat revisi, memposting permohonan maaf, dan menjelaskan informasi yang benar","D. Menyalahkan desainer di depan publik","E. Menutup akun media sosial"], a:2, e:"Tanggung jawab dan transparansi adalah kunci. PR harus mengakui kesalahan, meminta maaf, dan segera memberikan informasi koreksi yang benar."},
@@ -394,7 +401,6 @@
       {c:4, q:"🚨 CASE: Direktur tidak bisa hadir pada acara peresmian yang dijadwalkan, padahal wartawan sudah datang. PR harus...", o:["A. Membatalkan acara mendadak dan menyuruh wartawan pulang","B. Menghilang dan mematikan HP","C. Mengomunikasikan alasan ketidakhadiran secara profesional dan menghadirkan perwakilan resmi (wakil direktur) yang berkompeten","D. Meminta satpam mengusir wartawan","E. Berbohong bahwa direktur sedang sakit keras"], a:2, e:"Humas harus selalu punya contingency plan (rencana cadangan) dan memberikan kejelasan informasi dengan menunjuk perwakilan resmi (spokesperson pengganti)."},
       {c:4, q:"Gaya bahasa penulisan di media sosial institusi formal sebaiknya...", o:["A. Menggunakan bahasa gaul yang berlebihan agar viral","B. Kaku, rumit, dan penuh jargon teknis","C. Profesional, ramah, jelas, dan disesuaikan dengan profil target audiens tanpa menghilangkan wibawa institusi","D. Selalu menggunakan huruf kapital (Capslock)","E. Singkatan tidak baku seperti 'yg', 'dmn', 'sy'"], a:2, e:"Social media tone institusi harus menjaga keseimbangan antara ramah/interaktif dengan publik, namun tetap menjaga profesionalitas (brand voice)."},
 
-      // KATEGORI 5: KRISIS (Level 5)
       {c:5, q:"🚨 CASE: Produk makanan perusahaan Anda diduga menyebabkan keracunan massal. Langkah PERTAMA manajemen krisis PR adalah...", o:["A. Mengadakan diskon besar-besaran agar isu tertutupi","B. Menyangkal berita tersebut meski belum mengecek fakta","C. Mengumpulkan tim manajemen krisis, memverifikasi fakta di lapangan, dan mengeluarkan pernyataan simpati (holding statement)","D. Menyalahkan korban karena salah makan","E. Menutup pabrik dan kabur"], a:2, e:"Dalam krisis darurat, langkah pertama adalah verifikasi fakta internal dan merilis 'holding statement' (pernyataan awal) berisi kepedulian/simpati selagi investigasi berjalan."},
       {c:5, q:"Sebuah krisis komunikasi (PR Crisis) terjadi apabila...", o:["A. Gaji karyawan naik 10%","B. Ada acara ulang tahun perusahaan","C. Terjadi peristiwa negatif yang mengancam reputasi, operasional, dan kelangsungan hidup organisasi","D. Desain logo perusahaan diganti sedikit","E. Komputer di kantor mati lampu 5 menit"], a:2, e:"Krisis adalah situasi darurat berskala besar yang mendapat sorotan publik negatif dan dapat menghancurkan reputasi organisasi jika tidak ditangani segera."},
       {c:5, q:"'Holding Statement' dalam penanganan krisis berfungsi untuk...", o:["A. Menghentikan jurnalis bertanya selamanya","B. Menyatakan kebangkrutan perusahaan","C. Memberikan pernyataan resmi awal yang menegaskan perusahaan sadar akan masalah, sedang menangani, dan peduli pada korban","D. Mengancam akan menuntut pihak penyebar berita","E. Menyalahkan pihak ketiga secara tertulis"], a:2, e:"Holding statement mencegah kekosongan informasi (vacuum of information) di jam-jam pertama krisis yang bisa diisi oleh spekulasi liar/hoax di media."},
@@ -411,19 +417,19 @@
     let gameState = {
       player: { name: '', class: '' },
       level: 1,
-      questions: [],      // Soal aktif (30 soal)
+      questions: [],
       currentIndex: 0,
       score: 0,
       lives: 3,
       combo: 0,
       maxCombo: 0,
-      levelCorrect: 0,    // Benar per level
+      levelCorrect: 0,
       totalCorrect: 0,
       totalWrong: 0,
       timeLeft: 30,
-      totalTime: 0,       // Untuk hitung avg time
+      totalTime: 0,
       timer: null,
-      stats: { c1:0, c2:0, c3:0, c4:0, c5:0 }, // Benar per kategori
+      stats: { c1:0, c2:0, c3:0, c4:0, c5:0 },
       soundOn: true,
       isSimulation: typeof google === 'undefined'
     };
@@ -442,22 +448,15 @@
       gameState.soundOn = !gameState.soundOn;
       document.getElementById('sound-icon').className = gameState.soundOn ? 'fas fa-volume-up' : 'fas fa-volume-mute text-red-400';
     }
-
-    function playSound(type) {
-      if(!gameState.soundOn) return;
-      // Simulasi sound visual, krn kita tdk load aset MP3 besar untuk single file
-      // In real prod, u'd do: new Audio('correct.mp3').play();
-    }
+    function playSound(type) { if(!gameState.soundOn) return; }
 
     // --- 4. GAME LOGIC ---
     function initGame() {
-      // Pick 30 random questions (6 per kategori)
       let selectedQ = [];
       for(let cat=1; cat<=5; cat++) {
         let catSoal = bankSoal.filter(s => s.c === cat);
-        // Shuffle
         catSoal.sort(() => Math.random() - 0.5);
-        selectedQ = selectedQ.concat(catSoal.slice(0, 6)); // ambil 6 dari tiap 10
+        selectedQ = selectedQ.concat(catSoal.slice(0, 6)); 
       }
       
       gameState.questions = selectedQ;
@@ -524,25 +523,19 @@
       }
     }
 
-    // Acak posisi opsi jawaban (A,B,C,D,E)
     function shuffleOptions(question) {
-      // Simpan jawaban benar aslinya (berdasar index 'a' awal)
-      const correctText = question.o[question.a].substring(3); // hilangkan prefix "A. "
-      
-      // Ambil array tanpa prefix huruf
+      const correctText = question.o[question.a].substring(3);
       let rawOptions = question.o.map(opt => opt.substring(3));
       
-      // Shuffle array
       for (let i = rawOptions.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [rawOptions[i], rawOptions[j]] = [rawOptions[j], rawOptions[i]];
       }
       
-      // Kembalikan prefix huruf dan cari index jawaban benar yang baru
       let newCorrectIndex = 0;
       let newOptions = rawOptions.map((text, idx) => {
         if(text === correctText) newCorrectIndex = idx;
-        const prefix = String.fromCharCode(65 + idx); // A, B, C, D, E
+        const prefix = String.fromCharCode(65 + idx);
         return `${prefix}. ${text}`;
       });
       
@@ -554,15 +547,11 @@
       const qIndex = gameState.currentIndex;
       const qData = gameState.questions[qIndex];
       
-      // Progress UI
       document.getElementById('ui-q-current').innerText = qIndex + 1;
       let progress = ((qIndex) / 30) * 100;
       document.getElementById('ui-progress').style.width = progress + '%';
       
-      // Render text
       document.getElementById('ui-question').innerText = qData.q;
-      
-      // Case badge
       if(qData.q.includes("CASE")) {
         document.getElementById('ui-case-badge').classList.remove('hidden');
         document.getElementById('ui-question').innerText = qData.q.replace("🚨 CASE: ", "");
@@ -570,19 +559,15 @@
         document.getElementById('ui-case-badge').classList.add('hidden');
       }
 
-      // Shuffle ops
       const shuffled = shuffleOptions(qData);
       
-      // Render Buttons
       let opsHtml = '';
       shuffled.ops.forEach((opt, idx) => {
-        // Data attribute carries whether this index is the correct one
         const isCorrect = (idx === shuffled.ans) ? 'true' : 'false';
         opsHtml += `<button class="option-btn text-white text-sm md:text-base border-gray-600 shadow-md" data-correct="${isCorrect}" onclick="checkAnswer(this)">${opt}</button>`;
       });
       document.getElementById('ui-options').innerHTML = opsHtml;
 
-      // Timer
       gameState.timeLeft = 30;
       updateTimerUI();
       gameState.timer = setInterval(timerTick, 1000);
@@ -590,9 +575,8 @@
 
     function timerTick() {
       gameState.timeLeft--;
-      gameState.totalTime++; // counter statistik
+      gameState.totalTime++;
       updateTimerUI();
-      
       if(gameState.timeLeft <= 0) {
         clearInterval(gameState.timer);
         handleTimeout();
@@ -602,24 +586,17 @@
     function updateTimerUI() {
       const tEl = document.getElementById('ui-timer');
       tEl.innerText = gameState.timeLeft;
-      if(gameState.timeLeft <= 10) {
-        tEl.classList.add('pulse-danger');
-      } else {
-        tEl.classList.remove('pulse-danger');
-      }
+      if(gameState.timeLeft <= 10) tEl.classList.add('pulse-danger');
+      else tEl.classList.remove('pulse-danger');
     }
 
     function checkAnswer(btnEl) {
       clearInterval(gameState.timer);
-      
-      // Disable all buttons
       document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
       
       const isCorrect = btnEl.getAttribute('data-correct') === 'true';
       const qData = gameState.questions[gameState.currentIndex];
-      
-      let pts = 0;
-      let bonusText = "";
+      let pts = 0; let bonusText = "";
       
       if(isCorrect) {
         playSound('correct');
@@ -629,69 +606,51 @@
         gameState.combo++;
         if(gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
         
-        // Speed bonus
         if(gameState.timeLeft >= 20) {
           pts += 25;
           bonusText = "<br><span class='text-yellow-500 font-bold'>⚡ Speed Bonus +25</span>";
         }
-        // Combo bonus
         if(gameState.combo >= 3) {
           pts += 100;
           bonusText += `<br><span class='text-orange-500 font-bold'>🔥 Combo x${gameState.combo} Bonus +100</span>`;
         }
         
         gameState.score += pts;
-        
-        // Catat statistik per kategori
-        let catKey = 'c' + qData.c;
-        gameState.stats[catKey]++;
+        gameState.stats['c' + qData.c]++;
         
         btnEl.classList.replace('bg-gray-800', 'bg-green-600');
         btnEl.classList.add('border-green-400');
         
         Swal.fire({
-          icon: 'success',
-          title: 'CORRECT!',
+          icon: 'success', title: 'CORRECT!',
           html: `<p class="font-bold text-green-600 mb-2">+${pts} POINT</p>${bonusText}<hr class="my-2"><p class="text-sm text-left"><b>Penjelasan:</b><br>${qData.e}</p>`,
-          confirmButtonText: '➡️ SOAL BERIKUTNYA',
-          confirmButtonColor: '#4f46e5',
-          allowOutsideClick: false
+          confirmButtonText: '➡️ SOAL BERIKUTNYA', confirmButtonColor: '#4f46e5', allowOutsideClick: false
         }).then(() => processNext());
         
       } else {
         playSound('wrong');
         gameState.lives--;
         gameState.totalWrong++;
-        gameState.combo = 0; // reset combo
-        gameState.score -= 50; // penalty
+        gameState.combo = 0; 
+        gameState.score -= 50; 
         if(gameState.score < 0) gameState.score = 0;
         
         btnEl.classList.replace('bg-gray-800', 'bg-red-600');
-        
-        // Highlight correct answer in UI
         document.querySelectorAll('.option-btn').forEach(b => {
-          if(b.getAttribute('data-correct') === 'true') {
-            b.classList.replace('bg-gray-800', 'bg-green-600');
-          }
+          if(b.getAttribute('data-correct') === 'true') b.classList.replace('bg-gray-800', 'bg-green-600');
         });
         
         renderHearts();
-        
         let titleHtml = gameState.lives <= 0 ? 'GAME OVER 😭' : 'INCORRECT ❌';
         
         Swal.fire({
-          icon: 'error',
-          title: titleHtml,
+          icon: 'error', title: titleHtml,
           html: `<p class="text-red-500 mb-2">-50 POINT</p><hr class="my-2"><p class="text-sm text-left"><b>Penjelasan:</b><br>${qData.e}</p>`,
-          confirmButtonText: gameState.lives <= 0 ? 'LIHAT HASIL' : '➡️ SOAL BERIKUTNYA',
-          confirmButtonColor: '#ef4444',
-          allowOutsideClick: false
+          confirmButtonText: gameState.lives <= 0 ? 'LIHAT HASIL' : '➡️ SOAL BERIKUTNYA', confirmButtonColor: '#ef4444', allowOutsideClick: false
         }).then(() => {
-          if(gameState.lives <= 0) gameOver();
-          else processNext();
+          if(gameState.lives <= 0) gameOver(); else processNext();
         });
       }
-      
       renderHeaderGame();
     }
 
@@ -705,40 +664,26 @@
       if(gameState.score < 0) gameState.score = 0;
       
       renderHeaderGame();
-      
-      // Highlight correct
       document.querySelectorAll('.option-btn').forEach(b => {
         if(b.getAttribute('data-correct') === 'true') b.classList.replace('bg-gray-800', 'bg-green-600');
       });
       
       const qData = gameState.questions[gameState.currentIndex];
-      
       let titleHtml = gameState.lives <= 0 ? 'GAME OVER 😭' : '⏰ TIME\'S UP!';
       Swal.fire({
-        icon: 'warning',
-        title: titleHtml,
+        icon: 'warning', title: titleHtml,
         html: `<p class="text-red-500 mb-2">-75 POINT</p><hr class="my-2"><p class="text-sm text-left"><b>Penjelasan:</b><br>${qData.e}</p>`,
-        confirmButtonText: gameState.lives <= 0 ? 'LIHAT HASIL' : '➡️ SOAL BERIKUTNYA',
-        confirmButtonColor: '#ef4444',
-        allowOutsideClick: false
+        confirmButtonText: gameState.lives <= 0 ? 'LIHAT HASIL' : '➡️ SOAL BERIKUTNYA', confirmButtonColor: '#ef4444', allowOutsideClick: false
       }).then(() => {
-        if(gameState.lives <= 0) gameOver();
-        else processNext();
+        if(gameState.lives <= 0) gameOver(); else processNext();
       });
     }
 
     function processNext() {
       gameState.currentIndex++;
-      
-      // Cek apakah level selesai (kelipatan 6 soal)
       if (gameState.currentIndex > 0 && gameState.currentIndex % 6 === 0) {
-        if (gameState.currentIndex >= 30) {
-          // Tamat 30 soal
-          gameOver();
-        } else {
-          // Ganti level
-          showLevelComplete();
-        }
+        if (gameState.currentIndex >= 30) gameOver();
+        else showLevelComplete();
       } else {
         loadQuestion();
       }
@@ -752,9 +697,7 @@
       document.getElementById('lc-combo').innerText = 'x' + gameState.maxCombo;
       document.getElementById('lc-acc').innerText = accLevel + '%';
       
-      // Tentukan badge yang didapat
       let badgeHtml = `<i class="fas fa-medal text-yellow-500 mr-2"></i> ${levelNames[gameState.level]}`;
-      // Easter egg badge speed
       if(gameState.totalTime / gameState.currentIndex < 15) {
         badgeHtml += `<br><span class="text-sm text-yellow-400 mt-1 block">⚡ SPEED PR UNLOCKED!</span>`;
       }
@@ -779,35 +722,19 @@
     }
 
     function getRekomendasi() {
-      // Cari kategori dengan persentase terendah
-      // Soal per kategori = 6. Maks benar = 6
-      let maxPerCat = 6;
-      let currentQs = gameState.currentIndex; // jika game over di tengah jalan
-      if(currentQs === 0) currentQs = 1; // hindari div zero
-      
-      // Estimasi porsi:
+      let currentQs = gameState.currentIndex;
+      if(currentQs === 0) currentQs = 1; 
       let catNames = ["Konsep Dasar", "Publik Humas", "Media Humas", "Komunikasi Humas", "Krisis Komunikasi"];
       let catValues = [gameState.stats.c1, gameState.stats.c2, gameState.stats.c3, gameState.stats.c4, gameState.stats.c5];
-      
-      let minVal = 999;
-      let minIdx = 0;
-      
-      // Render Stats UI
+      let minVal = 999; let minIdx = 0;
       let statHtml = '';
+      
       for(let i=0; i<5; i++) {
-        // hitung persen dari soal yg telah dijawab (max 6)
-        // Agak tricky jika mati di level 2, maka c3,c4,c5 pasti 0.
-        // Kita hitung berdasar level yg sdh dilewati.
         let target = (gameState.level > i) ? 6 : ((gameState.level === i+1) ? (gameState.currentIndex % 6) : 0);
-        if(target === 0 && gameState.currentIndex % 6 === 0 && gameState.level === i+1) target=6; // fix ujung
+        if(target === 0 && gameState.currentIndex % 6 === 0 && gameState.level === i+1) target=6; 
         
         let pct = target === 0 ? 0 : Math.round((catValues[i]/target)*100);
-        
-        // Cari weakness dari level yg sdh dmainkan saja
-        if(target > 0 && pct < minVal) {
-          minVal = pct;
-          minIdx = i;
-        }
+        if(target > 0 && pct < minVal) { minVal = pct; minIdx = i; }
 
         statHtml += `
           <div>
@@ -822,24 +749,18 @@
       }
       
       document.getElementById('r-stats').innerHTML = statHtml;
-      
       let rek = "";
-      if (gameState.currentIndex < 30) {
-        rek = "Sayang sekali misimu terhenti sebelum tuntas. Pelajari kembali materi dasar dan jaga nyawamu di kesempatan berikutnya!";
-      } else if (minVal >= 80) {
-        rek = "Luar biasa! Kamu sudah menguasai seluruh aspek kehumasan dengan sangat baik. Pertahankan reputasimu sebagai PR Master!";
-      } else {
-        rek = `Secara umum performamu baik. Namun, kamu perlu lebih fokus belajar pada materi <b>${catNames[minIdx]}</b> untuk mengambil keputusan yang lebih tepat.`;
-      }
+      if (gameState.currentIndex < 30) rek = "Sayang sekali misimu terhenti sebelum tuntas. Pelajari kembali materi dasar dan jaga nyawamu di kesempatan berikutnya!";
+      else if (minVal >= 80) rek = "Luar biasa! Kamu sudah menguasai seluruh aspek kehumasan dengan sangat baik. Pertahankan reputasimu sebagai PR Master!";
+      else rek = `Secara umum performamu baik. Namun, kamu perlu lebih fokus belajar pada materi <b>${catNames[minIdx]}</b> untuk mengambil keputusan yang lebih tepat.`;
       return rek;
     }
 
     function gameOver() {
       clearInterval(gameState.timer);
       playSound('tada');
-      
       let totalQ = gameState.currentIndex;
-      if(totalQ === 0) totalQ = 1; // fail safe
+      if(totalQ === 0) totalQ = 1; 
       
       let acc = Math.round((gameState.totalCorrect / totalQ) * 100);
       let avgTime = Math.round(gameState.totalTime / totalQ);
@@ -859,18 +780,11 @@
       
       document.getElementById('r-rekomendasi').innerHTML = getRekomendasi();
       
-      // SAVE SCORE LOGIC (Hybrid Pattern)
       saveScoreToServer({
-        nama: gameState.player.name,
-        kelas: gameState.player.class,
-        score: gameState.score,
-        rank: rankObj.title,
-        benar: gameState.totalCorrect,
-        salah: gameState.totalWrong,
-        accuracy: acc + '%',
-        avgTime: avgTime + 's'
+        nama: gameState.player.name, kelas: gameState.player.class,
+        score: gameState.score, rank: rankObj.title, benar: gameState.totalCorrect,
+        salah: gameState.totalWrong, accuracy: acc + '%', avgTime: avgTime + 's'
       });
-      
       showView('view-result');
     }
 
@@ -882,37 +796,19 @@
       document.getElementById('loader-text').innerText = "Menyimpan Skor...";
       
       if (gameState.isSimulation) {
-        // --- MODE SIMULASI ---
         setTimeout(() => {
-          console.log("Simulasi Simpan Skor:", dataObj);
-          // Push to local memory
           dataObj.id = "SIM-" + Date.now();
           dataObj.tanggal = new Date().toLocaleString('id-ID');
           localLeaderboard.push(dataObj);
-          
-          // Save to LocalStorage for persistence in simulation
           localStorage.setItem('prQuizScores', JSON.stringify(localLeaderboard));
-          
           endLoading();
-          Swal.fire({
-            title: 'Tersimpan (Preview)',
-            text: 'Skor berhasil dicatat di memori lokal.',
-            icon: 'success',
-            toast: true, position: 'top-end', timer: 3000, showConfirmButton: false
-          });
+          Swal.fire({ title: 'Tersimpan (Preview)', text: 'Skor berhasil dicatat di memori lokal.', icon: 'success', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
         }, 1000);
       } else {
-        // --- MODE PRODUCTION (GAS) ---
         google.script.run
           .withSuccessHandler(res => {
             endLoading();
-            if(res.success) {
-              console.log("Skor tersimpan di server", res.data);
-              // Optimistic UI push
-              localLeaderboard.push(res.data);
-            } else {
-              console.error("Gagal simpan skor", res.message);
-            }
+            if(res.success) localLeaderboard.push(res.data);
           })
           .withFailureHandler(err => {
             endLoading();
@@ -929,9 +825,7 @@
       if (gameState.isSimulation) {
         setTimeout(() => {
           let lsScores = JSON.parse(localStorage.getItem('prQuizScores')) || [];
-          if(localLeaderboard.length === 0 && lsScores.length > 0) {
-            localLeaderboard = lsScores;
-          }
+          if(localLeaderboard.length === 0 && lsScores.length > 0) localLeaderboard = lsScores;
           renderLeaderboard(localLeaderboard);
           endLoading();
           showView('view-leaderboard');
@@ -951,7 +845,6 @@
           .withFailureHandler(err => {
             endLoading();
             Swal.fire('Gagal!', 'Terjadi kesalahan koneksi server.', 'error');
-            // fallback lokal
             renderLeaderboard(localLeaderboard);
             showView('view-leaderboard');
           })
@@ -962,8 +855,6 @@
     function renderLeaderboard(dataArray) {
       const tbody = document.getElementById('leaderboard-body');
       tbody.innerHTML = '';
-      
-      // sort descending just in case
       let sorted = [...dataArray].sort((a,b) => b.score - a.score);
       
       if(sorted.length === 0) {
@@ -989,19 +880,27 @@
       tbody.innerHTML = html;
     }
 
-    // --- 6. NAVIGATION ---
     function goHome() {
-      // Clear game states just in case
       clearInterval(gameState.timer);
       showView('view-home');
     }
 
-    // INITIALIZATION
-    document.addEventListener("DOMContentLoaded", () => {
+    // SPLASH SCREEN LOGIC (Meningkatkan Perceived Performance)
+    window.addEventListener('load', () => {
+      // Hilangkan loader instan ketika seluruh resource selesai di-download
+      const splash = document.getElementById('splash-screen');
+      if(splash) splash.style.display = 'none';
+      
+      // Tampilkan kontainer utama
+      document.getElementById('main-header').classList.remove('hidden');
+      document.getElementById('main-content').classList.remove('hidden');
+      document.getElementById('main-footer').classList.remove('hidden');
+
       if (gameState.isSimulation) {
         document.getElementById('preview-alert').classList.remove('hidden');
       }
-      goHome(); // Load initial screen
+      
+      goHome();
     });
 
   </script>
