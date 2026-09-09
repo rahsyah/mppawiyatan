@@ -5,9 +5,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PR Master - Kuis Hubungan Masyarakat</title>
+  <title>PR Master - Kuis Analisis & Strategi</title>
   
-  <!-- UI Framework (Bootstrap 5 & SweetAlert2) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,7 +17,7 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     .app-container {
-      max-width: 600px;
+      max-width: 700px;
       margin: 20px auto;
       background: white;
       border-radius: 15px;
@@ -29,7 +28,7 @@
       flex-direction: column;
     }
     .header-banner {
-      background: linear-gradient(135deg, #2c3e50, #3498db);
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
       color: white;
       padding: 30px 20px;
       text-align: center;
@@ -41,16 +40,18 @@
     .btn-option {
       width: 100%;
       text-align: left;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       padding: 15px;
       border-radius: 8px;
       border: 2px solid #e0e0e0;
       background: white;
       transition: all 0.2s;
       font-weight: 500;
+      font-size: 0.95rem;
+      line-height: 1.4;
     }
     .btn-option:hover:not(:disabled) {
-      border-color: #3498db;
+      border-color: #2a5298;
       background: #f0f8ff;
     }
     .btn-option.correct {
@@ -76,14 +77,21 @@
     .timer-badge {
       font-size: 1.2rem;
       font-weight: bold;
-      color: #e74c3c;
+      color: #2a5298;
+      background: #e9ecef;
+      padding: 5px 15px;
+      border-radius: 20px;
+    }
+    .question-text {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #333;
     }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <!-- Loading Overlay -->
   <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
     <h5 class="mt-3 text-primary">Sedang memproses data...</h5>
@@ -91,8 +99,8 @@
 
   <div class="app-container">
     <div class="header-banner">
-      <h2><i class="fa-solid fa-bullhorn"></i> PR Master Quiz</h2>
-      <p class="mb-0">Uji Pengetahuan Hubungan Masyarakat Anda</p>
+      <h2><i class="fa-solid fa-chess-knight"></i> PR Strategy Master</h2>
+      <p class="mb-0">Uji Analisis & Pemecahan Masalah Public Relations</p>
     </div>
 
     <div class="content-area">
@@ -102,61 +110,61 @@
           ⚠️ <strong>MODE PREVIEW:</strong> Aplikasi berjalan dalam memori browser (Simulasi).
         </div>
         <div class="text-center mb-4">
-          <i class="fa-solid fa-users-rectangle fa-4x text-secondary mb-3"></i>
-          <h4>Selamat Datang!</h4>
-          <p class="text-muted">Jawab pertanyaan seputar dunia Public Relations dengan cepat dan tepat. Waktu Anda dihitung!</p>
+          <i class="fa-solid fa-brain fa-4x text-secondary mb-3"></i>
+          <h4>Kuis HOTS Public Relations</h4>
+          <p class="text-muted">Anda akan diberikan 10 studi kasus acak dari 40 bank soal. Waktu berjalan maju. Jawab dengan analisis terbaik Anda!</p>
         </div>
-        <div class="form-group mb-3">
-          <label>Masukkan Nama Anda:</label>
+        <div class="form-group mb-4">
+          <label class="fw-bold mb-2">Masukkan Nama Anda:</label>
           <input type="text" id="playerName" class="form-control form-control-lg" placeholder="Contoh: Budi Santoso" autocomplete="off">
         </div>
-        <button class="btn btn-primary btn-lg w-100 mb-3" onclick="startGame()">Mulai Kuis <i class="fa-solid fa-play"></i></button>
+        <button class="btn btn-primary btn-lg w-100 mb-3" onclick="startGame()">Mulai Analisis <i class="fa-solid fa-play"></i></button>
         <button class="btn btn-outline-secondary w-100" onclick="showLeaderboard()">Lihat Leaderboard <i class="fa-solid fa-trophy"></i></button>
       </div>
 
       <!-- VIEW: QUIZ -->
       <div id="view-quiz" class="hidden">
-        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-          <h5 class="mb-0">Soal: <span id="qNumber">1</span>/<span id="qTotal">10</span></h5>
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+          <h5 class="mb-0 text-secondary">Kasus: <span id="qNumber" class="fw-bold text-dark">1</span>/<span id="qTotal">10</span></h5>
           <div class="timer-badge"><i class="fa-regular fa-clock"></i> <span id="timerDisplay">00:00</span></div>
         </div>
         
-        <h4 id="questionText" class="mb-4 text-center">Memuat pertanyaan...</h4>
+        <p id="questionText" class="question-text mb-4 fw-bold">Memuat studi kasus...</p>
         <div id="optionsContainer">
-          <!-- Opsi akan di-render di sini via JS -->
+          <!-- Options rendered via JS -->
         </div>
       </div>
 
       <!-- VIEW: RESULT -->
       <div id="view-result" class="hidden text-center">
-        <i class="fa-solid fa-medal fa-5x text-warning mb-3"></i>
-        <h3>Kuis Selesai!</h3>
-        <p>Terima kasih telah berpartisipasi, <strong id="resName"></strong>.</p>
+        <i class="fa-solid fa-award fa-5x text-success mb-3"></i>
+        <h3>Evaluasi Selesai!</h3>
+        <p>Terima kasih atas analisis strategis Anda, <strong id="resName"></strong>.</p>
         
         <div class="row mt-4 mb-4">
           <div class="col-6">
             <div class="p-3 bg-light rounded border">
-              <h5 class="text-muted mb-1">Skor</h5>
-              <h2 class="text-primary mb-0" id="resScore">0</h2>
+              <h6 class="text-muted mb-1">Skor Akurasi</h6>
+              <h2 class="text-success mb-0" id="resScore">0</h2>
             </div>
           </div>
           <div class="col-6">
             <div class="p-3 bg-light rounded border">
-              <h5 class="text-muted mb-1">Waktu</h5>
+              <h6 class="text-muted mb-1">Waktu Eksekusi</h6>
               <h2 class="text-primary mb-0"><span id="resTime">0</span>s</h2>
             </div>
           </div>
         </div>
 
-        <button id="btnSimpan" class="btn btn-success btn-lg w-100 mb-3" onclick="submitScore()">Simpan Skor <i class="fa-solid fa-cloud-arrow-up"></i></button>
-        <button class="btn btn-outline-secondary w-100" onclick="resetApp()">Kembali ke Awal</button>
+        <button id="btnSimpan" class="btn btn-success btn-lg w-100 mb-3" onclick="submitScore()">Simpan Skor ke Server <i class="fa-solid fa-cloud-arrow-up"></i></button>
+        <button class="btn btn-outline-secondary w-100" onclick="resetApp()">Kembali ke Beranda</button>
       </div>
 
       <!-- VIEW: LEADERBOARD -->
       <div id="view-leaderboard" class="hidden">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 class="mb-0"><i class="fa-solid fa-trophy text-warning"></i> Top PR Masters</h4>
-          <button class="btn btn-sm btn-outline-secondary" onclick="resetApp()"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+          <h4 class="mb-0"><i class="fa-solid fa-trophy text-warning"></i> Top PR Strategists</h4>
+          <button class="btn btn-sm btn-outline-secondary" onclick="resetApp()"><i class="fa-solid fa-arrow-left"></i> Beranda</button>
         </div>
         
         <div class="table-responsive">
@@ -164,20 +172,17 @@
             <thead class="table-dark">
               <tr>
                 <th>Rank</th>
-                <th>Nama</th>
+                <th>Nama Analis</th>
                 <th>Skor</th>
                 <th>Waktu</th>
               </tr>
             </thead>
-            <tbody id="leaderboardBody">
-              <!-- Data dari server -->
-            </tbody>
+            <tbody id="leaderboardBody"></tbody>
           </table>
         </div>
       </div>
     </div>
     
-    <!-- FOOTER -->
     <footer class="text-center mt-auto pb-3">
       <small class="text-muted">
         Generated by <a href="https://andie.basuki.com" target="_blank" class="text-decoration-none text-secondary">GAS Apps</a>
@@ -188,40 +193,51 @@
   <script>
     console.log("App generated using GAS WebApp Builder");
 
-    // --- MOCK DATA & STATE ---
-    let localLeaderboard = [
-      { timestamp: "2026-09-08 10:00:00", nama: "Andi", skor: 100, waktu: 45 },
-      { timestamp: "2026-09-08 11:30:00", nama: "Budi", skor: 80, waktu: 50 }
-    ];
+    let localLeaderboard = [];
     let isPreview = typeof google === 'undefined';
 
-    // DATABASE SOAL PR
+    // BANK SOAL PR HOTS (40 Soal Studi Kasus & Analisis)
     const prQuestions = [
-      {
-        q: "Apa fokus utama dari profesi Hubungan Masyarakat (PR)?",
-        opts: ["Meningkatkan penjualan langsung", "Membangun dan menjaga citra positif", "Membuat desain grafis produk", "Mengelola rekrutmen karyawan"],
-        ans: 1
-      },
-      {
-        q: "Alat utama PR yang sering dikirimkan ke media massa untuk memberitakan kegiatan perusahaan disebut...",
-        opts: ["Brosur", "Invoice", "Press Release", "Newsletter Internal"],
-        ans: 2
-      },
-      {
-        q: "Tindakan cepat dan strategis yang dilakukan PR saat perusahaan mengalami masalah yang merusak reputasi dikenal sebagai?",
-        opts: ["Crisis Management", "Marketing Campaign", "Rebranding", "Customer Service"],
-        ans: 0
-      },
-      {
-        q: "Apa perbedaan paling mendasar antara PR dan Periklanan (Advertising)?",
-        opts: ["PR itu gratis (earned media), Periklanan itu berbayar (paid media)", "PR menggunakan visual, Periklanan hanya teks", "PR untuk internal, Periklanan untuk eksternal", "Tidak ada perbedaan"],
-        ans: 0
-      },
-      {
-        q: "Salah satu fungsi internal PR adalah...",
-        opts: ["Menjawab keluhan pelanggan di Twitter", "Mengirimkan rilis pers ke jurnalis", "Menjaga komunikasi dan moral antar karyawan", "Melakukan survei pasar untuk produk baru"],
-        ans: 2
-      }
+      { q: "Sebuah video viral menunjukkan karyawan perusahaan Anda membuang limbah ke sungai. Langkah strategis PERTAMA yang paling tepat dilakukan PR adalah...", opts: ["Membantah video tersebut karena belum ada bukti valid", "Mengeluarkan holding statement bahwa perusahaan sedang menginvestigasi secara serius", "Memecat karyawan tersebut secara publik hari itu juga", "Menghapus semua akun media sosial perusahaan untuk menghindari komentar"], ans: 1 },
+      { q: "Perusahaan Anda akan meluncurkan produk yang terbukti ramah lingkungan namun harganya 30% lebih mahal. Positioning PR yang paling strategis adalah mengedepankan nilai...", opts: ["Eksklusivitas dan kemewahan produk", "Harga yang kompetitif di pasar", "Investasi jangka panjang untuk bumi dan generasi mendatang", "Fitur teknis yang tidak dimiliki kompetitor"], ans: 2 },
+      { q: "Jurnalis dari media tier-1 mempublikasikan artikel yang menyudutkan CEO Anda berdasarkan data yang salah. Tindakan PR yang etis dan efektif adalah...", opts: ["Menuntut media tersebut secara hukum tanpa peringatan", "Meminta hak jawab dengan menyertakan data faktual yang meluruskan", "Membayar influencer untuk menyerang kredibilitas jurnalis tersebut", "Mengabaikan artikel tersebut agar tidak semakin viral"], ans: 1 },
+      { q: "Saat merancang program CSR untuk perusahaan tambang, manakah pendekatan yang memiliki dampak reputasi jangka panjang terbaik?", opts: ["Membagikan sembako setiap hari raya", "Menjadi sponsor utama konser musik internasional", "Membangun pusat pelatihan vokasi untuk pemuda di ring 1 area tambang", "Memasang baliho besar tentang kepedulian perusahaan"], ans: 2 },
+      { q: "Berdasarkan prinsip PR modern, jika terjadi krisis, perusahaan harus berperan sebagai 'First Informant'. Mengapa ini krusial?", opts: ["Untuk mendominasi narasi dan mencegah spekulasi liar mengambil alih opini publik", "Agar perusahaan tidak perlu membayar denda", "Supaya saham perusahaan langsung naik", "Untuk menutupi fakta yang sebenarnya terjadi"], ans: 0 },
+      { q: "Sebuah LSM menuduh perusahaan Anda melakukan eksploitasi pekerja. Data internal menunjukkan tuduhan itu tidak berdasar. Strategi komunikasi Anda adalah...", opts: ["Menyerang balik LSM tersebut di media", "Mengundang LSM dan media untuk audit terbuka dan dialog transparan", "Membuat iklan besar-besaran tentang kesejahteraan karyawan", "Menutup akses komunikasi dengan pihak luar"], ans: 1 },
+      { q: "Dalam pemetaan stakeholder, kelompok warga yang tidak memiliki kekuatan ekonomi namun sangat terdampak oleh polusi pabrik Anda masuk ke dalam kategori...", opts: ["Latent", "Apathetic", "Defender/Vulnerable yang butuh pemberdayaan komunikasi", "Promoter"], ans: 2 },
+      { q: "CEO Anda membuat komentar kontroversial di Twitter yang menyinggung kelompok minoritas. Langkah mitigasi PR paling tepat adalah...", opts: ["Mengatakan bahwa akun CEO di-hack", "Menghapus tweet tanpa penjelasan", "Merilis permintaan maaf terbuka, tulus, dan rencana edukasi internal", "Menyalahkan tim PR yang mengelola akun"], ans: 2 },
+      { q: "Mengapa 'Earned Media' (liputan organik) dianggap lebih bernilai dari 'Paid Media' (iklan) dalam membangun kepercayaan publik?", opts: ["Karena gratis dan tidak butuh biaya operasional", "Karena ada validasi pihak ketiga (jurnalis) yang membuatnya lebih kredibel", "Karena ukurannya selalu lebih besar di halaman koran", "Karena bisa diatur isi kata-katanya secara mutlak"], ans: 1 },
+      { q: "Perusahaan teknologi Anda baru saja mengalami kebocoran data pelanggan. Pesan kunci (key message) utama yang harus disampaikan kepada publik adalah...", opts: ["Ini adalah salah vendor server kami", "Pengakuan insiden, langkah perbaikan keamanan, dan kompensasi/perlindungan data pengguna", "Jangan khawatir, data yang bocor tidak penting", "Kami adalah perusahaan teknologi terbaik di Asia"], ans: 1 },
+      { q: "Saat merancang Press Release untuk peluncuran aplikasi baru, paragraf pertama (Lead) yang menggunakan prinsip Piramida Terbalik harus berisi...", opts: ["Sejarah perusahaan sejak berdiri", "Kutipan dari CEO tentang visi hidupnya", "5W+1H tentang aplikasi dan solusi utama yang ditawarkannya", "Daftar harga langganan lengkap"], ans: 2 },
+      { q: "Kompetitor melakukan black-campaign secara halus melalui buzzer. Sebagai PR, respons yang paling menunjukkan kepemimpinan pasar adalah...", opts: ["Ikut menyewa buzzer untuk menyerang balik", "Melakukan edukasi pasar berbasis data mengenai keunggulan produk Anda", "Melaporkan kompetitor ke polisi", "Menurunkan harga produk secara drastis"], ans: 1 },
+      { q: "Manakah metrik PR yang paling relevan untuk mengukur keberhasilan kampanye perubahan perilaku (behavioral change)?", opts: ["Jumlah Share di Instagram", "Peningkatan jumlah pendaftar program setelah kampanye berjalan", "Jumlah Press Release yang dikirim", "Advertising Value Equivalency (AVE)"], ans: 1 },
+      { q: "Dalam Employee Relations, saat perusahaan akan melakukan lay-off (PHK) massal, siapa yang harus menerima informasi ini pertama kali?", opts: ["Media massa nasional", "Investor di bursa saham", "Karyawan yang terdampak langsung secara internal", "Pemerintah daerah"], ans: 2 },
+      { q: "Sebuah brand fashion dikritik karena menggunakan model yang tidak inklusif. Strategi re-branding yang paling substantif adalah...", opts: ["Hanya mengganti foto di website dengan model beragam", "Melakukan perubahan kebijakan rekrutmen model dan desain yang benar-benar inklusif", "Mengeluarkan press release bahwa perusahaan tidak rasis", "Memberikan diskon 50% untuk meredam isu"], ans: 1 },
+      { q: "Apa peran utama PR dalam tahap 'Issues Management' sebelum krisis benar-benar terjadi?", opts: ["Menunggu sampai masalah menjadi viral", "Memantau tren percakapan publik dan mengidentifikasi potensi ancaman sejak dini", "Membuat desain grafis peringatan dini", "Mencari kambing hitam"], ans: 1 },
+      { q: "Perusahaan startup Anda mengakuisisi perusahaan lain. Cara terbaik mengomunikasikan ini kepada karyawan perusahaan yang diakuisisi adalah...", opts: ["Melalui email broadcast singkat", "Townhall meeting interaktif yang menjelaskan jaminan masa depan dan budaya kerja", "Melalui berita di koran", "Tidak perlu dikomunikasikan, biarkan mereka tahu sendiri"], ans: 1 },
+      { q: "Anda mengadakan konferensi pers, namun jurnalis justru bertanya tentang rumor miring perusahaan di luar topik. Teknik PR yang digunakan adalah...", opts: ["Marah dan menghentikan wawancara", "Bridging (menjembatani): Menjawab singkat lalu mengarahkan kembali ke pesan utama (Key Message)", "Menjawab 'No Comment' berulang kali", "Menangis agar dikasihani"], ans: 1 },
+      { q: "Dalam komunikasi krisis, prinsip 'Tell it all, tell it fast' bertujuan untuk...", opts: ["Membuat jurnalis cepat pulang", "Mencegah terjadinya kekosongan informasi yang bisa diisi oleh hoax", "Menghabiskan anggaran komunikasi", "Menakut-nakuti kompetitor"], ans: 1 },
+      { q: "Ketika merancang kampanye PR digital, mengapa penting untuk memahami algoritma media sosial?", opts: ["Untuk bisa meretas platform", "Agar pesan kampanye bisa secara organik menjangkau audiens target secara maksimal", "Untuk meniru konten kompetitor 100%", "Agar bisa membuat laporan yang tebal"], ans: 1 },
+      { q: "Perusahaan B2B Anda ingin membangun Thought Leadership. Taktik PR mana yang paling sesuai?", opts: ["Membuat tarian viral di TikTok", "CEO rutin menulis Op-Ed (artikel opini) tentang masa depan industri di media bisnis", "Membagikan brosur di lampu merah", "Mensponsori tim e-sports"], ans: 1 },
+      { q: "Seorang influencer yang Anda endorse tertangkap menggunakan narkoba. Langkah PR brand Anda...", opts: ["Membelanya karena followersnya banyak", "Segera menangguhkan kontrak dan menegaskan brand value yang menolak narkoba", "Ikut membuat meme tentang influencer tersebut", "Diam saja sampai netizen lupa"], ans: 1 },
+      { q: "Perbedaan mendasar antara PR dan Marketing dalam pendekatan terhadap audiens adalah...", opts: ["Marketing fokus pada konversi penjualan, PR fokus pada pembangunan relasi dan trust", "PR menggunakan uang, Marketing gratis", "Marketing hanya untuk B2C, PR untuk B2B", "Tidak ada bedanya sama sekali"], ans: 0 },
+      { q: "Dalam evaluasi PR, apa kelemahan utama dari metrik AVE (Advertising Value Equivalency)?", opts: ["Terlalu sulit dihitung", "Tidak mengukur sentimen (positif/negatif) dan dampak nyata pada reputasi", "Hanya berlaku untuk media cetak", "Terlalu mahal biayanya"], ans: 1 },
+      { q: "Untuk meredam isu penolakan warga terhadap pembangunan pabrik, pendekatan PR komunitas (Community Relations) terbaik adalah...", opts: ["Membawa aparat keamanan", "Dialog partisipatif dan pemetaan kebutuhan sosial ekonomi warga lokal", "Membayar kepala desa secara diam-diam", "Membangun tembok tinggi di sekitar pabrik"], ans: 1 },
+      { q: "Apa yang dimaksud dengan 'Greenwashing' dalam konteks Public Relations?", opts: ["Kegiatan menanam pohon bersama media", "Mengklaim produk ramah lingkungan tanpa bukti substantif hanya untuk citra", "Mengecat kantor dengan warna hijau", "Kampanye PR untuk produk pertanian"], ans: 1 },
+      { q: "Dalam menyusun Media Pitching untuk jurnalis, hal paling krusial yang menentukan email Anda dibaca adalah...", opts: ["Menggunakan huruf kapital semua", "Subjek email yang memiliki 'News Value' (nilai berita) dan relevan dengan rubrik jurnalis", "Melampirkan file PDF sebesar 50MB", "Memasukkan 10 emoji di judul"], ans: 1 },
+      { q: "Sebagai PR, Anda mendapati produk baru perusahaan ternyata cacat dan berbahaya. Direksi ingin menutupinya. Tindakan etis Anda adalah...", opts: ["Setuju demi mengamankan jabatan", "Menasihati direksi tentang risiko reputasi dan hukum, serta mendorong recall produk", "Membocorkannya ke akun gosip anonim", "Pura-pura tidak tahu"], ans: 1 },
+      { q: "Dalam kampanye Advocacy PR, tujuan akhirnya adalah...", opts: ["Mendapatkan likes terbanyak", "Mempengaruhi perubahan kebijakan atau regulasi publik terkait suatu isu", "Menjual merchandise kampanye", "Membuat logo baru perusahaan"], ans: 1 },
+      { q: "Platform ulasan (seperti Google Reviews) dipenuhi komplain palsu dari kompetitor. Langkah PR digital Anda...", opts: ["Membalas dengan makian", "Melaporkan ulasan palsu ke platform sambil secara terbuka mengajak audiens melihat fakta layanan Anda", "Membeli ulasan positif palsu untuk menutupi", "Menutup halaman bisnis di Google"], ans: 1 },
+      { q: "Manakah yang merupakan contoh 'Owned Media' dalam ekosistem PR?", opts: ["Liputan di Kompas.com", "Iklan billboard di jalan tol", "Website resmi dan Blog Perusahaan", "Postingan influencer tentang produk"], ans: 2 },
+      { q: "Sebuah NGO kesehatan mengkritik kandungan gula tinggi pada minuman Anda. Strategi 'Proactive PR' yang tepat adalah...", opts: ["Menuntut NGO tersebut", "Menginisiasi peluncuran varian rendah gula dan kampanye gaya hidup sehat", "Menyatakan bahwa gula itu menyehatkan", "Menghentikan semua produksi minuman"], ans: 1 },
+      { q: "Dalam teori komunikasi, apa fungsi dari 'Gatekeeper' (misal: Redaktur Media) bagi PR?", opts: ["Orang yang menjaga gerbang kantor media", "Pihak yang menyaring apakah rilis PR Anda layak tayang atau dibuang", "Pemilik saham perusahaan", "Juru bicara perusahaan"], ans: 1 },
+      { q: "Mengapa PR perlu menyusun 'Standby Statement' sebelum isu meledak?", opts: ["Agar bisa liburan dengan tenang", "Mempercepat respons di jam-jam krusial jika krisis benar-benar terjadi", "Untuk diberikan ke polisi", "Agar terlihat sibuk bekerja"], ans: 1 },
+      { q: "Peran utama PR dalam Internal Communications adalah...", opts: ["Mengawasi jam masuk karyawan", "Memastikan setiap karyawan memahami visi perusahaan dan menjadi brand ambassador", "Menentukan gaji karyawan", "Membuat menu makan siang"], ans: 1 },
+      { q: "Saat menghadapi doorstop interview dari banyak jurnalis setelah insiden pabrik terbakar, jubir harus...", opts: ["Berlari masuk ke mobil", "Memberikan fakta awal, menunjukkan empati pada korban, dan berjanji memberi update berkala", "Menyalahkan petugas pemadam kebakaran", "Berdiam diri tanpa ekspresi"], ans: 1 },
+      { q: "Apa dampak terburuk jika perusahaan merespons krisis dengan strategi 'Silence' (diam)?", opts: ["Publik akan cepat lupa", "Media dan publik akan mencari narasumber lain yang mungkin memutarbalikkan fakta", "Saham akan stabil", "Reputasi akan naik secara misterius"], ans: 1 },
+      { q: "Dalam merancang pesan kampanye, pendekatan 'Storytelling' sangat disarankan bagi PR karena...", opts: ["Cerita lebih mudah diingat dan membangkitkan koneksi emosional dibanding sekadar data statistik", "Menulis cerita lebih cepat daripada mencari data", "Jurnalis hanya suka baca novel", "Tidak perlu biaya desain"], ans: 0 },
+      { q: "Bagaimana PR modern menyikapi 'Citizen Journalism' (jurnalisme warga) di media sosial?", opts: ["Mengabaikannya karena bukan media resmi", "Menganggap mereka sebagai stakeholder penting yang bisa memicu krisis atau advokasi", "Menuntut mereka jika salah bicara", "Membayar mereka semua menjadi karyawan"], ans: 1 },
+      { q: "Metode PESO (Paid, Earned, Shared, Owned) dalam PR bertujuan untuk...", opts: ["Menghemat anggaran", "Mengintegrasikan seluruh saluran komunikasi agar pesan lebih koheren dan berdampak luas", "Menghitung nilai tukar mata uang", "Menggantikan peran jurnalis sepenuhnya"], ans: 1 }
     ];
 
     let currentData = {
@@ -233,9 +249,9 @@
     
     let currentQuestionIndex = 0;
     let timerInterval = null;
-    let questionsShuffle = [];
+    let sessionQuestions = [];
+    const QUESTIONS_PER_SESSION = 10;
 
-    // --- INIT ---
     document.addEventListener("DOMContentLoaded", () => {
       if (isPreview) {
         document.getElementById('previewModeAlert').style.display = 'block';
@@ -243,7 +259,6 @@
       resetApp();
     });
 
-    // --- HELPER UI ---
     function showView(viewId) {
       ['view-start', 'view-quiz', 'view-result', 'view-leaderboard'].forEach(id => {
         const el = document.getElementById(id);
@@ -265,7 +280,6 @@
       btns.forEach(btn => btn.disabled = false);
     }
 
-    // --- GAME LOGIC ---
     function resetApp() {
       currentData = { nama: "", skor: 0, waktuStart: 0, waktuTotal: 0 };
       currentQuestionIndex = 0;
@@ -277,7 +291,7 @@
     function startGame() {
       const nameInput = document.getElementById('playerName').value.trim();
       if (!nameInput) {
-        Swal.fire('Oops!', 'Mohon masukkan nama Anda terlebih dahulu.', 'warning');
+        Swal.fire('Oops!', 'Mohon masukkan nama analis Anda terlebih dahulu.', 'warning');
         return;
       }
       
@@ -285,10 +299,11 @@
       currentData.skor = 0;
       currentQuestionIndex = 0;
       
-      // Acak soal
-      questionsShuffle = [...prQuestions].sort(() => Math.random() - 0.5);
+      // Ambil 10 soal acak dari bank 40 soal
+      let shuffledBank = [...prQuestions].sort(() => Math.random() - 0.5);
+      sessionQuestions = shuffledBank.slice(0, QUESTIONS_PER_SESSION);
       
-      document.getElementById('qTotal').textContent = questionsShuffle.length;
+      document.getElementById('qTotal').textContent = sessionQuestions.length;
       currentData.waktuStart = Date.now();
       
       showView('view-quiz');
@@ -307,12 +322,12 @@
     }
 
     function renderQuestion() {
-      if (currentQuestionIndex >= questionsShuffle.length) {
+      if (currentQuestionIndex >= sessionQuestions.length) {
         finishGame();
         return;
       }
 
-      const q = questionsShuffle[currentQuestionIndex];
+      const q = sessionQuestions[currentQuestionIndex];
       document.getElementById('qNumber').textContent = currentQuestionIndex + 1;
       document.getElementById('questionText').textContent = q.q;
       
@@ -321,7 +336,7 @@
       
       q.opts.forEach((optText, index) => {
         const btn = document.createElement('button');
-        btn.className = 'btn btn-option';
+        btn.className = 'btn btn-option shadow-sm';
         btn.textContent = optText;
         btn.onclick = () => handleAnswer(index, btn, q.ans);
         optsContainer.appendChild(btn);
@@ -329,22 +344,21 @@
     }
 
     function handleAnswer(selectedIndex, btnElement, correctIndex) {
-      // Nonaktifkan semua tombol setelah pilih
       const allBtns = document.querySelectorAll('.btn-option');
       allBtns.forEach(b => b.disabled = true);
 
       if (selectedIndex === correctIndex) {
         btnElement.classList.add('correct');
-        currentData.skor += 20; // 20 poin per soal benar
+        currentData.skor += 10; // 10 poin per soal benar (Max 100)
       } else {
         btnElement.classList.add('wrong');
-        allBtns[correctIndex].classList.add('correct'); // Tunjukkan yang benar
+        allBtns[correctIndex].classList.add('correct');
       }
 
       setTimeout(() => {
         currentQuestionIndex++;
         renderQuestion();
-      }, 1000);
+      }, 1200);
     }
 
     function finishGame() {
@@ -355,13 +369,10 @@
       document.getElementById('resScore').textContent = currentData.skor;
       document.getElementById('resTime').textContent = currentData.waktuTotal;
       
-      // Aktifkan kembali tombol simpan
       document.getElementById('btnSimpan').style.display = 'block';
-      
       showView('view-result');
     }
 
-    // --- SERVER COMMUNICATION ---
     function submitScore() {
       startLoading();
       
@@ -374,7 +385,6 @@
       if (isPreview) {
         setTimeout(() => {
           try {
-            // Simulasi Optimistic UI
             const newScore = {
               timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
               nama: payload.nama,
@@ -382,8 +392,8 @@
               waktu: payload.waktu
             };
             localLeaderboard.push(newScore);
-            Swal.fire('Berhasil (Simulasi)', 'Skor Anda berhasil disimpan ke memori.', 'success');
-            document.getElementById('btnSimpan').style.display = 'none'; // cegah double submit
+            Swal.fire('Berhasil (Simulasi)', 'Skor evaluasi disimpan ke memori.', 'success');
+            document.getElementById('btnSimpan').style.display = 'none';
             renderLeaderboardTable(localLeaderboard);
             showView('view-leaderboard');
           } catch (error) {
@@ -395,12 +405,10 @@
       } else {
         google.script.run
           .withSuccessHandler(res => {
-            endLoading(); // WAJIB BARIS PERTAMA
+            endLoading();
             if (res.success) {
-              Swal.fire('Berhasil', 'Skor Anda telah masuk ke Leaderboard server!', 'success');
+              Swal.fire('Tersimpan', 'Analisis Anda masuk ke Server Leaderboard!', 'success');
               document.getElementById('btnSimpan').style.display = 'none';
-              
-              // Optimistic UI: Masukkan langsung ke array lokal lalu render
               localLeaderboard.push(res.data);
               renderLeaderboardTable(localLeaderboard);
               showView('view-leaderboard');
@@ -409,7 +417,7 @@
             }
           })
           .withFailureHandler(err => {
-            endLoading(); // WAJIB BARIS PERTAMA
+            endLoading();
             Swal.fire('Error Server', err.message, 'error');
           })
           .simpanSkor(payload);
@@ -435,7 +443,7 @@
           .withSuccessHandler(res => {
             endLoading();
             if (res.success) {
-              localLeaderboard = res.data; // Sync lokal
+              localLeaderboard = res.data; 
               renderLeaderboardTable(localLeaderboard);
               showView('view-leaderboard');
             } else {
@@ -455,19 +463,18 @@
       tbody.innerHTML = '';
       
       if (!dataArr || dataArr.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Belum ada skor yang tercatat</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Belum ada analis terdaftar</td></tr>';
         return;
       }
 
-      // Pastikan diurutkan (Skor Desc, Waktu Asc)
       const sorted = [...dataArr].sort((a, b) => {
-        if (b.skor === a.skor) return a.waktu - b.waktu;
+        if (b.skor === a.skor) return a.waktu - b.waktu; // Waktu tersingkat menang jika skor sama
         return b.skor - a.skor;
       });
 
       sorted.forEach((row, i) => {
         let rankBadge = i + 1;
-        if (i === 0) rankBadge = '🥇';
+        if (i === 0) rankBadge = '🏆';
         else if (i === 1) rankBadge = '🥈';
         else if (i === 2) rankBadge = '🥉';
 
