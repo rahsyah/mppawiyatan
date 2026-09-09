@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secretary Under Pressure - The Itinerary Crisis</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+        .font-mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        /* Custom Animations */
+        @keyframes slideInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up {
+            animation: slideInUp 0.5s ease-out forwards;
+        }
+        
+        @keyframes blinkRed {
+            0%, 100% { background-color: rgba(239, 68, 68, 0.1); }
+            50% { background-color: rgba(239, 68, 68, 0.4); box-shadow: inset 0 0 50px rgba(239, 68, 68, 0.8); }
+        }
+        .crisis-mode {
+            animation: blinkRed 1s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Chat Bubble Styles */
+        .chat-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        .chat-left {
+            background-color: #1e293b;
+            border-bottom-left-radius: 2px;
+            align-self: flex-start;
+        }
+        .chat-right {
+            background-color: #3b82f6;
+            border-bottom-right-radius: 2px;
+            align-self: flex-end;
+        }
+        .chat-show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Option Card Hover */
+        .option-card {
+            transition: all 0.2s;
+        }
+        .option-card:hover:not(:disabled) {
+            transform: translateY(-2px);
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Trust Bar transition */
+        #trust-fill {
+            transition: width 0.5s ease-in-out, background-color 0.5s ease;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col items-center justify-center relative selection:bg-blue-500 selection:text-white">
+
+    <audio id="sfx-msg" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3" preload="auto"></audio>
+    <audio id="sfx-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3" preload="auto"></audio>
+    <audio id="sfx-wrong" src="https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3" preload="auto"></audio>
+    <audio id="sfx-alarm" src="https://assets.mixkit.co/active_storage/sfx/995/995-preview.mp3" preload="auto"></audio>
+
+    <div id="screen-intro" class="w-full max-w-md p-6 flex flex-col items-center justify-center text-center absolute inset-0 m-auto z-10">
+        <div class="mb-8 animate-slide-up">
+            <i class="fa-solid fa-briefcase text-5xl text-blue-500 mb-4"></i>
+            <h1 class="text-3xl font-extrabold tracking-tight mb-2">SECRETARY UNDER PRESSURE</h1>
+            <h2 class="text-xl text-blue-400 font-semibold mb-4">"THE ITINERARY CRISIS"</h2>
+            <p class="text-slate-400 text-sm italic border-l-4 border-blue-500 pl-3 text-left">
+                "Satu keputusan salah dapat mengacaukan seluruh perjalanan dan jadwal pimpinan di Google Calendar."
+            </p>
+        </div>
+        
+        <div class="w-full animate-slide-up" style="animation-delay: 0.2s;">
+            <label class="block text-left text-sm font-medium text-slate-300 mb-2">Nama Sekretaris Eksekutif:</label>
+            <input type="text" id="player-name" placeholder="Masukkan nama Anda..." class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition mb-6" onkeypress="if(event.key === 'Enter') startOpening()">
+            <button onclick="startOpening()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-lg shadow-[0_0_15px_rgba(37,99,235,0.5)] transition-all active:scale-95 text-lg">
+                <i class="fa-solid fa-power-off mr-2"></i> LOGIN SISTEM
+            </button>
+        </div>
+    </div>
+
+    <div id="screen-opening" class="hidden w-full max-w-md h-full md:h-[80vh] md:rounded-2xl bg-slate-900 border border-slate-700 flex flex-col relative z-10 shadow-2xl overflow-hidden">
+        <div class="bg-slate-800 p-4 border-b border-slate-700 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center">
+                    <i class="fa-solid fa-user-tie text-slate-400"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm">Bpk. Direktur Utama</h3>
+                    <p class="text-xs text-green-400">Online</p>
+                </div>
+            </div>
+            <div class="text-xs text-slate-400 font-mono">06.15 WIB</div>
+        </div>
+        <div id="chat-container" class="flex-1 p-4 flex flex-col overflow-y-auto">
+            <!-- Messages will be injected here -->
+        </div>
+        <div id="mission-start-box" class="hidden p-4 bg-slate-800/80 backdrop-blur border-t border-slate-700 flex flex-col items-center">
+            <p class="text-red-400 text-sm font-bold mb-3 text-center blink-text">🚨 MISSION START: Waktu Terbatas!</p>
+            <button onclick="startGameplay()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-4 rounded-lg transition-all active:scale-95 shadow-[0_0_15px_rgba(220,38,38,0.5)]">
+                TERIMA MISI
+            </button>
+        </div>
+    </div>
+
+    <div id="screen-gameplay" class="hidden w-full h-full flex flex-col relative z-10">
+        <!-- Dashboard Top Bar -->
+        <div class="bg-slate-800 border-b border-slate-700 p-3 md:px-6 flex flex-col md:flex-row justify-between items-center gap-2 shadow-lg">
+            <!-- Trust Bar -->
+            <div class="w-full md:w-1/3 flex flex-col">
+                <div class="flex justify-between text-xs font-bold mb-1">
+                    <span class="text-slate-300">DIRECTOR TRUST</span>
+                    <span id="ui-trust-text" class="text-blue-400">100%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                    <div id="ui-trust-bar" class="h-full bg-blue-500 w-full" style="transition: width 0.3s, background-color 0.3s;"></div>
+                </div>
+                <div id="ui-hearts" class="text-red-500 text-xs mt-1">❤️❤️❤️❤️❤️</div>
+            </div>
+            
+            <!-- Center Stats -->
+            <div class="flex gap-4 md:gap-8 items-center font-mono text-sm">
+                <div class="flex flex-col items-center bg-slate-900 px-3 py-1 rounded border border-slate-700">
+                    <span class="text-[10px] text-slate-400">SCORE</span>
+                    <span id="ui-score" class="font-bold text-yellow-400">0</span>
+                </div>
+                <div class="flex flex-col items-center bg-slate-900 px-3 py-1 rounded border border-slate-700">
+                    <span class="text-[10px] text-slate-400">LEVEL</span>
+                    <span id="ui-level" class="font-bold text-cyan-400">1/5</span>
+                </div>
+                <div class="flex flex-col items-center bg-slate-900 px-3 py-1 rounded border border-slate-700">
+                    <span class="text-[10px] text-slate-400">TIME</span>
+                    <span id="ui-time" class="font-bold text-white">00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crisis Overlay Warning (Hidden by default) -->
+        <div id="crisis-alert" class="hidden bg-red-600/90 text-white p-2 text-center font-bold tracking-widest text-sm shadow-[0_0_20px_rgba(220,38,38,0.8)] border-y border-red-400">
+            🚨 URGENT MESSAGE - DECISION REQUIRED 🚨
+        </div>
+
+        <!-- Timer Bar for Crisis -->
+        <div id="timer-container" class="hidden w-full h-1 bg-slate-800">
+            <div id="timer-bar" class="h-full bg-red-500 w-full origin-left"></div>
+        </div>
+
+        <!-- Question Area -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center">
+            <div class="w-full max-w-3xl bg-slate-800 rounded-xl p-6 md:p-8 border border-slate-700 shadow-xl relative">
+                
+                <div class="flex justify-between items-start mb-4">
+                    <span id="q-badge" class="text-xs font-bold px-2 py-1 bg-blue-900 text-blue-300 rounded uppercase">INTELLIGENCE</span>
+                    <span id="q-number" class="text-slate-400 text-sm font-mono">01/30</span>
+                </div>
+
+                <h3 id="q-text" class="text-lg md:text-xl font-semibold leading-relaxed mb-6 whitespace-pre-wrap">
+                    Loading question...
+                </h3>
+
+                <!-- Options -->
+                <div id="options-container" class="flex flex-col gap-3">
+                    <!-- Buttons injected via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-feedback" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div id="feedback-card" class="w-full max-w-md bg-slate-800 rounded-xl border border-slate-700 shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
+            <div id="feedback-header" class="p-4 rounded-t-xl text-center font-bold text-lg flex flex-col items-center gap-2">
+                <i id="feedback-icon" class="text-3xl"></i>
+                <span id="feedback-title">CORRECT!</span>
+            </div>
+            <div class="p-6">
+                <p id="feedback-msg" class="text-center text-slate-300 text-sm mb-4 italic">"Keputusan tepat..."</p>
+                
+                <div class="bg-slate-900 p-4 rounded-lg mb-6 border border-slate-700">
+                    <p class="text-xs text-slate-400 font-bold mb-1 uppercase tracking-wider">WHY?</p>
+                    <p id="feedback-explanation" class="text-sm text-slate-200">Penjelasan disini.</p>
+                </div>
+
+                <div class="flex justify-between items-center font-mono text-sm font-bold border-t border-slate-700 pt-4">
+                    <div id="feedback-points" class="text-green-400">+100 PTS</div>
+                    <div id="feedback-trust" class="text-blue-400">+5% TRUST</div>
+                </div>
+
+                <button onclick="continueGame()" class="mt-6 w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-4 rounded-lg transition-all">
+                    LANJUTKAN <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-end" class="hidden fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="w-full max-w-2xl bg-slate-800 rounded-2xl border border-slate-700 shadow-2xl p-8 text-center animate-slide-up my-auto">
+            
+            <div id="end-header" class="mb-6">
+                <!-- Injected via JS based on win/lose -->
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-700">
+                    <div class="text-xs text-slate-400 mb-1">SKOR</div>
+                    <div id="end-score" class="text-xl font-bold text-yellow-400">0</div>
+                </div>
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-700">
+                    <div class="text-xs text-slate-400 mb-1">AKURASI</div>
+                    <div id="end-accuracy" class="text-xl font-bold text-blue-400">0%</div>
+                </div>
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-700">
+                    <div class="text-xs text-slate-400 mb-1">TRUST</div>
+                    <div id="end-trust" class="text-xl font-bold text-green-400">0%</div>
+                </div>
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-700">
+                    <div class="text-xs text-slate-400 mb-1">WAKTU</div>
+                    <div id="end-time" class="text-xl font-bold text-white">00:00</div>
+                </div>
+            </div>
+
+            <div id="rank-container" class="mb-8 p-6 bg-gradient-to-r from-slate-800 via-blue-900/30 to-slate-800 rounded-xl border border-blue-800/50">
+                <p class="text-sm text-slate-400 mb-2">Peringkat Sekretaris:</p>
+                <h3 id="end-rank" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+                    EXECUTIVE SECRETARY
+                </h3>
+            </div>
+
+            <div id="badges-container" class="mb-8 hidden">
+                <p class="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wider text-left">Achievements Unlocked:</p>
+                <div id="badges-list" class="flex flex-wrap gap-2">
+                    <!-- Badges injected via JS -->
+                </div>
+            </div>
+
+            <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all w-full md:w-auto">
+                <i class="fa-solid fa-rotate-right mr-2"></i> MAIN LAGI
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Database 30 Soal terbagi 5 Level
+        const questionsData = [
+            // LEVEL 1: ITINERARY INTELLIGENCE (1-5)
+            {
+                level: 1, type: 'INTELLIGENCE', isCrisis: false,
+                text: "Seorang direktur akan melakukan perjalanan dinas ke Jakarta. Anda membuat dokumen yang berisi tanggal, penerbangan, link Google Meet jika ada hybrid meeting, hotel, dan transportasi darat. Dokumen terpadu ini disebut...",
+                options: [
+                    { text: "Itinerary", isCorrect: true },
+                    { text: "Surat Perintah Perjalanan Dinas (SPPD)", isCorrect: false },
+                    { text: "Notula Rapat", isCorrect: false },
+                    { text: "Memo Internal", isCorrect: false },
+                    { text: "Buku Ekspedisi", isCorrect: false }
+                ],
+                explanation: "Itinerary adalah jadwal perjalanan terperinci yang memuat seluruh agenda, transportasi, akomodasi, dan keterangan tempat/waktu agar perjalanan terstruktur."
+            },
+            {
+                level: 1, type: 'INTELLIGENCE', isCrisis: false,
+                text: "Saat menyusun Itinerary, Anda juga membuat undangan Google Calendar untuk rapat di lokasi tujuan dengan client. Apa pengaturan paling penting yang harus dipastikan agar client tidak salah waktu?",
+                options: [
+                    { text: "Memastikan Time Zone (Zona Waktu) diset ke zona waktu lokasi tujuan", isCorrect: true },
+                    { text: "Mengubah warna event menjadi merah", isCorrect: false },
+                    { text: "Mematikan notifikasi email", isCorrect: false },
+                    { text: "Mengosongkan bagian 'location' agar fleksibel", isCorrect: false },
+                    { text: "Mengundang seluruh staf kantor", isCorrect: false }
+                ],
+                explanation: "Saat mengundang orang di zona waktu berbeda atau rapat di lokasi berbeda, fitur Time Zone di Google Calendar memastikan waktu yang tampil di kalender mereka otomatis menyesuaikan."
+            },
+            {
+                level: 1, type: 'INTELLIGENCE', isCrisis: false,
+                text: "Direktur meminta Anda memasukkan e-tiket penerbangan dan bukti booking hotel agar ia mudah mencarinya saat di bandara. Tindakan terbaik menggunakan Google Calendar adalah...",
+                options: [
+                    { text: "Melampirkan (Attach) file PDF tiket dan voucher hotel langsung ke dalam event kalender", isCorrect: true },
+                    { text: "Mengetik ulang seluruh nomor seri tiket di judul event", isCorrect: false },
+                    { text: "Meminta direktur mencari sendiri di emailnya", isCorrect: false },
+                    { text: "Hanya mencetak di kertas dan berharap tidak hilang", isCorrect: false },
+                    { text: "Mengirimkan via pesan instan saja tanpa ditaruh di kalender", isCorrect: false }
+                ],
+                explanation: "Google Calendar memiliki fitur 'Add attachment' sehingga dokumen penting (tiket/hotel) bisa langsung dibuka dari jadwal pada jam yang sesuai."
+            },
+            {
+                level: 1, type: 'INTELLIGENCE', isCrisis: false,
+                text: "Dalam menyusun agenda harian di itinerary, pimpinan meminta agar ia tidak diganggu oleh panggilan dari staf lain selama meeting dengan Client VIP. Di Google Calendar, Anda harus mengubah status event tersebut menjadi...",
+                options: [
+                    { text: "Busy (Sibuk)", isCorrect: true },
+                    { text: "Free (Tersedia)", isCorrect: false },
+                    { text: "Out of Office (Di luar kantor)", isCorrect: false },
+                    { text: "Working Location", isCorrect: false },
+                    { text: "Private", isCorrect: false }
+                ],
+                explanation: "Mengatur status 'Busy' akan memberitahu kolega yang mencoba menjadwalkan rapat bahwa pimpinan sedang tidak bisa diganggu (ada bentrok jadwal)."
+            },
+            {
+                level: 1, type: 'INTELLIGENCE', isCrisis: false,
+                text: "Tujuan utama seorang sekretaris memberikan estimasi waktu tempuh (misal: 08.00-09.00 Perjalanan Hotel ke Kantor Client) dalam itinerary adalah...",
+                options: [
+                    { text: "Sebagai buffer time dan memastikan ketepatan waktu hadir di agenda berikutnya", isCorrect: true },
+                    { text: "Hanya untuk memenuhi kolom format yang kosong", isCorrect: false },
+                    { text: "Agar biaya bensin bisa dihitung eksak", isCorrect: false },
+                    { text: "Membuat dokumen terlihat panjang", isCorrect: false },
+                    { text: "Menentukan jenis mobil yang disewa", isCorrect: false }
+                ],
+                explanation: "Waktu perjalanan (Transit time) sangat krusial dalam itinerary sebagai 'buffer' untuk mencegah keterlambatan beruntun."
+            },
+
+            // LEVEL 2: TIME CRISIS (6-10)
+            {
+                level: 2, type: 'TIME CRISIS', isCrisis: false,
+                text: "Direktur memiliki meeting pukul 13.00 di Jakarta. Waktu tempuh bandara ke lokasi sekitar 60 menit. Pilihan penerbangan:\nA. 06.00–07.30\nB. 09.30–11.00\nC. 12.00–13.30\nPenerbangan mana yang paling ideal dipesan?",
+                options: [
+                    { text: "B. 09.30–11.00", isCorrect: true },
+                    { text: "A. 06.00–07.30 (Terlalu lama menunggu)", isCorrect: false },
+                    { text: "C. 12.00–13.30 (Pasti terlambat)", isCorrect: false },
+                    { text: "Penerbangan malam sebelumnya", isCorrect: false },
+                    { text: "Tidak usah berangkat", isCorrect: false }
+                ],
+                explanation: "Tiba jam 11.00 memberikan waktu 2 jam (buffer yang aman) untuk antre bagasi, keluar bandara, dan perjalanan 60 menit ke lokasi meeting (tiba jam 12 sekian)."
+            },
+            {
+                level: 2, type: 'TIME CRISIS', isCrisis: true, // TRIGGER CRISIS TIMER
+                text: "Pimpinan meminta meeting pukul 10.00-11.30. Di Google Calendar, Anda melihat pimpinan sudah memiliki acara 'Review Laporan Keuangan' jam 11.00-12.00. Apa tindakan Anda?",
+                options: [
+                    { text: "Mengusulkan ke pimpinan untuk menggeser meeting klien ke jam 09.00-10.30 atau memindahkan review laporan", isCorrect: true },
+                    { text: "Tetap menyimpan event dan membiarkan jadwal bentrok", isCorrect: false },
+                    { text: "Menghapus acara Review Laporan diam-diam", isCorrect: false },
+                    { text: "Membatalkan pertemuan dengan client sepihak", isCorrect: false },
+                    { text: "Mengubah kalender menjadi 'Free'", isCorrect: false }
+                ],
+                explanation: "Sekretaris harus proaktif mendeteksi bentrok (Double Booking) dan memberikan solusi/alternatif waktu sebelum mengunci jadwal."
+            },
+            {
+                level: 2, type: 'TIME CRISIS', isCrisis: false,
+                text: "Pimpinan memiliki jadwal padat. Meeting A selesai 14.00, Meeting B mulai 14.15 di gedung berbeda yang berjarak 30 menit. Anda menyadari ini saat menyusun Google Calendar. Langkah tepat?",
+                options: [
+                    { text: "Memasukkan 'Buffer Block / Travel Time' di kalender jam 14.00-14.30 dan memundurkan Meeting B ke 14.30", isCorrect: true },
+                    { text: "Menyuruh sopir ngebut agar sampai dalam 15 menit", isCorrect: false },
+                    { text: "Mengurangi durasi Meeting A diam-diam tanpa memberitahu siapapun", isCorrect: false },
+                    { text: "Tidak melakukan apa-apa", isCorrect: false },
+                    { text: "Mewakilkan pimpinan di Meeting B", isCorrect: false }
+                ],
+                explanation: "Membuat block khusus untuk 'Travel Time' di Google Calendar sangat profesional agar pimpinan tidak kelabakan dan kolega tahu dia sedang di jalan."
+            },
+            {
+                level: 2, type: 'TIME CRISIS', isCrisis: false,
+                text: "Untuk penerbangan ke luar kota jam 08.00 pagi, Anda ingin Google Calendar mengingatkan Pimpinan agar tidak telat bangun. Pengaturan 'Notification/Reminder' paling efektif adalah:",
+                options: [
+                    { text: "Notifikasi 2 jam sebelumnya (06.00) dan malam sebelumnya (20.00)", isCorrect: true },
+                    { text: "Notifikasi 10 menit sebelumnya", isCorrect: false },
+                    { text: "Email 1 minggu sebelumnya", isCorrect: false },
+                    { text: "Tidak perlu reminder, pimpinan pasti ingat", isCorrect: false },
+                    { text: "Notifikasi setiap jam dari jam 00.00", isCorrect: false }
+                ],
+                explanation: "Reminder pagi hari untuk persiapan ke bandara dan pengingat malam sebelumnya (untuk packing/istirahat) adalah standar pelayanan sekretaris yang prima."
+            },
+            {
+                level: 2, type: 'TIME CRISIS', isCrisis: true,
+                text: "Anda telah menjadwalkan meeting di Google Calendar. Namun, tiba-tiba zona waktu laptop pimpinan berubah. Akibatnya jadwal di kalender pimpinan terlihat maju 1 jam. Apa saran Anda?",
+                options: [
+                    { text: "Masuk ke Settings Google Calendar > Time Zone, dan centang 'Ask to update my primary time zone to current location'", isCorrect: true },
+                    { text: "Mengubah manual semua jadwal dimundurkan 1 jam", isCorrect: false },
+                    { text: "Membatalkan semua jadwal dan membuat ulang", isCorrect: false },
+                    { text: "Mengabaikannya dan menyuruh pimpinan mengingat jam asli", isCorrect: false },
+                    { text: "Menghapus akun Google", isCorrect: false }
+                ],
+                explanation: "Google Calendar mengandalkan sistem zona waktu perangkat. Menyesuaikan primary timezone otomatis saat travelling akan memperbaiki tampilan semua jadwal."
+            },
+
+            // LEVEL 3: TRAVEL PROBLEM (11-15)
+            {
+                level: 3, type: 'TRAVEL PROBLEM', isCrisis: true,
+                text: "FLIGHT DELAY! Penerbangan yang awalnya tiba 10.30 tertunda menjadi tiba 13.00. Padahal ada jadwal 'Lunch Meeting' di Google Calendar jam 12.00 bersama VIP. Tindakan pertama Anda:",
+                options: [
+                    { text: "Menghubungi VIP/asistennya untuk meminta maaf, mereschedule via G-Cal ke jam 14.00, atau ubah ke makan malam", isCorrect: true },
+                    { text: "Marah pada maskapai dan membatalkan tiket", isCorrect: false },
+                    { text: "Diam saja menunggu pimpinan mendarat baru mengabari", isCorrect: false },
+                    { text: "Menghapus event dari kalender diam-diam", isCorrect: false },
+                    { text: "Memesan tiket pesawat lain yang harganya 5x lipat tanpa izin", isCorrect: false }
+                ],
+                explanation: "Komunikasi segera kepada pihak terkait adalah prioritas utama saat terjadi force majeure (delay), lalu perbarui jadwal (reschedule) secara resmi."
+            },
+            {
+                level: 3, type: 'TRAVEL PROBLEM', isCrisis: false,
+                text: "Saat tiba di kota tujuan, sopir sewaan yang Anda pesan tidak bisa dihubungi. Agenda pertama dimulai 45 menit lagi. Keputusan terbaik?",
+                options: [
+                    { text: "Meminta pimpinan segera menggunakan taksi bandara resmi/online, lalu Anda urus komplain ke rental mobil", isCorrect: true },
+                    { text: "Menyuruh pimpinan menunggu di bandara sampai sopir bisa ditelepon", isCorrect: false },
+                    { text: "Anda terbang ke sana untuk menjemput", isCorrect: false },
+                    { text: "Membatalkan meeting hari itu", isCorrect: false },
+                    { text: "Menyuruh pimpinan naik kendaraan umum yang tidak jelas rutenya", isCorrect: false }
+                ],
+                explanation: "Keamanan dan ketepatan waktu pimpinan lebih penting dari pada menunggu kendaraan rental. Gunakan alternatif tercepat & teraman (taksi resmi)."
+            },
+            {
+                level: 3, type: 'TRAVEL PROBLEM', isCrisis: false,
+                text: "Dalam event Google Calendar 'Meeting dengan Vendor', Anda tidak mencantumkan link Google Meet karena mengira itu tatap muka. Vendor ternyata mengira itu online. Mendekati jam H, vendor meminta link. Anda harus...",
+                options: [
+                    { text: "Segera edit event G-Cal, klik 'Add Google Meet video conferencing', lalu klik 'Save & Send update' ke tamu", isCorrect: true },
+                    { text: "Menyalahkan vendor karena salah paham", isCorrect: false },
+                    { text: "Meminta pimpinan menelepon via WhatsApp video seadanya", isCorrect: false },
+                    { text: "Menunda meeting ke besok", isCorrect: false },
+                    { text: "Mengabaikan chat dari vendor", isCorrect: false }
+                ],
+                explanation: "Fitur 'Add Google Meet' sangat cepat. Update kalender dan kirim notifikasi revisi akan langsung masuk ke email/kalender peserta."
+            },
+            {
+                level: 3, type: 'TRAVEL PROBLEM', isCrisis: true,
+                text: "HOTEL OVERBOOKED! Setibanya pimpinan di hotel jam 21.00, resepsionis mengatakan kamar penuh akibat kesalahan sistem mereka. Sikap Anda yang berada di kantor/rumah:",
+                options: [
+                    { text: "Menuntut pihak hotel bertanggung jawab memindahkan pimpinan ke hotel setara/lebih baik tanpa biaya tambahan", isCorrect: true },
+                    { text: "Menyuruh pimpinan tidur di lobi", isCorrect: false },
+                    { text: "Langsung memesan hotel lain dan membayar dobel memakai uang pribadi", isCorrect: false },
+                    { text: "Pasrah dan meminta pimpinan cari kost terdekat", isCorrect: false },
+                    { text: "Memarahi pimpinan karena check-in kemalaman", isCorrect: false }
+                ],
+                explanation: "Jika terjadi overbooked karena kesalahan hotel, itu adalah kewajiban hotel untuk melakukan 'Walk' (memindahkan tamu ke hotel selevel dengan biaya ditanggung mereka)."
+            },
+            {
+                level: 3, type: 'TRAVEL PROBLEM', isCrisis: false,
+                text: "Klien membalas undangan Google Calendar Anda dengan status 'Propose a new time' karena ia tidak bisa di jam tersebut. Apa yang Anda lakukan di dashboard kalender?",
+                options: [
+                    { text: "Mengecek kesesuaian waktu usulan klien dengan jadwal kosong pimpinan, lalu klik 'Accept' jika cocok", isCorrect: true },
+                    { text: "Menolak otomatis karena jadwal direktur tidak boleh diatur orang lain", isCorrect: false },
+                    { text: "Membuat event baru dan membiarkan event lama menggantung", isCorrect: false },
+                    { text: "Menelepon marah-marah", isCorrect: false },
+                    { text: "Mengabaikan proposal tersebut", isCorrect: false }
+                ],
+                explanation: "Fitur 'Propose new time' di Google Calendar memudahkan negosiasi jadwal. Jika usulan sesuai dengan waktu kosong pimpinan, Anda tinggal accept."
+            },
+
+            // LEVEL 4: SECRETARY DECISION (16-20)
+            {
+                level: 4, type: 'SECRETARY DECISION', isCrisis: false,
+                text: "Pimpinan memiliki meeting jam 08.00 pagi di distrik bisnis yang macet total. Tersedia:\nHotel A: Rp1,5jt (Jalan kaki 5 menit ke meeting)\nHotel B: Rp800rb (Butuh 1 jam naik taksi, biaya taksi PP Rp200rb). \nPilihan Anda?",
+                options: [
+                    { text: "Hotel A, karena menghemat waktu pimpinan dan risiko telat akibat macet sangat kecil", isCorrect: true },
+                    { text: "Hotel B, karena total pengeluaran (1jt) lebih murah dari A", isCorrect: false },
+                    { text: "Hotel yang paling mahal saja tanpa memikirkan jarak", isCorrect: false },
+                    { text: "Tidak menginap, penerbangan subuh", isCorrect: false },
+                    { text: "Hotel B dan menyuruh pimpinan bangun jam 4 pagi", isCorrect: false }
+                ],
+                explanation: "Bagi level eksekutif, efisiensi waktu, energi, dan risiko terlambat jauh lebih bernilai (opportunity cost) dibandingkan selisih uang hotel beberapa ratus ribu."
+            },
+            {
+                level: 4, type: 'SECRETARY DECISION', isCrisis: false,
+                text: "Direktur meminta meeting tertutup (Confidential). Di Google Calendar, setelan 'Default Visibility' bisa dilihat oleh semua manajer perusahaan. Agar detail rapat tidak bocor, Anda harus:",
+                options: [
+                    { text: "Mengubah visibility event tersebut menjadi 'Private'", isCorrect: true },
+                    { text: "Memakai sandi morse di judul rapat", isCorrect: false },
+                    { text: "Tidak memasukkan acara ke kalender sama sekali", isCorrect: false },
+                    { text: "Menghapus akses kalender semua manajer secara permanen", isCorrect: false },
+                    { text: "Mengubah status menjadi 'Free'", isCorrect: false }
+                ],
+                explanation: "Setelan 'Private' menyembunyikan detail acara (hanya terlihat 'Busy' oleh orang selain pimpinan) sehingga kerahasiaan terjaga."
+            },
+            {
+                level: 4, type: 'SECRETARY DECISION', isCrisis: true,
+                text: "Pimpinan meminta Anda mengatur 'Dinner Partner' di kalendernya. Pimpinan Muslim. Restoran yang direkomendasikan klien ternyata terkenal dengan spesialisasi non-halal. Tindakan Anda?",
+                options: [
+                    { text: "Proaktif menghubungi klien dengan sopan meminta perubahan restoran demi kenyamanan pimpinan (dietary requirement)", isCorrect: true },
+                    { text: "Biarkan saja, pimpinan bisa pesan minum air putih saja", isCorrect: false },
+                    { text: "Membatalkan makan malam sepihak", isCorrect: false },
+                    { text: "Memesan makanan dari luar dan minta pimpinan bawa bekal", isCorrect: false },
+                    { text: "Tidak memberi tahu pimpinan agar tidak repot", isCorrect: false }
+                ],
+                explanation: "Sekretaris harus sangat teliti terhadap 'Dietary Requirement' (Halal/Vegan/Alergi) atasan dan berhak bernegosiasi secara profesional dengan kolega/klien."
+            },
+            {
+                level: 4, type: 'SECRETARY DECISION', isCrisis: false,
+                text: "Anda membuat beberapa jenis kalender di akun kantor: Kalender Meeting, Kalender Penerbangan, dan Kalender Pribadi Pimpinan. Untuk membedakan jenis kegiatannya secara visual di Google Calendar pimpinan, cara terbaik adalah...",
+                options: [
+                    { text: "Menggunakan fitur 'Color Labeling' (Memberi warna berbeda untuk tiap kategori acara)", isCorrect: true },
+                    { text: "Menulis judul acara dengan huruf KAPITAL SEMUA", isCorrect: false },
+                    { text: "Membuat akun email baru untuk setiap acara", isCorrect: false },
+                    { text: "Menambahkan banyak emoji di setiap judul", isCorrect: false },
+                    { text: "Menaruh di hari yang berbeda-beda", isCorrect: false }
+                ],
+                explanation: "Color coding (misal: Merah untuk travel, Biru untuk meeting internal, Kuning untuk klien) memudahkan pimpinan membaca jadwal dalam sekali lihat (glance)."
+            },
+            {
+                level: 4, type: 'SECRETARY DECISION', isCrisis: false,
+                text: "Anda diberi budget terbatas namun harus memilih maskapai. Maskapai X murah tapi sering delay dan tidak ada makan. Maskapai Y sedikit over budget tapi tepat waktu dan full service. Pimpinan besok harus tampil segar di presentasi siang.",
+                options: [
+                    { text: "Maskapai Y, lalu mencari penghematan di pos pengeluaran lain (misal hotel/makan), demi kenyamanan atasan", isCorrect: true },
+                    { text: "Maskapai X, agar budget aman walau atasan kelelahan", isCorrect: false },
+                    { text: "Membatalkan presentasi", isCorrect: false },
+                    { text: "Meminta tambahan dana ke direksi secara paksa", isCorrect: false },
+                    { text: "Suruh atasan bayar pakai uang sendiri sisanya", isCorrect: false }
+                ],
+                explanation: "Performa pimpinan adalah prioritas. Anda bisa mengorbankan sedikit budget atau mensubsidi silang, dibanding mengambil risiko maskapai delay."
+            },
+
+            // LEVEL 5: ERROR DETECTOR (21-25)
+            {
+                level: 5, type: 'ERROR DETECTOR', isCrisis: false,
+                text: "Temukan kesalahan pada itinerary ini:\n07.00: Keluar Hotel\n07.30: Tiba di Bandara\n08.00: Penerbangan (Take Off)",
+                options: [
+                    { text: "Waktu tiba di bandara sangat berisiko (hanya 30 mnt sebelum take off, boarding gate sudah tutup)", isCorrect: true },
+                    { text: "Penerbangan terlalu pagi", isCorrect: false },
+                    { text: "Hotel terlalu dekat", isCorrect: false },
+                    { text: "Tidak ada waktu sarapan", isCorrect: false },
+                    { text: "Itinerary ini sempurna", isCorrect: false }
+                ],
+                explanation: "Proses Check-in dan Boarding minimal butuh 1-2 jam sebelum jadwal keberangkatan pesawat. Tiba pukul 07.30 untuk pesawat pukul 08.00 dipastikan hangus."
+            },
+            {
+                level: 5, type: 'ERROR DETECTOR', isCrisis: false,
+                text: "Di Google Calendar pimpinan, Anda mengatur penerbangan JKT-BALI. Berangkat jam 10.00 WIB. Lama terbang 2 jam. Anda mengatur jadwal tiba (End Time) jam 12.00 di kalender. Apa kesalahannya?",
+                options: [
+                    { text: "Tidak memperhitungkan perbedaan Zona Waktu. Bali adalah WITA (+1 jam). Harus diatur tiba jam 13.00 waktu lokal", isCorrect: true },
+                    { text: "Pesawat ke Bali biasanya 5 jam", isCorrect: false },
+                    { text: "Lupa memasukkan nama maskapai", isCorrect: false },
+                    { text: "Harusnya diubah jadi PM bukan AM", isCorrect: false },
+                    { text: "Tidak ada kesalahan", isCorrect: false }
+                ],
+                explanation: "Perjalanan lintas zona waktu wajib diperhatikan. Take off 10.00 WIB + 2 jam terbang = 12.00 WIB = 13.00 WITA."
+            },
+            {
+                level: 5, type: 'ERROR DETECTOR', isCrisis: true,
+                text: "Pimpinan chat: 'Saya lihat di kalender ada jadwal makan siang jam 12 PM - 1 PM. Tapi kok ada rapat direksi jam 00:30 AM?' Apa kesalahan sekertaris saat input di G-Cal?",
+                options: [
+                    { text: "Salah membedakan format AM/PM (Jam 12.30 siang diinput sebagai 00:30 AM)", isCorrect: true },
+                    { text: "Sekretaris salah mengundang tamu", isCorrect: false },
+                    { text: "Kalender error terserang virus", isCorrect: false },
+                    { text: "Tidak ada salah, rapat memang tengah malam", isCorrect: false },
+                    { text: "Pimpinan yang salah membaca kalender", isCorrect: false }
+                ],
+                explanation: "Kesalahan format 12 Jam (AM/PM) sering terjadi. Pukul 12.30 siang harusnya ditulis 12:30 PM (atau 12:30 dalam format 24h), bukan 12:30 AM (tengah malam)."
+            },
+            {
+                level: 5, type: 'ERROR DETECTOR', isCrisis: false,
+                text: "Itinerary Hari Terakhir: \n09.00 - Meeting di Kantor Cabang\n12.00 - Makan Siang\n14.00 - Penerbangan Pulang dari Bandara. \nApa yang terlewatkan secara fatal?",
+                options: [
+                    { text: "Tidak ada jadwal Check-out Hotel dan pengambilan barang", isCorrect: true },
+                    { text: "Makan siang terlalu cepat", isCorrect: false },
+                    { text: "Tidak bawa oleh-oleh", isCorrect: false },
+                    { text: "Jam penerbangan kurang sore", isCorrect: false },
+                    { text: "Lokasi meeting terlalu jauh", isCorrect: false }
+                ],
+                explanation: "Sekretaris lupa memasukkan proses check-out (yang biasanya maksimal jam 12.00) dan transit dari hotel/kantor cabang membawa koper menuju bandara."
+            },
+            {
+                level: 5, type: 'ERROR DETECTOR', isCrisis: false,
+                text: "Di kalender, Anda membuat 5 rapat back-to-back berurutan (09.00-10.00, 10.00-11.00, dst) di lokasi yang sama. Apa kesalahan humanis dari penyusunan ini?",
+                options: [
+                    { text: "Tidak memberikan waktu bernapas/jeda (Breaks) untuk toilet atau transisi pikiran bagi pimpinan", isCorrect: true },
+                    { text: "Judulnya kepanjangan", isCorrect: false },
+                    { text: "Harusnya ditaruh di hari berbeda semua", isCorrect: false },
+                    { text: "Menggunakan warna yang membosankan", isCorrect: false },
+                    { text: "Harusnya diketik ulang jadi 1 event gabungan", isCorrect: false }
+                ],
+                explanation: "Google Calendar memiliki opsi 'Speedy Meetings' yang memotong rapat 5-10 menit lebih awal untuk memberi waktu istirahat antar rapat."
+            },
+
+            // FINAL BOSS: ITINERARY CRISIS (26-30) -> Menggunakan 5 soal kompleks agar total 30
+            {
+                level: 6, type: 'FINAL BOSS', isCrisis: true,
+                text: "FINAL CASE 1: Pimpinan terbang ke Tokyo. Rapat penting jam 10.00 waktu Tokyo besok. Penerbangan mendarat di Tokyo jam 06.00 pagi. Butuh 1.5 jam ke hotel. Check-in hotel normal jam 14.00. Solusi Anda?",
+                options: [
+                    { text: "Memesan hotel dari H-1 (bayar ekstra malam) atau 'Early Check-in' dan menaruh ini di G-Cal agar pimpinan bisa mandi dan siap rapat", isCorrect: true },
+                    { text: "Meminta pimpinan mandi di toilet bandara agar murah", isCorrect: false },
+                    { text: "Menyuruh pimpinan datang ke rapat bawa koper dan belum mandi", isCorrect: false },
+                    { text: "Mengubah jadwal rapat ke jam 15.00 sepihak", isCorrect: false },
+                    { text: "Menunggu di lobi hotel dari jam 8 pagi", isCorrect: false }
+                ],
+                explanation: "Eksekutif butuh 'freshen up' (mandi/ganti baju) setelah red-eye flight. Pesan dari H-1 (Guaranteed Early Check-in) adalah keharusan."
+            },
+            {
+                level: 6, type: 'FINAL BOSS', isCrisis: false,
+                text: "FINAL CASE 2: Jadwal pimpinan di G-Cal di-share (bagikan) ke asisten direktur dengan akses 'See all event details'. Suatu saat pimpinan mengeluh asisten tidak sengaja menghapus jadwal. Pengaturan apa yang salah?",
+                options: [
+                    { text: "Akses asisten diset ke 'Make changes to events' bukan sekadar 'See all event details'", isCorrect: true },
+                    { text: "Asisten mematikan laptop pimpinan", isCorrect: false },
+                    { text: "Google Calendar error menghapus sendiri", isCorrect: false },
+                    { text: "Pimpinan yang amnesia", isCorrect: false },
+                    { text: "Kalender tidak bisa di-share", isCorrect: false }
+                ],
+                explanation: "Izin berbagi (Sharing permissions) kalender sangat fatal. Hanya Anda (Sekretaris Utama) yang boleh punya izin 'Make changes'. Asisten cukup 'See events'."
+            },
+            {
+                level: 6, type: 'FINAL BOSS', isCrisis: true,
+                text: "FINAL CASE 3: Pimpinan Anda berada di London, Klien di Tokyo, dan Anda di Jakarta menyusun rapat virtual. Cara termudah memastikan waktu cocok untuk ketiganya tanpa pusing?",
+                options: [
+                    { text: "Menggunakan fitur 'Find a Time' atau 'Suggested Times' di Google Calendar dengan memasukkan email semua orang", isCorrect: true },
+                    { text: "Menebak-nebak jam yang cocok", isCorrect: false },
+                    { text: "Menelepon mereka satu per satu tengah malam", isCorrect: false },
+                    { text: "Membuka 3 jam tangan di meja kerja", isCorrect: false },
+                    { text: "Minta pimpinan yang mengurus sendiri karena terlalu rumit", isCorrect: false }
+                ],
+                explanation: "Jika Anda memasukkan email tamu di G-Cal, fitur 'Find a Time' otomatis menyelaraskan zona waktu dan mencari slot kosong di kalender semua pihak."
+            },
+            {
+                level: 6, type: 'FINAL BOSS', isCrisis: false,
+                text: "FINAL CASE 4: Pimpinan sedang di tengah perjalanan dinas di kereta lambat (hilang sinyal). Klien penting tiba-tiba membatalkan rapat sore via email ke Anda. Yang Anda lakukan:",
+                options: [
+                    { text: "Update kalender jadi batal, dan KIRIM SMS/Telfon ke pimpinan karena email/internet mungkin mati di kereta", isCorrect: true },
+                    { text: "Hanya update di Google Calendar dan berharap pimpinan cek sendiri", isCorrect: false },
+                    { text: "Balas email klien minta jangan batal", isCorrect: false },
+                    { text: "Biarkan pimpinan pergi ke tempat rapat", isCorrect: false },
+                    { text: "Tidur saja karena itu bukan salah Anda", isCorrect: false }
+                ],
+                explanation: "Sistem kalender digital bagus, tapi komunikasi multi-channel (SMS/Telfon reguler) wajib dipakai saat ada perubahan krusial (Crisis Management) ketika internet atasan tidak stabil."
+            },
+            {
+                level: 6, type: 'FINAL BOSS', isCrisis: true,
+                text: "FINAL DECISION: Pimpinan akan pulang. Rapat selesai 16.00. Penerbangan terbaik A: 17.30 (Nyaman tapi sangat mepet), B: 20.00 (Harus nunggu lama di bandara). Pimpinan tidak suka menunggu. Strategi Itinerary terbaik Anda?",
+                options: [
+                    { text: "Pilih B (20.00) agar aman, tapi booking 'Lounge Akses VIP' (atau meeting di Cafe Bandara) lalu taruh di G-Cal sebagai waktu kerja santai", isCorrect: true },
+                    { text: "Pilih A dan berdoa jalanan kosong", isCorrect: false },
+                    { text: "Pilih A dan minta pimpinan kabur dari rapat lebih cepat", isCorrect: false },
+                    { text: "Pilih B dan biarkan atasan marah nunggu di kursi ruang tunggu biasa", isCorrect: false },
+                    { text: "Suruh atasan pulang naik kereta malam saja", isCorrect: false }
+                ],
+                explanation: "Mengelola 'Pain point' pimpinan (tidak suka nunggu) dengan fasilitas Lounge membuat waktu buffer (yang aman dari telat) terasa produktif dan eksklusif."
+            }
+        ];
+
+        let state = {
+            currentQIndex: 0,
+            score: 0,
+            trust: 100,
+            timeElapsed: 0,
+            gameTimer: null,
+            crisisTimer: null,
+            correctCount: 0,
+            badges: [],
+            isCrisisMode: false,
+            playerName: ''
+        };
+
+        const uiElements = {
+            intro: document.getElementById('screen-intro'),
+            opening: document.getElementById('screen-opening'),
+            gameplay: document.getElementById('screen-gameplay'),
+            chat: document.getElementById('chat-container'),
+            end: document.getElementById('screen-end')
+        };
+
+        function playSFX(id) {
+            const el = document.getElementById(id);
+            if(el) { el.currentTime = 0; el.play().catch(e=>console.log("Audio play blocked by browser")); }
+        }
+
+        function startOpening() {
+            const nameInput = document.getElementById('player-name').value;
+            if(!nameInput) {
+                document.getElementById('player-name').classList.add('animate-shake', 'border-red-500');
+                setTimeout(() => document.getElementById('player-name').classList.remove('animate-shake'), 500);
+                return;
+            }
+            state.playerName = nameInput;
+            uiElements.intro.classList.add('hidden');
+            uiElements.opening.classList.remove('hidden');
+            
+            runChatSequence();
+        }
+
+        async function runChatSequence() {
+            const chat = uiElements.chat;
+            const messages = [
+                { sender: 'right', text: 'Selamat pagi Pak, ini jadwal dan laporan hari ini.' },
+                { sender: 'left', text: `Pagi ${state.playerName}.`, delay: 1500 },
+                { sender: 'left', text: 'Saya harus terbang ke lokasi proyek siang ini secara mendadak.', delay: 2000 },
+                { sender: 'left', text: 'Tolong atur ulang semua Itinerary saya dan perbarui di Google Calendar.', delay: 2000 },
+                { sender: 'left', text: 'Pastikan tidak ada jadwal yang bentrok. Klien VIP sangat ketat dengan waktu.', delay: 2500 }
+            ];
+
+            for (let msg of messages) {
+                await new Promise(r => setTimeout(r, msg.delay || 1000));
+                
+                const div = document.createElement('div');
+                div.className = `chat-bubble text-sm ${msg.sender === 'left' ? 'chat-left' : 'chat-right text-white'}`;
+                div.innerHTML = msg.text;
+                chat.appendChild(div);
+                
+                // Animate
+                setTimeout(() => div.classList.add('chat-show'), 50);
+                chat.scrollTop = chat.scrollHeight;
+                if(msg.sender === 'left') playSFX('sfx-msg');
+            }
+
+            setTimeout(() => {
+                playSFX('sfx-alarm');
+                document.getElementById('mission-start-box').classList.remove('hidden');
+                document.getElementById('mission-start-box').classList.add('animate-slide-up');
+            }, 1000);
+        }
+
+        function startGameplay() {
+            uiElements.opening.classList.add('hidden');
+            uiElements.gameplay.classList.remove('hidden');
+            
+            // Start Global Time
+            state.gameTimer = setInterval(() => {
+                state.timeElapsed++;
+                const mins = Math.floor(state.timeElapsed / 60).toString().padStart(2, '0');
+                const secs = (state.timeElapsed % 60).toString().padStart(2, '0');
+                document.getElementById('ui-time').innerText = `${mins}:${secs}`;
+            }, 1000);
+
+            loadQuestion();
+        }
+
+        function updateTrustUI() {
+            document.getElementById('ui-trust-text').innerText = state.trust + '%';
+            document.getElementById('ui-trust-bar').style.width = state.trust + '%';
+            
+            if(state.trust <= 30) document.getElementById('ui-trust-bar').style.backgroundColor = '#ef4444'; // Red
+            else if(state.trust <= 60) document.getElementById('ui-trust-bar').style.backgroundColor = '#f59e0b'; // Yellow
+            else document.getElementById('ui-trust-bar').style.backgroundColor = '#3b82f6'; // Blue
+
+            // Hearts visual
+            let hearts = Math.ceil(state.trust / 20);
+            if(hearts < 0) hearts = 0;
+            document.getElementById('ui-hearts').innerText = '❤️'.repeat(hearts) + '🖤'.repeat(5 - hearts);
+
+            if(state.trust <= 0) {
+                gameOver(false);
+            }
+        }
+
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        function loadQuestion() {
+            const q = questionsData[state.currentQIndex];
+            
+            document.getElementById('ui-level').innerText = `${q.level}/6`;
+            document.getElementById('q-number').innerText = `${state.currentQIndex + 1}/${questionsData.length}`;
+            document.getElementById('q-badge').innerText = q.type;
+            document.getElementById('q-text').innerText = q.text;
+
+            const optContainer = document.getElementById('options-container');
+            optContainer.innerHTML = '';
+
+            // Clone and Shuffle options
+            let options = [...q.options];
+            options = shuffleArray(options);
+
+            const labels = ['A', 'B', 'C', 'D', 'E'];
+            
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-card w-full text-left bg-slate-900 border border-slate-700 p-4 rounded-lg flex items-start gap-4 transition hover:bg-slate-800';
+                btn.innerHTML = `
+                    <span class="bg-blue-900 text-blue-200 font-bold px-3 py-1 rounded shrink-0">${labels[idx]}</span>
+                    <span class="text-sm md:text-base text-slate-200">${opt.text}</span>
+                `;
+                btn.onclick = () => handleAnswer(opt.isCorrect, q.explanation);
+                optContainer.appendChild(btn);
+            });
+
+            // Handle Crisis Mode
+            const crisisAlert = document.getElementById('crisis-alert');
+            const timerContainer = document.getElementById('timer-container');
+            const gameplayScreen = document.getElementById('screen-gameplay');
+            
+            if(q.isCrisis) {
+                playSFX('sfx-alarm');
+                gameplayScreen.classList.add('crisis-mode');
+                crisisAlert.classList.remove('hidden');
+                timerContainer.classList.remove('hidden');
+                
+                // Start 15 sec timer
+                let timeLeft = 15;
+                const tBar = document.getElementById('timer-bar');
+                tBar.style.width = '100%';
+                
+                state.crisisTimer = setInterval(() => {
+                    timeLeft -= 0.1;
+                    let pct = (timeLeft / 15) * 100;
+                    tBar.style.width = `${pct}%`;
+                    if(timeLeft <= 0) {
+                        clearInterval(state.crisisTimer);
+                        handleAnswer(false, "Waktu HABIS! Keterlambatan mengambil keputusan berdampak fatal pada jadwal atasan.", true);
+                    }
+                }, 100);
+            } else {
+                gameplayScreen.classList.remove('crisis-mode');
+                crisisAlert.classList.add('hidden');
+                timerContainer.classList.add('hidden');
+            }
+        }
+
+        function handleAnswer(isCorrect, explanation, isTimeout = false) {
+            // Stop timers
+            if(state.crisisTimer) clearInterval(state.crisisTimer);
+
+            // Disable buttons
+            const btns = document.querySelectorAll('.option-card');
+            btns.forEach(b => b.disabled = true);
+
+            const fbModal = document.getElementById('modal-feedback');
+            const fbCard = document.getElementById('feedback-card');
+            const fbIcon = document.getElementById('feedback-icon');
+            const fbTitle = document.getElementById('feedback-title');
+            const fbMsg = document.getElementById('feedback-msg');
+            const fbExp = document.getElementById('feedback-explanation');
+            const fbPts = document.getElementById('feedback-points');
+            const fbTrs = document.getElementById('feedback-trust');
+
+            fbExp.innerText = explanation;
+
+            if(isCorrect) {
+                playSFX('sfx-correct');
+                state.score += 100;
+                state.trust = Math.min(100, state.trust + 5);
+                state.correctCount++;
+                
+                fbIcon.className = "fa-solid fa-circle-check text-green-500";
+                fbTitle.innerText = "CORRECT DECISION!";
+                fbTitle.className = "text-green-500 font-extrabold";
+                fbMsg.innerText = "Keputusan tepat. Anda berhasil menjaga itinerary tetap realistis dan terorganisir.";
+                fbPts.innerText = "+100 PTS"; fbPts.className = "text-green-400";
+                fbTrs.innerText = "+5% TRUST"; fbTrs.className = "text-green-400";
+                
+            } else {
+                playSFX('sfx-wrong');
+                state.score = Math.max(0, state.score - 50);
+                const penalty = isTimeout ? 20 : (questionsData[state.currentQIndex].isCrisis ? 15 : 10);
+                state.trust -= penalty;
+                
+                fbIcon.className = "fa-solid fa-triangle-exclamation text-red-500";
+                fbTitle.innerText = isTimeout ? "TIME OUT!" : "DECISION ERROR!";
+                fbTitle.className = "text-red-500 font-extrabold";
+                fbMsg.innerText = "Keputusan ini berisiko menyebabkan agenda pimpinan berantakan.";
+                fbPts.innerText = "-50 PTS"; fbPts.className = "text-red-400";
+                fbTrs.innerText = `-${penalty}% TRUST`; fbTrs.className = "text-red-400";
+                
+                document.getElementById('screen-gameplay').classList.add('animate-shake');
+                setTimeout(()=> document.getElementById('screen-gameplay').classList.remove('animate-shake'), 500);
+            }
+
+            document.getElementById('ui-score').innerText = state.score;
+            updateTrustUI();
+
+            fbModal.classList.remove('hidden');
+            setTimeout(() => {
+                fbCard.classList.remove('scale-95', 'opacity-0');
+            }, 50);
+        }
+
+        function continueGame() {
+            if(state.trust <= 0) return; // Handled by trust update
+
+            document.getElementById('feedback-card').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                document.getElementById('modal-feedback').classList.add('hidden');
+                state.currentQIndex++;
+                
+                if(state.currentQIndex >= questionsData.length) {
+                    gameOver(true);
+                } else {
+                    loadQuestion();
+                }
+            }, 300);
+        }
+
+        function gameOver(isWin) {
+            clearInterval(state.gameTimer);
+            if(state.crisisTimer) clearInterval(state.crisisTimer);
+
+            uiElements.gameplay.classList.add('hidden');
+            uiElements.end.classList.remove('hidden');
+
+            const hdr = document.getElementById('end-header');
+            if(!isWin) {
+                playSFX('sfx-wrong');
+                hdr.innerHTML = `
+                    <i class="fa-solid fa-user-xmark text-6xl text-red-500 mb-4"></i>
+                    <h2 class="text-3xl font-black text-red-500 tracking-wide mb-2">MISSION FAILED</h2>
+                    <p class="text-slate-300">Direktur tidak lagi mempercayakan pengelolaan perjalanan kepada Anda.</p>
+                `;
+                document.getElementById('rank-container').classList.add('hidden');
+            } else {
+                playSFX('sfx-correct');
+                hdr.innerHTML = `
+                    <i class="fa-solid fa-medal text-6xl text-yellow-400 mb-4"></i>
+                    <h2 class="text-3xl font-black text-yellow-400 tracking-wide mb-2">MISSION COMPLETE!</h2>
+                    <p class="text-slate-300">Kerja bagus, <span class="font-bold text-white">${state.playerName}</span>. Anda berhasil mengelola Itinerary dan Google Calendar!</p>
+                `;
+                calculateFinalStats();
+            }
+
+            // Populate Stats
+            const mins = Math.floor(state.timeElapsed / 60).toString().padStart(2, '0');
+            const secs = (state.timeElapsed % 60).toString().padStart(2, '0');
+            document.getElementById('end-score').innerText = state.score;
+            document.getElementById('end-accuracy').innerText = Math.round((state.correctCount / questionsData.length) * 100) + '%';
+            document.getElementById('end-trust').innerText = state.trust + '%';
+            document.getElementById('end-time').innerText = `${mins}:${secs}`;
+            
+            // Save to LocalStorage
+            if(isWin) {
+                const history = JSON.parse(localStorage.getItem('secretaryScores') || '[]');
+                history.push({ name: state.playerName, score: state.score, date: new Date().toISOString() });
+                localStorage.setItem('secretaryScores', JSON.stringify(history));
+            }
+        }
+
+        function calculateFinalStats() {
+            const acc = (state.correctCount / questionsData.length) * 100;
+            let rankText = "";
+            let rankClass = "";
+
+            if(state.score >= 2300) { rankText = "👑 EXECUTIVE SECRETARY"; rankClass = "from-yellow-400 to-yellow-200"; }
+            else if(state.score >= 1800) { rankText = "💼 SENIOR SECRETARY"; rankClass = "from-blue-400 to-cyan-300"; }
+            else if(state.score >= 1200) { rankText = "⭐ PROFESSIONAL SECRETARY"; rankClass = "from-emerald-400 to-green-300"; }
+            else if(state.score >= 800) { rankText = "📋 JUNIOR SECRETARY"; rankClass = "from-slate-400 to-slate-200"; }
+            else { rankText = "🚨 SECRETARY IN TRAINING"; rankClass = "from-red-400 to-orange-300"; }
+
+            const rankEl = document.getElementById('end-rank');
+            rankEl.innerText = rankText;
+            rankEl.className = `text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${rankClass}`;
+
+            // Badges
+            let badgeHTML = "";
+            if(acc >= 90) badgeHTML += `<span class="bg-yellow-900/50 border border-yellow-500 text-yellow-400 text-xs px-2 py-1 rounded"><i class="fa-solid fa-trophy mr-1"></i> ITINERARY MASTER</span>`;
+            if(state.trust === 100) badgeHTML += `<span class="bg-pink-900/50 border border-pink-500 text-pink-400 text-xs px-2 py-1 rounded"><i class="fa-solid fa-heart mr-1"></i> DIRECTOR'S TRUST</span>`;
+            if(state.timeElapsed < (questionsData.length * 20)) badgeHTML += `<span class="bg-cyan-900/50 border border-cyan-500 text-cyan-400 text-xs px-2 py-1 rounded"><i class="fa-solid fa-bolt mr-1"></i> FAST DECISION MAKER</span>`;
+
+            if(badgeHTML) {
+                document.getElementById('badges-container').classList.remove('hidden');
+                document.getElementById('badges-list').innerHTML = badgeHTML;
+            }
+        }
+
+    </script>
+</body>
+</html>
