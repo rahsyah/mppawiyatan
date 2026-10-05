@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Edukasi: Master Pelayanan Prima 🌟</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow-x: hidden;
+            color: #1F2937;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .option-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: scale(1.015);
+            border-color: #8B5CF6;
+            background-color: #F5F3FF;
+        }
+        
+        .correct-answer {
+            background-color: #10B981 !important; 
+            color: white !important;
+            border-color: #059669 !important;
+            box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39) !important;
+        }
+        
+        .wrong-answer {
+            background-color: #EF4444 !important; 
+            color: white !important;
+            border-color: #DC2626 !important;
+            box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.39) !important;
+        }
+
+        .floating-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .float-icon {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.15;
+            animation: float-up 12s linear infinite;
+        }
+        @keyframes float-up {
+            from { transform: translateY(110vh) rotate(0deg); }
+            to { transform: translateY(-10vh) rotate(360deg); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #c7c7c7; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+        .progress-bar-fill {
+            transition: width 0.4s ease;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 text-gray-800 relative">
+
+    <div class="floating-bg" id="floatingBg"></div>
+
+    <div class="glass w-full max-w-4xl mx-auto p-6 sm:p-10 relative overflow-hidden flex flex-col max-h-[95vh]">
+        
+        <!-- ==================== MAIN MENU ==================== -->
+        <div id="mainMenu" class="text-center animate-fade-up my-auto">
+            <div class="text-7xl mb-6">🏢</div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
+                Akademi Pelayanan Prima
+            </h1>
+            <p class="text-gray-600 mb-10 text-lg max-w-2xl mx-auto">
+                Asah keterampilanmu dalam memberikan layanan terbaik! Pilih mode permainan di bawah ini untuk memulai pelatihan.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                <button onclick="startMCQMode()" class="group relative bg-white border-2 border-blue-200 p-6 rounded-2xl shadow-md hover:shadow-xl hover:border-blue-500 transition text-left overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-8xl opacity-10 group-hover:scale-110 transition">🎯</div>
+                    <h3 class="text-2xl font-bold text-blue-700 mb-2">Mode Kuis (30 Soal)</h3>
+                    <p class="text-gray-500 text-sm">Uji pengetahuan cepatmu tentang Grooming, 5S, dan Komunikasi. Kumpulkan poin tertinggi!</p>
+                </button>
+
+                <button onclick="startEssayMode()" class="group relative bg-white border-2 border-purple-200 p-6 rounded-2xl shadow-md hover:shadow-xl hover:border-purple-500 transition text-left overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-8xl opacity-10 group-hover:scale-110 transition">✍️</div>
+                    <h3 class="text-2xl font-bold text-purple-700 mb-2">Mode Essay HOTS</h3>
+                    <p class="text-gray-500 text-sm">Analisis 3 studi kasus nyata dan latih nalar penanganan keluhan pelanggan (HOTS).</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== MCQ MODE ==================== -->
+        <div id="mcqContainer" class="hidden flex-col h-full animate-fade-up">
+            
+            <!-- Progress & Score Header -->
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="returnToMenu()" class="text-gray-500 hover:text-blue-600 font-bold transition flex items-center gap-2">
+                    ⬅️ Kembali
+                </button>
+                <div class="text-right">
+                    <span class="text-sm text-gray-500 font-bold uppercase tracking-wider">Skor Kuis</span>
+                    <div class="text-2xl font-black text-blue-600" id="mcqScore">0</div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-6">
+                <div id="mcqProgressBar" class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full progress-bar-fill" style="width: 0%"></div>
+            </div>
+
+            <div class="text-center mb-2 text-sm font-bold text-gray-400" id="mcqProgressText">Soal 1 dari 30</div>
+
+            <!-- Question Area -->
+            <div class="flex-1 overflow-y-auto pr-2 pb-4">
+                <div class="mb-6 bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                    <h2 id="mcqQuestion" class="text-xl sm:text-2xl font-bold text-gray-800 leading-snug">
+                        Pertanyaan akan muncul di sini...
+                    </h2>
+                </div>
+
+                <div id="mcqOptions" class="grid grid-cols-1 gap-3">
+                    <!-- Buttons injected by JS -->
+                </div>
+
+                <!-- Feedback -->
+                <div id="mcqFeedback" class="hidden mt-4 p-4 rounded-xl text-center font-bold"></div>
+                
+                <div class="text-center mt-6">
+                     <button id="mcqNextBtn" onclick="nextMCQQuestion()" class="hidden bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-blue-700 transition w-full sm:w-auto">
+                        Selanjutnya ➡️
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MCQ RESULT SCREEN ==================== -->
+        <div id="mcqResultScreen" class="hidden text-center animate-fade-up my-auto">
+            <div id="mcqResultIcon" class="text-7xl mb-4">🏆</div>
+            <h2 class="text-4xl font-black text-gray-800 mb-2">Ujian Selesai!</h2>
+            <p class="text-gray-600 text-lg mb-8">Ini dia hasil evaluasi dari 30 soal Pelayanan Prima kamu:</p>
+            
+            <div class="bg-gray-50 p-8 rounded-3xl mb-8 border border-gray-200 inline-block min-w-[300px]">
+                <span class="block text-gray-500 font-bold uppercase tracking-wide mb-2">Nilai Akhir</span>
+                <span id="mcqFinalScore" class="text-6xl font-black text-blue-600 block mb-4">0</span>
+                <div class="h-px w-full bg-gray-200 mb-4"></div>
+                <span id="mcqPredikat" class="text-2xl font-bold block">Predikat</span>
+                <span id="mcqPesan" class="text-sm text-gray-500 mt-2 block">Pesan</span>
+            </div>
+
+            <br>
+            <button onclick="returnToMenu()" class="bg-gray-800 text-white font-bold py-3 px-10 rounded-full shadow hover:bg-gray-900 transition">
+                🏠 Ke Menu Utama
+            </button>
+        </div>
+
+        <!-- ==================== ESSAY HOTS MODE ==================== -->
+        <div id="essayContainer" class="hidden flex-col h-full animate-fade-up">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <button onclick="returnToMenu()" class="text-gray-500 hover:text-purple-600 font-bold transition flex items-center gap-2">
+                    ⬅️ Kembali
+                </button>
+                <div class="text-right">
+                    <span class="bg-purple-100 text-purple-700 px-4 py-1 rounded-full text-sm font-bold" id="essayProgressText">Kasus 1 / 3</span>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto pr-2 pb-4">
+                <div class="bg-amber-50 border-l-4 border-amber-400 p-6 rounded-r-xl mb-6 shadow-sm">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-2xl">🚨</span>
+                        <h3 class="font-bold text-amber-800 text-lg">Studi Kasus HOTS</h3>
+                    </div>
+                    <p id="essayQuestion" class="text-gray-800 text-lg leading-relaxed font-medium"></p>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Analisis & Jawaban Anda:</label>
+                    <textarea id="essayInput" rows="5" class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring focus:ring-purple-200 transition outline-none resize-none" placeholder="Ketik jawaban dan analisismu di sini..."></textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                    <button id="showAnswerBtn" onclick="revealEssayAnswer()" class="flex-1 bg-white border-2 border-purple-500 text-purple-600 font-bold py-3 px-6 rounded-xl hover:bg-purple-50 transition">
+                        👁️ Tampilkan Kunci Jawaban
+                    </button>
+                    <button id="nextEssayBtn" onclick="nextEssayQuestion()" class="flex-1 bg-purple-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-purple-700 transition shadow-lg hidden">
+                        Lanjut Studi Kasus ➡️
+                    </button>
+                </div>
+
+                <!-- Key Answer Reveal Box -->
+                <div id="essayKeyAnswer" class="hidden bg-emerald-50 border-2 border-emerald-200 p-6 rounded-xl mb-4 animate-fade-up">
+                    <h4 class="font-bold text-emerald-800 mb-2 flex items-center gap-2"><span>✅</span> Rubrik & Kunci Jawaban Ideal:</h4>
+                    <p id="essayKeyText" class="text-emerald-900 text-sm sm:text-base leading-relaxed"></p>
+                    <div class="mt-4 pt-4 border-t border-emerald-200 text-xs text-emerald-700">
+                        *Bandingkan jawabanmu dengan kunci di atas. Apakah poin-poin pentingnya sudah terjawab?
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ================= BACKGROUND ANIMATION =================
+        function generateFloatingBg() {
+            const bg = document.getElementById('floatingBg');
+            const icons = ['✨', '🤝', '😊', '💼', '🌟', '💬', '👔', '🏅'];
+            for(let i=0; i<20; i++) {
+                const span = document.createElement('span');
+                span.className = 'float-icon';
+                span.innerText = icons[Math.floor(Math.random() * icons.length)];
+                span.style.left = `${Math.random() * 100}vw`;
+                span.style.animationDelay = `${Math.random() * 10}s`;
+                span.style.fontSize = `${Math.random() * 2 + 1}rem`;
+                bg.appendChild(span);
+            }
+        }
+        generateFloatingBg();
+
+        // ================= DATA MCQ (30 SOAL) =================
+        const mcqData = [
+            // Konsep Dasar & A3 (Attitude, Attention, Action)
+            { q: "Apa tujuan utama dari Pelayanan Prima (Service Excellence)?", o: ["A. Mendapatkan keuntungan sebesar-besarnya", "B. Memberikan kepuasan maksimal kepada pelanggan sehingga tercipta loyalitas", "C. Menghindari pajak perusahaan", "D. Mengurangi beban kerja karyawan"], a: 1 },
+            { q: "Konsep pelayanan prima A3 terdiri dari...", o: ["A. Attitude, Attention, Action", "B. Attitude, Appearance, Accountability", "C. Attention, Action, Award", "D. Action, Appearance, Ability"], a: 0 },
+            { q: "Sikap ramah, penuh simpatik, dan menjunjung tinggi nilai sopan santun termasuk dalam konsep...", o: ["A. Action", "B. Attention", "C. Attitude", "D. Appearance"], a: 2 },
+            { q: "Mendengarkan dan memahami kebutuhan pelanggan dengan seksama merupakan bentuk dari konsep...", o: ["A. Attitude", "B. Attention", "C. Action", "D. Accountability"], a: 1 },
+            { q: "Mencatat pesanan pelanggan, menegaskan kembali kebutuhan pelanggan, dan mengucapkan terima kasih adalah bentuk penerapan dari...", o: ["A. Action", "B. Attitude", "C. Attention", "D. Anticipation"], a: 0 },
+            
+            // Grooming (Penampilan)
+            { q: "Mengapa Grooming (Penampilan fisik) sangat penting bagi seorang front-liner?", o: ["A. Agar terlihat lebih kaya dari pelanggan", "B. Menunjukkan profesionalisme dan citra baik perusahaan", "C. Memenuhi syarat fashion terkini", "D. Agar mudah mencari teman di tempat kerja"], a: 1 },
+            { q: "Standar penggunaan name tag (papan nama) yang benar adalah...", o: ["A. Disimpan di saku celana", "B. Dipasang di dada sebelah kanan/kiri agar mudah dibaca pelanggan", "C. Digantung di tas kerja", "D. Dipakai hanya saat ada atasan"], a: 1 },
+            { q: "Bagi staf wanita, standar riasan wajah (make up) dalam pelayanan prima yang paling tepat adalah...", o: ["A. Sangat tebal dan mencolok", "B. Natural, segar, dan tidak berlebihan", "C. Tidak menggunakan make up sama sekali", "D. Menggunakan warna-warna gelap (gothic)"], a: 1 },
+            { q: "Bagaimana standar kebersihan kuku bagi seorang pramusaji atau staf pelayanan?", o: ["A. Panjang, runcing, dan dicat warna terang", "B. Pendek, bersih, dan tidak menggunakan cat kuku berwarna mencolok", "C. Boleh panjang asalkan bersih", "D. Diperbolehkan kotor asal tangan dicuci pakai sabun"], a: 1 },
+            { q: "Mengenakan seragam yang kusut dan berbau saat melayani pelanggan akan berdampak pada...", o: ["A. Pelanggan merasa kasihan", "B. Turunnya kepercayaan dan citra buruk bagi perusahaan", "C. Peningkatan penjualan", "D. Tidak ada dampak sama sekali"], a: 1 },
+            
+            // 5S (Senyum, Sapa, Salam, Sopan, Santun)
+            { q: "Manakah yang merupakan urutan 5S yang sering diterapkan di dunia kerja Indonesia?", o: ["A. Senyum, Santai, Sapa, Salam, Sopan", "B. Senyum, Sapa, Salam, Sopan, Santun", "C. Salam, Senyum, Sapa, Sayang, Santun", "D. Sapa, Senyum, Serius, Sopan, Santun"], a: 1 },
+            { q: "Cara mengucapkan 'Salam' yang paling tepat dan profesional di pagi hari adalah...", o: ["A. 'Pagi bos, mau beli apa?'", "B. 'Selamat pagi Bapak/Ibu, ada yang bisa saya bantu?'", "C. 'Woy pagi, cari apa?'", "D. 'Halo, tumben pagi-pagi ke sini.'"], a: 1 },
+            { q: "Saat tersenyum kepada pelanggan, hal yang harus diperhatikan adalah...", o: ["A. Tersenyum sinis", "B. Tersenyum tulus dengan kontak mata (eye contact)", "C. Tersenyum sambil menatap lantai", "D. Tersenyum sambil bermain handphone"], a: 1 },
+            { q: "Bersikap 'Sopan' berarti...", o: ["A. Berbicara dengan nada tinggi agar jelas", "B. Menghargai dan menghormati pelanggan dari tutur kata maupun bahasa tubuh", "C. Selalu membenarkan perkataan pelanggan meski pelanggan melanggar hukum", "D. Memberikan diskon terus-menerus"], a: 1 },
+            { q: "Sikap 'Santun' dapat ditunjukkan dengan cara...", o: ["A. Menggunakan kata 'Tolong', 'Maaf', dan 'Terima kasih'", "B. Menunjuk wajah pelanggan dengan jari telunjuk", "C. Memotong pembicaraan pelanggan agar cepat selesai", "D. Meninggalkan pelanggan saat ia sedang bertanya"], a: 0 },
+            
+            // Komunikasi Efektif
+            { q: "Apa yang dimaksud dengan 'Active Listening' (Mendengarkan Aktif)?", o: ["A. Mendengarkan sambil membalas chat di HP", "B. Mendengarkan, memahami, dan memberikan respon/feedback yang sesuai", "C. Hanya diam saja dari awal sampai akhir", "D. Menyela pembicaraan karena sudah tahu maksudnya"], a: 1 },
+            { q: "Bahasa tubuh (Body Language) menyumbang persentase besar dalam komunikasi. Sikap tubuh yang benar saat melayani adalah...", o: ["A. Bersandar di tembok, tangan bersedekap", "B. Berdiri tegak, condong sedikit ke depan, wajah antusias", "C. Duduk bersandar malas", "D. Membelakangi pelanggan"], a: 1 },
+            { q: "Saat Anda tidak mengetahui jawaban dari pertanyaan pelanggan, kalimat yang paling tepat adalah...", o: ["A. 'Wah, saya gak tahu tuh Pak.'", "B. 'Bukan urusan departemen saya.'", "C. 'Mohon maaf Bapak, saya kurang pasti. Mohon tunggu sebentar saya tanyakan kepada rekan yang lebih berwenang.'", "D. Mengabaikan dan pura-pura tidak dengar"], a: 2 },
+            { q: "Volume dan intonasi suara saat berbicara dengan pelanggan sebaiknya...", o: ["A. Sangat pelan seperti berbisik", "B. Keras dan membentak", "C. Jelas, ramah, dan intonasi yang dinamis (tidak datar)", "D. Cepat agar menghemat waktu"], a: 2 },
+            { q: "Penggunaan 'Magic Words' sangat ditekankan. Manakah di bawah ini yang merupakan Magic Words?", o: ["A. Maaf, Tolong, Terima Kasih, Permisi", "B. Cepat, Nanti, Besok, Tidak bisa", "C. Jangan, Dilarang, Awas, Batal", "D. Wah, Aduh, Ya ampun, Gila"], a: 0 },
+
+            // Penanganan Pelanggan & Komplain (Handling Complaint)
+            { q: "Metode standar dalam menangani komplain sering disingkat L-E-A-R-N. Huruf L berarti...", o: ["A. Leave (Tinggalkan)", "B. Listen (Dengarkan dengan empati)", "C. Laugh (Tertawakan)", "D. Lock (Kunci)"], a: 1 },
+            { q: "Ketika pelanggan datang dalam keadaan sangat marah, langkah pertama yang wajib Anda lakukan adalah...", o: ["A. Memarahi balik agar ia diam", "B. Meminta maaf dan membiarkannya meluapkan emosi terlebih dahulu tanpa disela", "C. Memanggil satpam untuk mengusir", "D. Menangis"], a: 1 },
+            { q: "Apabila kesalahan murni ada di pihak perusahaan, sikap kita adalah...", o: ["A. Mencari kambing hitam sesama karyawan", "B. Mengakui kesalahan, meminta maaf, dan segera memberikan solusi/kompensasi sesuai aturan", "C. Menyangkal mati-matian", "D. Menyuruh pelanggan lapor polisi"], a: 1 },
+            { q: "Tipe pelanggan bermacam-macam. Jika menghadapi pelanggan yang 'Banyak Bicara / Cerewet', Anda sebaiknya...", o: ["A. Menyuruhnya diam secara kasar", "B. Menjadi pendengar yang baik, lalu secara sopan mengarahkan kembali ke topik pelayanan", "C. Ikut banyak bicara tentang masalah pribadi", "D. Pergi ke toilet agar dia diam"], a: 1 },
+            { q: "Bagaimana cara menghadapi pelanggan yang ragu-ragu dalam memilih produk?", o: ["A. Memaksanya membeli produk yang paling mahal", "B. Mengabaikannya sampai ia memutuskan sendiri", "C. Memberikan informasi detail, membandingkan produk, dan meyakinkan tanpa memaksa", "D. Menertawakan keraguannya"], a: 2 },
+
+            // Studi Kasus Praktikal
+            { q: "Seorang difabel menggunakan kursi roda datang ke bank Anda. Tindakan Service Excellence yang tepat adalah...", o: ["A. Membiarkannya membuka pintu sendiri", "B. Segera membukakan pintu, memprioritaskan antreannya, dan menyesuaikan posisi saat berkomunikasi (sejajar)", "C. Menatapnya dengan tatapan aneh", "D. Menyuruhnya membawa pendamping esok hari"], a: 1 },
+            { q: "Kasir: 'Total belanjaan Ibu Rp 150.000,-'. Ibu X menyodorkan uang Rp 200.000,-. Apa tindakan selanjutnya?", o: ["A. 'Uangnya Rp 200 ribu ya Bu, kembaliannya Rp 50 ribu, ini struknya. Terima kasih, silakan datang kembali.'", "B. Kasih kembalian tanpa bicara apa-apa", "C. 'Susuk e seket ewu ya.' (Tanpa basa-basi)", "D. 'Ibu ga ada uang pas aja?' (Nada kesal)"], a: 0 },
+            { q: "Jam operasional toko tutup pukul 21:00. Pukul 20:55 seorang pelanggan masuk ingin membeli barang darurat. Anda seharusnya...", o: ["A. Mengusirnya, bilang kasir sudah tutup", "B. Mematikan lampu toko", "C. Tetap menyambut dengan senyum, mengizinkan masuk dan melayaninya dengan cepat", "D. Mengomel sepanjang pelanggan berbelanja"], a: 2 },
+            { q: "Telepon perusahaan berdering. Berapa maksimal dering sebelum telepon harus diangkat menurut standar operasional?", o: ["A. 1 kali", "B. 3 kali dering", "C. 10 kali dering", "D. Tidak perlu diangkat kalau sibuk"], a: 1 },
+            { q: "Standar salam saat mengangkat telepon perusahaan (Resepsionis) yang benar adalah...", o: ["A. 'Halo? Siapa ini?'", "B. 'Ya, dengan PT Maju Jaya, halo?'", "C. 'Selamat pagi, dengan PT Maju Jaya, saya [Nama], ada yang bisa saya bantu?'", "D. 'Assalamualaikum, mau bicara sama siapa?'"], a: 2 }
+        ];
+
+        // ================= DATA ESSAY (HOTS) =================
+        const essayData = [
+            {
+                scenario: "Kamu bekerja sebagai Resepsionis di Hotel Bintang 4. Saat lobi sedang sangat sibuk, seorang tamu VVIP marah besar berteriak kepadamu karena kamar yang ia pesan ternyata belum siap, padahal ia sudah lelah terbang 10 jam. Banyak tamu lain yang melihat kejadian tersebut. Bagaimana caramu menangani situasi ini menerapkan prinsip Komunikasi Efektif dan Handling Complaint?",
+                keyAnswer: "1. <strong>Listen & Control:</strong> Tetap tenang, jangan terbawa emosi, dengarkan keluhannya tanpa memotong pembicaraan.<br>2. <strong>Isolate:</strong> Segera arahkan tamu VVIP tersebut ke ruang tunggu VIP/Lounge yang lebih sepi agar tidak menjadi tontonan tamu lain, tawarkan minuman penyegar.<br>3. <strong>Apologize & Empathy:</strong> Sampaikan permohonan maaf yang tulus mewakili pihak hotel. 'Saya sangat memahami kelelahan Bapak/Ibu...'<br>4. <strong>Action/Solution:</strong> Segera hubungi Housekeeping untuk prioritas pembersihan, dan tawarkan kompensasi kecil (seperti voucher spa/makan siang gratis) sambil menunggu kamar siap."
+            },
+            {
+                scenario: "Kamu adalah supervisor minimarket. Kamu menyadari salah satu kasirmu sering memakai seragam yang kusut, rambut tidak disisir rapi, dan menggunakan parfum menyengat. Ketika ditegur, ia beralasan 'Yang penting kan saya kerja cepat melayani kasir, penampilan nggak terlalu penting.' Analisislah mengapa pemikiran kasir ini salah dan jelaskan dampaknya bagi perusahaan!",
+                keyAnswer: "1. <strong>Pemikiran Salah:</strong> Pelayanan tidak hanya soal 'kecepatan', tapi juga 'kenyamanan' pelanggan (Attitude & Appearance).<br>2. <strong>Dampak Citra:</strong> Grooming yang buruk mencerminkan bahwa toko tidak higienis dan tidak profesional. Pelanggan bisa berasumsi jika stafnya kotor, maka produknya juga tidak terjamin kebersihannya.<br>3. <strong>Dampak Bau:</strong> Parfum yang menyengat (atau bau badan) sangat mengganggu kenyamanan bernapas pelanggan di ruang ber-AC.<br>4. <strong>Tindakan:</strong> Supervisor harus memberikan edukasi bahwa Grooming adalah bentuk penghargaan kepada diri sendiri dan pelanggan, serta menegakkan Standar Operasional Perusahaan (SOP)."
+            },
+            {
+                scenario: "Di sebuah restoran yang sedang jam sibuk (rush hour), kamu melayani meja A yang meminta tambahan saus, meja B yang melambaikan tangan minta nota pembayaran, dan ada pelanggan baru masuk mencari meja kosong. Berdasarkan prinsip Pelayanan Prima (Action/Responsiveness), bagaimana urutan prioritas tindakanmu agar semua merasa dilayani tanpa ada yang diabaikan?",
+                keyAnswer: "Dalam kondisi multi-tasking, kuncinya adalah <strong>Komunikasi (Acknowledgment)</strong>. Urutan eksekusi:<br>1. <strong>Sapa Pelanggan Baru:</strong> Lakukan eye contact dan senyum sambil berkata, 'Selamat datang, mohon tunggu sebentar saya carikan meja ya Kak.' (Butuh 2 detik, pelanggan baru merasa diakui).<br>2. <strong>Respons Meja B (Bill):</strong> Beri anggukan/isyarat tangan ke Meja B sambil berkata, 'Baik Kak, notanya segera saya siapkan.'<br>3. <strong>Eksekusi Meja A (Saus):</strong> Ambilkan saus untuk Meja A karena ini tindakan fisik paling cepat dan selesaikan makanan mereka.<br>4. <strong>Lanjutkan Proses:</strong> Ambil nota untuk Meja B, lalu antar pelanggan baru ke meja yang kosong. Kunci dari studi kasus ini adalah <em>jangan mengabaikan siapa pun secara visual dan verbal</em>."
+            }
+        ];
+
+        // ================= GLOBAL STATE =================
+        let currentMode = ''; 
+        let mcqIndex = 0;
+        let mcqScore = 0;
+        let mcqPointsPerQuestion = 100 / 30; // Max score 100
+        let isAnswered = false;
+
+        let essayIndex = 0;
+
+        // DOM Elements
+        const mainMenu = document.getElementById('mainMenu');
+        
+        // MCQ DOM
+        const mcqContainer = document.getElementById('mcqContainer');
+        const mcqQuestion = document.getElementById('mcqQuestion');
+        const mcqOptions = document.getElementById('mcqOptions');
+        const mcqFeedback = document.getElementById('mcqFeedback');
+        const mcqNextBtn = document.getElementById('mcqNextBtn');
+        const mcqProgressBar = document.getElementById('mcqProgressBar');
+        const mcqProgressText = document.getElementById('mcqProgressText');
+        const mcqScoreDisplay = document.getElementById('mcqScore');
+        
+        const mcqResultScreen = document.getElementById('mcqResultScreen');
+
+        // Essay DOM
+        const essayContainer = document.getElementById('essayContainer');
+        const essayQuestion = document.getElementById('essayQuestion');
+        const essayInput = document.getElementById('essayInput');
+        const essayKeyAnswer = document.getElementById('essayKeyAnswer');
+        const essayKeyText = document.getElementById('essayKeyText');
+        const showAnswerBtn = document.getElementById('showAnswerBtn');
+        const nextEssayBtn = document.getElementById('nextEssayBtn');
+        const essayProgressText = document.getElementById('essayProgressText');
+
+        // ================= NAVIGATION =================
+        function hideAll() {
+            mainMenu.classList.add('hidden');
+            mcqContainer.classList.add('hidden');
+            mcqResultScreen.classList.add('hidden');
+            essayContainer.classList.add('hidden');
+        }
+
+        function returnToMenu() {
+            hideAll();
+            mainMenu.classList.remove('hidden');
+        }
+
+        // ================= MCQ LOGIC =================
+        function startMCQMode() {
+            currentMode = 'MCQ';
+            mcqIndex = 0;
+            mcqScore = 0;
+            mcqScoreDisplay.innerText = "0";
+            hideAll();
+            mcqContainer.classList.remove('hidden');
+            loadMCQ();
+        }
+
+        function loadMCQ() {
+            isAnswered = false;
+            mcqFeedback.classList.add('hidden');
+            mcqNextBtn.classList.add('hidden');
+            mcqOptions.innerHTML = '';
+            
+            // Progress Bar & Text
+            let progress = ((mcqIndex) / 30) * 100;
+            mcqProgressBar.style.width = `${progress}%`;
+            mcqProgressText.innerText = `Soal ${mcqIndex + 1} dari 30`;
+
+            const data = mcqData[mcqIndex];
+            mcqQuestion.innerText = `${mcqIndex + 1}. ${data.q}`;
+
+            data.o.forEach((optText, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn w-full text-left bg-white border-2 border-gray-200 text-gray-700 font-bold py-4 px-6 rounded-xl shadow-sm text-sm sm:text-base';
+                btn.innerText = optText;
+                btn.onclick = () => selectMCQ(btn, index, data.a);
+                mcqOptions.appendChild(btn);
+            });
+        }
+
+        function selectMCQ(selectedBtn, selectedIdx, correctIdx) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const allBtns = mcqOptions.querySelectorAll('button');
+            
+            allBtns.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === correctIdx) {
+                    btn.classList.add('correct-answer');
+                }
+            });
+
+            if (selectedIdx === correctIdx) {
+                // Correct
+                mcqScore += mcqPointsPerQuestion;
+                mcqScoreDisplay.innerText = Math.round(mcqScore);
+                mcqFeedback.innerHTML = `✅ <strong>Tepat Sekali!</strong>`;
+                mcqFeedback.className = 'mt-4 p-4 rounded-xl text-center text-emerald-800 bg-emerald-100 border border-emerald-200 block animate-fade-up';
+            } else {
+                // Wrong
+                selectedBtn.classList.add('wrong-answer');
+                mcqFeedback.innerHTML = `❌ <strong>Kurang Tepat.</strong> Perhatikan jawaban yang berwarna hijau.`;
+                mcqFeedback.className = 'mt-4 p-4 rounded-xl text-center text-red-800 bg-red-100 border border-red-200 block animate-fade-up';
+            }
+
+            mcqNextBtn.classList.remove('hidden');
+            if (mcqIndex === mcqData.length - 1) {
+                mcqNextBtn.innerText = "Lihat Hasil Akhir 🏆";
+            } else {
+                mcqNextBtn.innerText = "Selanjutnya ➡️";
+            }
+        }
+
+        function nextMCQQuestion() {
+            if (mcqIndex < mcqData.length - 1) {
+                mcqIndex++;
+                loadMCQ();
+            } else {
+                showMCQResult();
+            }
+        }
+
+        function showMCQResult() {
+            mcqContainer.classList.add('hidden');
+            mcqResultScreen.classList.remove('hidden');
+            
+            let finalScoreRound = Math.round(mcqScore);
+            document.getElementById('mcqFinalScore').innerText = finalScoreRound;
+            
+            const predikatEl = document.getElementById('mcqPredikat');
+            const pesanEl = document.getElementById('mcqPesan');
+            const iconEl = document.getElementById('mcqResultIcon');
+
+            if (finalScoreRound >= 90) {
+                predikatEl.innerText = "🌟 Service Ambassador 🌟";
+                predikatEl.className = "text-2xl font-black text-emerald-600 block";
+                pesanEl.innerText = "Luar biasa! Penguasaanmu tentang pelayanan prima sangat sempurna.";
+                iconEl.innerText = "👑";
+            } else if (finalScoreRound >= 70) {
+                predikatEl.innerText = "👍 Staf Profesional";
+                predikatEl.className = "text-2xl font-black text-blue-600 block";
+                pesanEl.innerText = "Sangat baik! Kamu sudah memahami konsep dasar dan penerapannya.";
+                iconEl.innerText = "🏅";
+            } else if (finalScoreRound >= 50) {
+                predikatEl.innerText = "⚠️ Perlu Peningkatan";
+                predikatEl.className = "text-2xl font-black text-amber-500 block";
+                pesanEl.innerText = "Cukup baik, tapi yuk pelajari lagi SOP dan komunikasi pelanggan.";
+                iconEl.innerText = "📚";
+            } else {
+                predikatEl.innerText = "💔 Standar Kurang";
+                predikatEl.className = "text-2xl font-black text-red-600 block";
+                pesanEl.innerText = "Kamu harus banyak mengulang materi tentang empati dan Grooming.";
+                iconEl.innerText = "📉";
+            }
+        }
+
+        // ================= ESSAY LOGIC =================
+        function startEssayMode() {
+            currentMode = 'ESSAY';
+            essayIndex = 0;
+            hideAll();
+            essayContainer.classList.remove('hidden');
+            loadEssay();
+        }
+
+        function loadEssay() {
+            essayKeyAnswer.classList.add('hidden');
+            nextEssayBtn.classList.add('hidden');
+            showAnswerBtn.classList.remove('hidden');
+            essayInput.value = ""; // clear input
+            
+            essayProgressText.innerText = `Kasus ${essayIndex + 1} dari 3`;
+            const data = essayData[essayIndex];
+            essayQuestion.innerText = data.scenario;
+            essayKeyText.innerHTML = data.keyAnswer;
+        }
+
+        function revealEssayAnswer() {
+            if(essayInput.value.trim() === "") {
+                // Provide simple inline feedback if empty
+                essayInput.classList.add('border-red-500', 'bg-red-50');
+                essayInput.placeholder = "Harap ketik jawaban analisis Anda terlebih dahulu sebelum melihat kunci!";
+                setTimeout(() => {
+                    essayInput.classList.remove('border-red-500', 'bg-red-50');
+                }, 2000);
+                return;
+            }
+
+            showAnswerBtn.classList.add('hidden');
+            essayKeyAnswer.classList.remove('hidden');
+            nextEssayBtn.classList.remove('hidden');
+
+            if (essayIndex === essayData.length - 1) {
+                nextEssayBtn.innerText = "Selesai (Kembali ke Menu) 🏠";
+            } else {
+                nextEssayBtn.innerText = "Lanjut Studi Kasus ➡️";
+            }
+        }
+
+        function nextEssayQuestion() {
+            if (essayIndex < essayData.length - 1) {
+                essayIndex++;
+                loadEssay();
+            } else {
+                returnToMenu();
+            }
+        }
+
+    </script>
+</body>
+</html>
