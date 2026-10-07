@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Breaking: Tangkap Emoji Fokus 🤩</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            /* Cheerful colorful background */
+            background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow: hidden;
+            color: #333;
+        }
+
+        h1, .display-font {
+            font-family: 'Fredoka One', cursive;
+        }
+
+        /* Glassmorphism Panel */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        /* Hole Styling */
+        .hole {
+            position: relative;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: inset 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            aspect-ratio: 1 / 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Emoji Target Styling */
+        .emoji-target {
+            font-size: 4rem; /* Adjustable based on screen size */
+            line-height: 1;
+            position: absolute;
+            bottom: -20px; /* Hide below the hole */
+            transition: transform 0.1s;
+            user-select: none;
+            pointer-events: none; /* Let the click fall through to the hole container */
+        }
+
+        /* Animation Classes */
+        .pop-up {
+            animation: popUpAnim 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .pop-down {
+            animation: popDownAnim 0.2s ease-in forwards;
+        }
+
+        @keyframes popUpAnim {
+            0% { transform: translateY(100%); opacity: 0; }
+            100% { transform: translateY(-20px); opacity: 1; }
+        }
+
+        @keyframes popDownAnim {
+            0% { transform: translateY(-20px); opacity: 1; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+
+        /* Score floating animation on click */
+        .floating-score {
+            position: absolute;
+            font-weight: 800;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: floatUpFade 0.8s ease-out forwards;
+            z-index: 10;
+        }
+
+        .score-plus { color: #10B981; text-shadow: 1px 1px 2px white; } /* Emerald 500 */
+        .score-minus { color: #EF4444; text-shadow: 1px 1px 2px white; } /* Red 500 */
+
+        @keyframes floatUpFade {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-40px) scale(1.5); opacity: 0; }
+        }
+
+        /* Confetti Background Canvas */
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body class="p-4 relative w-full h-full">
+
+    <canvas id="confettiCanvas" class="hidden"></canvas>
+
+    <div class="glass-panel w-full max-w-md mx-auto p-6 sm:p-8 relative">
+        
+        <!-- Header: Title and Instructions -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-pink-600 mb-2 drop-shadow-sm">Tangkap Fokus!</h1>
+            <p class="text-gray-700 font-semibold text-sm">
+                Tangkap 🤩 (+10)<br>Hindari 😴 (-5)
+            </p>
+        </div>
+
+        <div class="flex justify-between items-center bg-white/50 rounded-2xl p-4 mb-6 shadow-sm border border-white/60">
+            <div class="text-center w-1/2 border-r border-gray-300/50">
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Skor</div>
+                <div id="scoreDisplay" class="display-font text-3xl text-indigo-600">0</div>
+            </div>
+            <div class="text-center w-1/2">
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Waktu</div>
+                <div id="timeDisplay" class="display-font text-3xl text-rose-500">30s</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 sm:gap-4 mb-8" id="gameGrid">
+            <!-- Holes will be populated here -->
+            <div class="hole" data-index="0"><div class="emoji-target"></div></div>
+            <div class="hole" data-index="1"><div class="emoji-target"></div></div>
+            <div class="hole" data-index="2"><div class="emoji-target"></div></div>
+            <div class="hole" data-index="3"><div class="emoji-target"></div></div>
+            <div class="hole" data-index="4"><div class="emoji-target"></div></div>
+            <div class="hole" data-index="5"><div class="emoji-target"></div></div>
+            <div class="hole" data-index="6"><div class="emoji-target"></div></div>
+            <div class="hole" data-index="7"><div class="emoji-target"></div></div>
+            <div class="hole" data-index="8"><div class="emoji-target"></div></div>
+        </div>
+
+        <div class="text-center">
+            <button id="startBtn" onclick="startGame()" class="display-font text-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white py-3 px-8 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all w-full">
+                MULAI MAIN 🚀
+            </button>
+        </div>
+
+        <!-- Game Over Overlay -->
+        <div id="gameOverModal" class="hidden absolute inset-0 bg-white/90 backdrop-blur-sm rounded-24px flex flex-col items-center justify-center z-50 p-6 text-center border border-white">
+            <h2 class="display-font text-4xl text-purple-600 mb-2">Waktu Habis!</h2>
+            <p class="text-lg font-bold text-gray-600 mb-4">Skor Fokus Kamu:</p>
+            <div id="finalScore" class="display-font text-6xl text-pink-500 mb-6 drop-shadow-md">0</div>
+            <p id="feedbackText" class="font-bold text-gray-700 mb-8 bg-pink-100 py-2 px-4 rounded-xl border border-pink-200">
+                Keren banget!
+            </p>
+            <button onclick="resetGame()" class="display-font text-xl bg-indigo-500 text-white py-3 px-8 rounded-full shadow-lg hover:bg-indigo-600 transition-colors">
+                Main Lagi 🔄
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Variables ---
+        const holes = document.querySelectorAll('.hole');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const startBtn = document.getElementById('startBtn');
+        const gameOverModal = document.getElementById('gameOverModal');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const feedbackText = document.getElementById('feedbackText');
+        
+        let lastHole;
+        let timeUp = false;
+        let score = 0;
+        let timeLeft = 30;
+        let countdownTimer;
+        let gameLoopTimer;
+        let currentActiveHole = null;
+        let isPlaying = false;
+
+        // Emoji Configurations
+        const GOOD_EMOJI = '🤩';
+        const BAD_EMOJI = '😴';
+        
+        // --- Core Functions ---
+
+        // Random time generator
+        function randomTime(min, max) {
+            return Math.round(Math.random() * (max - min) + min);
+        }
+
+        // Random hole picker (prevents same hole twice in a row)
+        function randomHole(holesList) {
+            const idx = Math.floor(Math.random() * holesList.length);
+            const hole = holesList[idx];
+            if (hole === lastHole) {
+                return randomHole(holesList);
+            }
+            lastHole = hole;
+            return hole;
+        }
+
+        function peep() {
+            if (timeUp) return;
+
+            const time = randomTime(600, 1100); // How long emoji stays up
+            const hole = randomHole(holes);
+            const emojiTarget = hole.querySelector('.emoji-target');
+            
+            // 75% chance for Good Emoji, 25% for Trap
+            const isGood = Math.random() > 0.25;
+            emojiTarget.textContent = isGood ? GOOD_EMOJI : BAD_EMOJI;
+            hole.dataset.type = isGood ? 'good' : 'bad';
+            hole.dataset.whacked = 'false'; // Reset whack status
+
+            // Animate up
+            emojiTarget.classList.remove('pop-down');
+            emojiTarget.classList.add('pop-up');
+            currentActiveHole = hole;
+
+            // Hide after 'time' expires
+            gameLoopTimer = setTimeout(() => {
+                emojiTarget.classList.remove('pop-up');
+                emojiTarget.classList.add('pop-down');
+                
+                // Call next peep slightly after this one starts going down
+                if (!timeUp) setTimeout(peep, 200); 
+            }, time);
+        }
+
+        function whack(e) {
+            if (!isPlaying) return;
+            // The click is bound to the .hole element.
+            // Check if there is an active emoji in it and it hasn't been whacked
+            if (!this.dataset.type || this.dataset.whacked === 'true') return;
+            
+            const emojiTarget = this.querySelector('.emoji-target');
+            // If it's not currently popped up, ignore
+            if (!emojiTarget.classList.contains('pop-up')) return;
+
+            this.dataset.whacked = 'true'; // Prevent double scoring
+            
+            // Calculate points
+            const isGood = this.dataset.type === 'good';
+            const points = isGood ? 10 : -5;
+            score += points;
+            scoreDisplay.textContent = score;
+
+            // Show floating point animation
+            showFloatingScore(this, points);
+
+            // Animate down immediately upon hit
+            emojiTarget.classList.remove('pop-up');
+            emojiTarget.classList.add('pop-down');
+        }
+
+        function showFloatingScore(element, points) {
+            const rect = element.getBoundingClientRect();
+            const floater = document.createElement('div');
+            
+            floater.textContent = points > 0 ? `+${points}` : points;
+            floater.className = `floating-score ${points > 0 ? 'score-plus' : 'score-minus'}`;
+            
+            // Position relative to the clicked hole
+            floater.style.left = `${rect.left + rect.width / 2 - 15}px`;
+            floater.style.top = `${rect.top + rect.height / 2 - 15}px`;
+            
+            document.body.appendChild(floater);
+            
+            // Remove after animation completes
+            setTimeout(() => {
+                floater.remove();
+            }, 800);
+        }
+
+        function startGame() {
+            if (isPlaying) return;
+            
+            isPlaying = true;
+            scoreDisplay.textContent = 0;
+            timeDisplay.textContent = '30s';
+            timeUp = false;
+            score = 0;
+            timeLeft = 30;
+            startBtn.disabled = true;
+            startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            // Clear any lingering emojis
+            holes.forEach(hole => {
+                const em = hole.querySelector('.emoji-target');
+                em.classList.remove('pop-up');
+                em.classList.add('pop-down');
+                hole.dataset.whacked = 'false';
+            });
+
+            peep();
+
+            // Timer Loop
+            countdownTimer = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = `${timeLeft}s`;
+                
+                if (timeLeft <= 10) {
+                    timeDisplay.classList.add('text-red-600', 'animate-pulse');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            timeUp = true;
+            isPlaying = false;
+            clearTimeout(gameLoopTimer);
+            startBtn.disabled = false;
+            startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            timeDisplay.classList.remove('text-red-600', 'animate-pulse');
+            
+            // Generate Feedback
+            let feedback = "";
+            if (score >= 200) feedback = "Luar Biasa! Fokusmu setajam elang! 🦅🔥";
+            else if (score >= 100) feedback = "Bagus Sekali! Pemanasan yang mantap! 👏✨";
+            else if (score > 0) feedback = "Lumayan! Tapi masih agak ngantuk ya? ☕😆";
+            else feedback = "Waduh, kebanyakan klik yang ngantuk nih! 😴💤";
+
+            finalScoreDisplay.textContent = score;
+            feedbackText.textContent = feedback;
+            
+            // Show Modal with tiny delay
+            setTimeout(() => {
+                gameOverModal.classList.remove('hidden');
+                gameOverModal.classList.add('animate-fade-in');
+            }, 500);
+        }
+
+        function resetGame() {
+            gameOverModal.classList.add('hidden');
+            scoreDisplay.textContent = '0';
+            timeDisplay.textContent = '30s';
+        }
+
+        // Attach event listeners to all holes
+        holes.forEach(hole => hole.addEventListener('mousedown', whack));
+        holes.forEach(hole => hole.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent double firing on touch devices
+            whack.call(hole, e);
+        }, {passive: false}));
+
+    </script>
+</body>
+</html>
