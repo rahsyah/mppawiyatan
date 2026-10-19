@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan IT: Misi Hardware & Software</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        body { font-family: 'Nunito', sans-serif; background: #4f46e5; }
+        .bg-pattern {
+            background-color: #4f46e5;
+            background-image: radial-gradient(#6366f1 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+        .hidden-screen { display: none !important; }
+        
+        /* Card animations */
+        .match-card { transition: all 0.3s ease; }
+        .match-card.selected { border-color: #fbbf24; transform: scale(1.05); background-color: #fef3c7; }
+        .match-card.matched { border-color: #10b981; background-color: #d1fae5; opacity: 0.6; pointer-events: none; }
+        .match-card.wrong { animation: shake 0.5s; border-color: #ef4444; background-color: #fee2e2; }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .btn-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-hover:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+        .btn-hover:active { transform: translateY(1px); }
+    </style>
+</head>
+<body class="bg-pattern min-h-screen text-gray-800 flex flex-col p-4 md:p-8">
+
+    <!-- Header (Score & Progress) -->
+    <header id="game-header" class="hidden-screen w-full max-w-4xl mx-auto bg-white/90 backdrop-blur rounded-3xl p-4 shadow-xl flex items-center justify-between mb-6 border-4 border-indigo-300">
+        <div class="flex items-center gap-4">
+            <div class="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-2xl font-bold text-lg md:text-xl flex items-center gap-2">
+                <i class="fa-solid fa-star text-yellow-400"></i> Skor: <span id="score-display">0</span>
+            </div>
+        </div>
+        <div class="flex-1 mx-4 max-w-sm">
+            <div class="text-sm font-bold text-center text-indigo-700 mb-1" id="level-title-display">Level 1</div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div id="progress-bar" class="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full transition-all duration-500" style="width: 33%"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 flex items-center justify-center w-full max-w-5xl mx-auto">
+        
+        <!-- Screen 0: Start -->
+        <section id="start-screen" class="bg-white rounded-[2rem] p-8 md:p-12 shadow-2xl text-center max-w-2xl w-full border-b-8 border-indigo-200 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 text-indigo-100 text-9xl opacity-50"><i class="fa-solid fa-rocket"></i></div>
+            <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 mb-4 z-10 relative">Petualangan IT</h1>
+            <p class="text-lg md:text-xl text-gray-600 mb-8 z-10 relative">Mari belajar Hardware, Software, dan Perawatan dengan cara yang seru! Kumpulkan poin sebanyak-banyaknya.</p>
+            <button onclick="startGame()" class="btn-hover relative z-10 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-bold text-2xl py-4 px-12 rounded-full shadow-lg border-b-4 border-yellow-600 hover:from-yellow-300 hover:to-yellow-400">
+                <i class="fa-solid fa-play mr-2"></i> MULAI MAIN
+            </button>
+        </section>
+
+        <!-- Screen 1: Level 1 (Hardware Match) -->
+        <section id="level1-screen" class="hidden-screen w-full bg-white rounded-[2rem] p-6 shadow-2xl border-b-8 border-indigo-200 flex flex-col h-full max-h-[85vh]">
+            <h2 class="text-3xl font-black text-indigo-700 mb-2 text-center"><i class="fa-solid fa-plug text-blue-500"></i> Misi 1: Perangkat Keras</h2>
+            <p class="text-center text-gray-600 mb-6 font-semibold">Klik sebuah gambar perangkat, lalu klik fungsinya yang tepat untuk menjodohkan!</p>
+            
+            <div class="flex-1 overflow-y-auto pr-2 flex flex-col md:flex-row gap-6">
+                <!-- Items Column -->
+                <div class="flex-1 flex flex-col gap-3" id="hw-items">
+                    <!-- Populated by JS -->
+                </div>
+                <!-- Descriptions Column -->
+                <div class="flex-1 flex flex-col gap-3" id="hw-desc">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Screen 2: Level 2 (Software Quiz) -->
+        <section id="level2-screen" class="hidden-screen w-full max-w-3xl bg-white rounded-[2rem] p-6 md:p-10 shadow-2xl border-b-8 border-indigo-200">
+            <h2 class="text-3xl font-black text-indigo-700 mb-2 text-center"><i class="fa-brands fa-windows text-blue-500"></i> Misi 2: Perangkat Lunak</h2>
+            <p class="text-center text-gray-600 mb-8 font-semibold">Jawab kuis berikut dengan tepat!</p>
+            
+            <div id="quiz-container" class="bg-indigo-50 p-6 rounded-3xl border-2 border-indigo-100">
+                <h3 id="quiz-question" class="text-xl md:text-2xl font-bold text-center text-indigo-900 mb-6">Pertanyaan...</h3>
+                <div id="quiz-options" class="flex flex-col gap-4">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Screen 3: Level 3 (Maintenance Scenarios) -->
+        <section id="level3-screen" class="hidden-screen w-full max-w-4xl bg-white rounded-[2rem] p-6 md:p-10 shadow-2xl border-b-8 border-indigo-200">
+            <h2 class="text-3xl font-black text-indigo-700 mb-2 text-center"><i class="fa-solid fa-shield-halved text-green-500"></i> Misi 3: Perawatan & Keselamatan</h2>
+            <p class="text-center text-gray-600 mb-8 font-semibold">Pilih tindakan yang paling tepat untuk situasi di bawah ini!</p>
+            
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="w-48 h-48 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 border-4 border-green-300 text-6xl text-green-600 shadow-inner">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <div class="flex-1 w-full">
+                    <div id="scenario-container" class="bg-yellow-50 p-6 rounded-3xl border-2 border-yellow-200">
+                        <h3 id="scenario-text" class="text-xl font-bold text-gray-800 mb-6">Skenario...</h3>
+                        <div id="scenario-options" class="flex flex-col gap-3">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Screen 4: Victory -->
+        <section id="end-screen" class="hidden-screen bg-white rounded-[2rem] p-8 md:p-12 shadow-2xl text-center max-w-2xl w-full border-b-8 border-yellow-400 relative overflow-hidden">
+            <div class="text-yellow-400 text-7xl mb-4"><i class="fa-solid fa-trophy"></i></div>
+            <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-red-500 mb-4">MISI SELESAI!</h1>
+            <p class="text-xl text-gray-600 mb-2">Hebat sekali! Kamu berhasil menyelesaikan semua tantangan Petualangan IT.</p>
+            
+            <div class="bg-indigo-100 rounded-3xl p-6 my-8 border-4 border-indigo-200 inline-block">
+                <div class="text-gray-500 font-bold uppercase tracking-wider mb-1">Skor Akhir Kamu</div>
+                <div class="text-6xl font-black text-indigo-700" id="final-score">0</div>
+            </div>
+            
+            <div>
+                <button onclick="location.reload()" class="btn-hover bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold text-xl py-3 px-8 rounded-full shadow-lg border-b-4 border-indigo-800">
+                    <i class="fa-solid fa-rotate-right mr-2"></i> MAIN LAGI
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Visual Feedback Popups -->
+    <div id="feedback-popup" class="fixed inset-0 flex items-center justify-center z-50 pointer-events-none hidden-screen transition-opacity duration-300">
+        <div id="feedback-content" class="bg-white px-8 py-6 rounded-3xl shadow-2xl transform scale-50 transition-transform duration-300 flex flex-col items-center">
+            <i id="feedback-icon" class="text-7xl mb-2"></i>
+            <h3 id="feedback-text" class="text-3xl font-black"></h3>
+        </div>
+    </div>
+
+<script>
+    // --- Data Game ---
+    const hardwareData = [
+        { id: 'h1', name: 'Scanner Flatbed', icon: 'fa-print', desc: 'Scanner datar untuk memindai dokumen satuan atau buku tebal.' },
+        { id: 'h2', name: 'Scanner ADF', icon: 'fa-layer-group', desc: 'Scanner penarik kertas otomatis untuk memindai banyak dokumen sekaligus.' },
+        { id: 'h3', name: 'Printer Multifungsi', icon: 'fa-print', desc: 'Alat cetak yang juga memiliki fitur untuk scan dan fotokopi.' },
+        { id: 'h4', name: 'Komputer & Laptop', icon: 'fa-laptop', desc: 'Perangkat komputasi utama untuk memproses dan menyimpan berbagai data.' },
+        { id: 'h5', name: 'Smartphone (Scanner)', icon: 'fa-mobile-screen', desc: 'Alat komunikasi genggam yang kameranya bisa digunakan untuk memindai dokumen.' },
+        { id: 'h6', name: 'Flashdisk', icon: 'fa-usb', desc: 'Media penyimpanan portabel kecil yang dicolokkan ke port USB.' },
+        { id: 'h7', name: 'Harddisk Eksternal', icon: 'fa-hard-drive', desc: 'Penyimpanan portabel berkapasitas sangat besar, cocok untuk backup data.' }
+    ];
+
+    const softwareQuiz = [
+        { q: "Perangkat lunak (software) apa yang sering digunakan untuk mengetik, membuat tabel, dan presentasi?", options: ["Microsoft Office", "Windows Scan", "Google Drive"], ans: 0 },
+        { q: "Aplikasi yang dirancang khusus untuk membaca dokumen berformat PDF adalah?", options: ["CamScanner", "Adobe Acrobat Reader", "Microsoft Excel"], ans: 1 },
+        { q: "Aplikasi bawaan di Windows yang digunakan untuk mengoperasikan alat scanner yang terhubung adalah?", options: ["Google Drive", "Windows Scan", "Adobe Lens"], ans: 1 },
+        { q: "Aplikasi di Smartphone yang mengubah kamera HP menjadi alat pemindai (scanner) dokumen adalah?", options: ["CamScanner / Microsoft Lens", "Microsoft Word", "Flashdisk App"], ans: 0 },
+        { q: "Layanan penyimpanan awan (cloud) dari Google untuk menyimpan hasil scan secara online adalah?", options: ["Harddisk", "Windows Scan", "Google Drive"], ans: 2 }
+    ];
+
+    const maintenanceScenarios = [
+        { 
+            q: "Kaca Scanner Flatbed terlihat kotor oleh debu dan noda sidik jari. Apa yang harus kamu lakukan untuk membersihkannya?",
+            options: [
+                "Menyemprotkan air secukupnya langsung ke kaca agar basah.",
+                "Mengelap kaca menggunakan kain microfiber lembut yang sedikit dibasahi cairan pembersih.",
+                "Menggosoknya dengan tisu kering yang kasar dengan tenaga kuat."
+            ], ans: 1 
+        },
+        { 
+            q: "Setelah selesai menggunakan komputer dan printer di laboratorium, langkah keselamatan apa yang paling tepat?",
+            options: [
+                "Biarkan saja menyala agar teman lain bisa langsung pakai besok.",
+                "Cabut kabel langsung dari stopkontak agar cepat mati.",
+                "Matikan perangkat sesuai prosedur (Shut Down) lalu cabut kabel jika perlu."
+            ], ans: 2 
+        },
+        { 
+            q: "Kamu ingin mencabut Flashdisk dari laptop setelah memindahkan file. Cara yang paling aman adalah?",
+            options: [
+                "Langsung cabut Flashdisk dengan cepat.",
+                "Klik 'Eject' atau 'Safely Remove' pada laptop, tunggu notifikasi, lalu cabut.",
+                "Matikan paksa laptop lalu cabut Flashdisk-nya."
+            ], ans: 1 
+        }
+    ];
+
+    // --- State ---
+    let score = 0;
+    
+    // Level 1 State
+    let hwSelectedId = null;
+    let descSelectedId = null;
+    let hwMatches = 0;
+
+    // Level 2 & 3 State
+    let currentQuizIndex = 0;
+    let currentScenarioIndex = 0;
+
+    // --- Core Functions ---
+    function updateScore(points) {
+        score += points;
+        document.getElementById('score-display').innerText = score;
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('section').forEach(s => s.classList.add('hidden-screen'));
+        document.getElementById(screenId).classList.remove('hidden-screen');
+    }
+
+    function updateProgress(percentage, levelText) {
+        document.getElementById('progress-bar').style.width = `${percentage}%`;
+        document.getElementById('level-title-display').innerText = levelText;
+    }
+
+    function startGame() {
+        document.getElementById('game-header').classList.remove('hidden-screen');
+        setupLevel1();
+        showScreen('level1-screen');
+        updateProgress(33, 'Level 1: Hardware');
+    }
+
+    function showFeedback(isCorrect, message) {
+        const popup = document.getElementById('feedback-popup');
+        const content = document.getElementById('feedback-content');
+        const icon = document.getElementById('feedback-icon');
+        const text = document.getElementById('feedback-text');
+
+        popup.classList.remove('hidden-screen');
+        
+        if (isCorrect) {
+            content.className = 'bg-white px-8 py-6 rounded-3xl shadow-2xl transform transition-transform duration-300 flex flex-col items-center border-4 border-green-400';
+            icon.className = 'fa-solid fa-circle-check text-7xl mb-2 text-green-500';
+            text.className = 'text-3xl font-black text-green-600';
+            text.innerText = message || 'Benar!';
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 }, colors: ['#10b981', '#fbbf24'] });
+        } else {
+            content.className = 'bg-white px-8 py-6 rounded-3xl shadow-2xl transform transition-transform duration-300 flex flex-col items-center border-4 border-red-400';
+            icon.className = 'fa-solid fa-circle-xmark text-7xl mb-2 text-red-500';
+            text.className = 'text-3xl font-black text-red-600';
+            text.innerText = message || 'Kurang Tepat!';
+        }
+
+        setTimeout(() => content.classList.replace('scale-50', 'scale-100'), 10);
+
+        setTimeout(() => {
+            content.classList.replace('scale-100', 'scale-50');
+            setTimeout(() => popup.classList.add('hidden-screen'), 300);
+        }, 1500);
+    }
+
+    // --- Level 1: Hardware Logic ---
+    function shuffleArray(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function setupLevel1() {
+        const hwCol = document.getElementById('hw-items');
+        const descCol = document.getElementById('hw-desc');
+        hwCol.innerHTML = '';
+        descCol.innerHTML = '';
+
+        const shuffledItems = shuffleArray(hardwareData);
+        const shuffledDesc = shuffleArray(hardwareData);
+
+        shuffledItems.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'match-card border-2 border-indigo-100 bg-indigo-50 p-4 rounded-xl cursor-pointer flex items-center gap-4 hover:border-indigo-400 font-bold text-indigo-900';
+            el.innerHTML = `<div class="bg-white p-3 rounded-lg shadow-sm text-blue-500 text-xl w-12 text-center"><i class="fa-solid ${item.icon}"></i></div> <span>${item.name}</span>`;
+            el.onclick = () => selectItem(el, item.id, 'hw');
+            hwCol.appendChild(el);
+        });
+
+        shuffledDesc.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'match-card border-2 border-indigo-100 bg-indigo-50 p-4 rounded-xl cursor-pointer text-gray-700 text-sm md:text-base hover:border-indigo-400';
+            el.innerHTML = item.desc;
+            el.onclick = () => selectItem(el, item.id, 'desc');
+            descCol.appendChild(el);
+        });
+    }
+
+    let hwSelectedEl = null;
+    let descSelectedEl = null;
+
+    function selectItem(element, id, type) {
+        if (element.classList.contains('matched')) return;
+
+        if (type === 'hw') {
+            if (hwSelectedEl) hwSelectedEl.classList.remove('selected');
+            hwSelectedEl = element;
+            hwSelectedId = id;
+            element.classList.add('selected');
+        } else {
+            if (descSelectedEl) descSelectedEl.classList.remove('selected');
+            descSelectedEl = element;
+            descSelectedId = id;
+            element.classList.add('selected');
+        }
+
+        checkMatch();
+    }
+
+    function checkMatch() {
+        if (hwSelectedId && descSelectedId) {
+            if (hwSelectedId === descSelectedId) {
+                // Match
+                hwSelectedEl.classList.remove('selected');
+                descSelectedEl.classList.remove('selected');
+                hwSelectedEl.classList.add('matched');
+                descSelectedEl.classList.add('matched');
+                updateScore(10);
+                hwMatches++;
+                
+                hwSelectedId = null; descSelectedId = null;
+                hwSelectedEl = null; descSelectedEl = null;
+
+                if (hwMatches === hardwareData.length) {
+                    showFeedback(true, "Level 1 Selesai!");
+                    setTimeout(startLevel2, 2000);
+                } else {
+                    // Small success sound or visual if needed
+                }
+            } else {
+                // Mismatch
+                hwSelectedEl.classList.add('wrong');
+                descSelectedEl.classList.add('wrong');
+                setTimeout(() => {
+                    if (hwSelectedEl) { hwSelectedEl.classList.remove('wrong'); hwSelectedEl.classList.remove('selected'); }
+                    if (descSelectedEl) { descSelectedEl.classList.remove('wrong'); descSelectedEl.classList.remove('selected'); }
+                    hwSelectedId = null; descSelectedId = null;
+                    hwSelectedEl = null; descSelectedEl = null;
+                }, 500);
+            }
+        }
+    }
+
+    // --- Level 2: Software Logic ---
+    function startLevel2() {
+        showScreen('level2-screen');
+        updateProgress(66, 'Level 2: Software');
+        currentQuizIndex = 0;
+        loadQuiz();
+    }
+
+    function loadQuiz() {
+        const qData = softwareQuiz[currentQuizIndex];
+        document.getElementById('quiz-question').innerText = `${currentQuizIndex + 1}. ${qData.q}`;
+        
+        const optionsContainer = document.getElementById('quiz-options');
+        optionsContainer.innerHTML = '';
+        
+        qData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'w-full text-left bg-white border-2 border-indigo-200 p-4 rounded-xl font-bold text-gray-700 hover:bg-indigo-100 hover:border-indigo-400 transition-colors shadow-sm';
+            btn.innerHTML = `<span class="inline-block w-8 h-8 bg-indigo-500 text-white text-center rounded-full leading-8 mr-3">${String.fromCharCode(65+idx)}</span> ${opt}`;
+            btn.onclick = () => submitQuiz(idx, btn);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function submitQuiz(selectedIdx, btnElement) {
+        const qData = softwareQuiz[currentQuizIndex];
+        const buttons = document.getElementById('quiz-options').querySelectorAll('button');
+        buttons.forEach(b => b.disabled = true);
+
+        if (selectedIdx === qData.ans) {
+            btnElement.classList.replace('border-indigo-200', 'border-green-500');
+            btnElement.classList.replace('bg-white', 'bg-green-100');
+            updateScore(15);
+            showFeedback(true, "Tepat!");
+        } else {
+            btnElement.classList.replace('border-indigo-200', 'border-red-500');
+            btnElement.classList.replace('bg-white', 'bg-red-100');
+            
+            // Highlight correct
+            buttons[qData.ans].classList.replace('border-indigo-200', 'border-green-500');
+            buttons[qData.ans].classList.replace('bg-white', 'bg-green-100');
+            showFeedback(false, "Salah!");
+        }
+
+        setTimeout(() => {
+            currentQuizIndex++;
+            if (currentQuizIndex < softwareQuiz.length) {
+                loadQuiz();
+            } else {
+                startLevel3();
+            }
+        }, 1800);
+    }
+
+    // --- Level 3: Maintenance Logic ---
+    function startLevel3() {
+        showScreen('level3-screen');
+        updateProgress(90, 'Level 3: Perawatan');
+        currentScenarioIndex = 0;
+        loadScenario();
+    }
+
+    function loadScenario() {
+        const sData = maintenanceScenarios[currentScenarioIndex];
+        document.getElementById('scenario-text').innerText = `Skenario ${currentScenarioIndex + 1}: ${sData.q}`;
+        
+        const optionsContainer = document.getElementById('scenario-options');
+        optionsContainer.innerHTML = '';
+        
+        sData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'w-full text-left bg-white border-2 border-yellow-300 p-4 rounded-xl font-bold text-gray-700 hover:bg-yellow-100 hover:border-yellow-500 transition-colors shadow-sm';
+            btn.innerText = opt;
+            btn.onclick = () => submitScenario(idx, btn);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function submitScenario(selectedIdx, btnElement) {
+        const sData = maintenanceScenarios[currentScenarioIndex];
+        const buttons = document.getElementById('scenario-options').querySelectorAll('button');
+        buttons.forEach(b => b.disabled = true);
+
+        if (selectedIdx === sData.ans) {
+            btnElement.classList.add('bg-green-200', 'border-green-500');
+            updateScore(20);
+            showFeedback(true, "Langkah Aman!");
+        } else {
+            btnElement.classList.add('bg-red-200', 'border-red-500');
+            buttons[sData.ans].classList.add('bg-green-200', 'border-green-500');
+            showFeedback(false, "Berbahaya!");
+        }
+
+        setTimeout(() => {
+            currentScenarioIndex++;
+            if (currentScenarioIndex < maintenanceScenarios.length) {
+                loadScenario();
+            } else {
+                endGame();
+            }
+        }, 2000);
+    }
+
+    // --- End Game ---
+    function endGame() {
+        document.getElementById('game-header').classList.add('hidden-screen');
+        showScreen('end-screen');
+        document.getElementById('final-score').innerText = score;
+        
+        const duration = 3000;
+        const end = Date.now() + duration;
+
+        (function frame() {
+            confetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: ['#4f46e5', '#fbbf24', '#10b981']
+            });
+            confetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: ['#4f46e5', '#fbbf24', '#10b981']
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        }());
+    }
+</script>
+</body>
+</html>
