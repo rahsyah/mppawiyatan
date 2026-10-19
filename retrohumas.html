@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Up-Tris: Kehumasan Retro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #33ff33;
+            --border-color: #33ff33;
+            --grid-bg: #000000;
+            --btn-bg: #222;
+            --btn-active: #444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Press Start 2P', monospace;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            padding: 10px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 10px;
+            font-size: 10px;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        #canvas-wrapper {
+            position: relative;
+            border: 4px solid var(--border-color);
+            background-color: var(--grid-bg);
+            box-shadow: 0 0 15px var(--text-color);
+        }
+
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+        }
+
+        /* Touch Controls */
+        #controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: var(--btn-bg);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            padding: 15px 0;
+            text-align: center;
+            font-size: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #111;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #111;
+            background-color: var(--btn-active);
+        }
+
+        #btn-left { grid-column: 1; grid-row: 1; }
+        #btn-rotate { grid-column: 2; grid-row: 1; }
+        #btn-right { grid-column: 3; grid-row: 1; }
+        #btn-drop { grid-column: 1 / span 3; grid-row: 2; padding: 20px 0; }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-content {
+            border: 3px solid var(--border-color);
+            background: var(--bg-color);
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 20px var(--text-color);
+            line-height: 1.5;
+        }
+
+        #quiz-question {
+            font-size: 10px;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            color: #fff;
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: var(--btn-bg);
+            color: #fff;
+            border: 2px solid var(--text-color);
+            font-size: 8px;
+            cursor: pointer;
+        }
+
+        .quiz-option:active {
+            background: var(--text-color);
+            color: #000;
+        }
+
+        .title-text {
+            color: #ff3333;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px #fff;
+        }
+
+        #start-btn, #restart-btn, #continue-btn {
+            margin-top: 20px;
+            background: var(--text-color);
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <header>
+        <div>SCORE: <span id="score">0</span></div>
+        <div>LVL: <span id="level">1</span></div>
+    </header>
+
+    <div id="canvas-wrapper">
+        <canvas id="gameCanvas" width="200" height="400"></canvas>
+        <div class="scanlines"></div>
+    </div>
+
+    <div id="controls">
+        <div class="btn" id="btn-left">◀</div>
+        <div class="btn" id="btn-rotate">↻</div>
+        <div class="btn" id="btn-right">▶</div>
+        <div class="btn" id="btn-drop">UP / DROP</div>
+    </div>
+</div>
+
+<!-- Start Screen -->
+<div id="start-screen" class="modal" style="display: flex;">
+    <div class="modal-content">
+        <div class="title-text">UP-TRIS</div>
+        <div style="font-size: 8px; margin-bottom: 20px; color:#aaa;">Kehumasan SMK - Retro Edition</div>
+        <p style="font-size: 8px; margin-bottom: 15px;">Balok akan bergerak ke ATAS. Susun balok hingga penuh secara horizontal.</p>
+        <p style="font-size: 8px; margin-bottom: 20px;">Jawab soal saat baris penuh untuk mendapat poin ekstra!</p>
+        <button id="start-btn">MAIN</button>
+    </div>
+</div>
+
+<!-- Game Over Screen -->
+<div id="game-over-screen" class="modal">
+    <div class="modal-content">
+        <div class="title-text">GAME OVER</div>
+        <p style="font-size: 12px; margin-bottom: 20px;">Score: <span id="final-score">0</span></p>
+        <button id="restart-btn">MAIN LAGI</button>
+    </div>
+</div>
+
+<!-- Quiz Modal -->
+<div id="quiz-screen" class="modal">
+    <div class="modal-content">
+        <div style="font-size: 12px; margin-bottom:10px; color: #ffeb3b;">PERTANYAAN!</div>
+        <div id="quiz-question">Question text here...</div>
+        <div id="quiz-options">
+            <!-- Options injected here -->
+        </div>
+        <div id="quiz-feedback" style="display:none; font-size: 10px; margin-top:15px; margin-bottom:15px;"></div>
+        <button id="continue-btn" style="display:none;">LANJUT</button>
+    </div>
+</div>
+
+<script>
+    // --- 25 Kehumasan Questions (Mixed types) ---
+    const questionBank = [
+        // Pilihan Ganda (Multiple Choice)
+        { type: 'mc', q: "Fungsi utama humas (Public Relations) dalam sebuah organisasi adalah...", options: ["Mencari keuntungan finansial", "Membangun citra positif", "Merekrut pegawai baru", "Mengelola keuangan perusahaan"], answer: 1 },
+        { type: 'mc', q: "Kegiatan menyampaikan informasi dari perusahaan kepada masyarakat luas disebut...", options: ["Publisitas", "Advertising", "Marketing", "Sales promotion"], answer: 0 },
+        { type: 'mc', q: "Salah satu media humas internal yang paling sering digunakan adalah...", options: ["Siaran pers", "Brosur promosi", "Majalah perusahaan (in-house magazine)", "Iklan televisi"], answer: 2 },
+        { type: 'mc', q: "Kemampuan yang paling wajib dimiliki oleh seorang praktisi humas adalah...", options: ["Pemrograman komputer", "Akuntansi dasar", "Komunikasi yang baik", "Desain grafis"], answer: 2 },
+        { type: 'mc', q: "Syarat utama dalam penulisan press release (siaran pers) harus mengandung unsur...", options: ["5W + 1H", "SPOA", "Gaya bahasa sastra", "Opini pribadi"], answer: 0 },
+        { type: 'mc', q: "Media komunikasi visual yang sering dipasang di jalan untuk menyampaikan pesan humas disebut...", options: ["Pamflet", "Baliho", "Koran", "Press kit"], answer: 1 },
+        { type: 'mc', q: "Bentuk komunikasi dua arah (two-way traffic communication) bertujuan untuk...", options: ["Memaksa kehendak", "Mendapat feedback/umpan balik", "Menghindari kritik", "Menyebarkan gosip"], answer: 1 },
+        { type: 'mc', q: "Tindakan humas dalam menangani isu negatif yang beredar di masyarakat disebut...", options: ["Crisis management", "Event organizing", "Marketing communication", "Customer relation"], answer: 0 },
+        
+        // Pengecualian (Kecuali)
+        { type: 'mc', q: "Berikut ini adalah tugas pokok Public Relations, KECUALI...", options: ["Menyelenggarakan konferensi pers", "Menyusun laporan keuangan", "Menjalin hubungan dengan media", "Menangani keluhan masyarakat"], answer: 1 },
+        { type: 'mc', q: "Berikut ini merupakan karakteristik humas, KECUALI...", options: ["Adanya upaya komunikasi dua arah", "Terencana dan berkesinambungan", "Berorientasi pada penjualan produk secara langsung", "Mempengaruhi opini publik"], answer: 2 },
+        { type: 'mc', q: "Media eksternal humas meliputi hal-hal berikut, KECUALI...", options: ["Konferensi pers", "Papan pengumuman karyawan", "Siaran radio", "Media sosial perusahaan"], answer: 1 },
+        { type: 'mc', q: "Pihak yang menjadi sasaran (stakeholder) internal humas adalah sebagai berikut, KECUALI...", options: ["Pegawai", "Pemegang saham", "Masyarakat sekitar (Community)", "Manajer"], answer: 2 },
+        { type: 'mc', q: "Berikut adalah kode etik humas yang harus dipatuhi, KECUALI...", options: ["Menyebarkan informasi yang jujur", "Menjaga rahasia perusahaan", "Memberikan informasi palsu demi citra", "Tidak merusak reputasi profesi"], answer: 2 },
+        { type: 'mc', q: "Kegiatan protokoler sering terkait dengan humas. Unsur-unsur keprotokolan meliputi berikut, KECUALI...", options: ["Tata tempat", "Tata upacara", "Tata rias", "Tata penghormatan"], answer: 2 },
+        
+        // Benar atau Salah (True/False)
+        { type: 'tf', q: "BENAR atau SALAH: Humas (PR) dan Marketing adalah departemen dengan fungsi yang sama persis.", options: ["BENAR", "SALAH"], answer: 1 },
+        { type: 'tf', q: "BENAR atau SALAH: Opini publik sangat mempengaruhi keberlangsungan suatu organisasi/perusahaan.", options: ["BENAR", "SALAH"], answer: 0 },
+        { type: 'tf', q: "BENAR atau SALAH: Press release selalu berisi iklan berbayar untuk mempromosikan produk.", options: ["BENAR", "SALAH"], answer: 1 },
+        { type: 'tf', q: "BENAR atau SALAH: Corporate Social Responsibility (CSR) merupakan salah satu program kerja humas.", options: ["BENAR", "SALAH"], answer: 0 },
+        { type: 'tf', q: "BENAR atau SALAH: Seorang humas boleh menyembunyikan fakta jika fakta tersebut merugikan perusahaan, meskipun menyangkut keselamatan publik.", options: ["BENAR", "SALAH"], answer: 1 },
+        { type: 'tf', q: "BENAR atau SALAH: Media relations bertujuan untuk menjalin hubungan baik dengan wartawan dan media massa.", options: ["BENAR", "SALAH"], answer: 0 },
+        { type: 'tf', q: "BENAR atau SALAH: Etiket menelepon di kantor merupakan salah satu bagian dari menjaga citra instansi.", options: ["BENAR", "SALAH"], answer: 0 },
+        { type: 'tf', q: "BENAR atau SALAH: Internal relations hanya berfokus pada hubungan antara perusahaan dengan konsumen.", options: ["BENAR", "SALAH"], answer: 1 },
+        { type: 'tf', q: "BENAR atau SALAH: Dokumentasi kegiatan adalah hal yang tidak penting bagi seorang Public Relations.", options: ["BENAR", "SALAH"], answer: 1 },
+        { type: 'tf', q: "BENAR atau SALAH: Lobbying adalah salah satu teknik humas untuk mempengaruhi pengambil keputusan.", options: ["BENAR", "SALAH"], answer: 0 },
+        { type: 'tf', q: "BENAR atau SALAH: Cutlip & Center adalah tokoh yang terkenal dengan teori 4 langkah proses PR (Fact Finding, Planning, Communicating, Evaluating).", options: ["BENAR", "SALAH"], answer: 0 }
+    ];
+
+    // --- Tetris Constants & Variables ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Scale for visual size
+    const COLS = 10;
+    const ROWS = 20;
+    const BLOCK_SIZE = canvas.width / COLS; // 20px
+
+    const COLORS = [
+        null,
+        '#FF0d72', '#0DC2FF', '#0DFF72',
+        '#F538FF', '#FF8E0D', '#FFE138', '#3877FF'
+    ];
+
+    const PIECES = [
+        [],
+        // T
+        [ [0,0,0], [1,1,1], [0,1,0] ],
+        // I
+        [ [0,2,0,0], [0,2,0,0], [0,2,0,0], [0,2,0,0] ],
+        // S
+        [ [0,3,3], [3,3,0], [0,0,0] ],
+        // Z
+        [ [4,4,0], [0,4,4], [0,0,0] ],
+        // L
+        [ [0,5,0], [0,5,0], [0,5,5] ],
+        // J
+        [ [0,6,0], [0,6,0], [6,6,0] ],
+        // O
+        [ [7,7], [7,7] ]
+    ];
+
+    let grid = [];
+    let score = 0;
+    let level = 1;
+    let dropCounter = 0;
+    let dropInterval = 1000;
+    let lastTime = 0;
+    let animationId;
+    let isGameOver = false;
+    let isPaused = false;
+    
+    let pendingLinesToClear = []; // Store lines waiting to clear after quiz
+
+    const player = {
+        pos: {x: 0, y: 0},
+        matrix: null,
+    };
+
+    // --- Utility functions ---
+    function createMatrix(w, h) {
+        const matrix = [];
+        while (h--) {
+            matrix.push(new Array(w).fill(0));
+        }
+        return matrix;
+    }
+
+    function createPiece(type) {
+        return PIECES[type];
+    }
+
+    function drawMatrix(matrix, offset) {
+        matrix.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value !== 0) {
+                    ctx.fillStyle = COLORS[value];
+                    ctx.fillRect((x + offset.x) * BLOCK_SIZE, (y + offset.y) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect((x + offset.x) * BLOCK_SIZE, (y + offset.y) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                    
+                    // Simple retro highlight
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                    ctx.fillRect((x + offset.x) * BLOCK_SIZE + 2, (y + offset.y) * BLOCK_SIZE + 2, BLOCK_SIZE - 4, 4);
+                }
+            });
+        });
+    }
+
+    function draw() {
+        ctx.fillStyle = 'var(--grid-bg)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw grid lines
+        ctx.strokeStyle = '#111';
+        ctx.lineWidth = 1;
+        for(let i=0; i<=COLS; i++) {
+            ctx.beginPath(); ctx.moveTo(i*BLOCK_SIZE, 0); ctx.lineTo(i*BLOCK_SIZE, canvas.height); ctx.stroke();
+        }
+        for(let i=0; i<=ROWS; i++) {
+            ctx.beginPath(); ctx.moveTo(0, i*BLOCK_SIZE); ctx.lineTo(canvas.width, i*BLOCK_SIZE); ctx.stroke();
+        }
+
+        drawMatrix(grid, {x: 0, y: 0});
+        drawMatrix(player.matrix, player.pos);
+    }
+
+    function merge(grid, player) {
+        player.matrix.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value !== 0) {
+                    grid[y + player.pos.y][x + player.pos.x] = value;
+                }
+            });
+        });
+    }
+
+    // Reverse Tetris Collision: Check UPWARDS.
+    // The ceiling is y=0, floor is y=19. Blocks fall UP.
+    function collide(grid, player) {
+        const m = player.matrix;
+        const o = player.pos;
+        for (let y = 0; y < m.length; ++y) {
+            for (let x = 0; x < m[y].length; ++x) {
+                if (m[y][x] !== 0 &&
+                    (grid[y + o.y] && grid[y + o.y][x + o.x]) !== 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function playerReset() {
+        const pieces = '1234567';
+        player.matrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
+        // Start at BOTTOM
+        player.pos.y = ROWS - player.matrix.length; 
+        player.pos.x = Math.floor(COLS / 2) - Math.floor(player.matrix[0].length / 2);
+        
+        // If immediate collision at bottom, game over
+        if (collide(grid, player)) {
+            gameOver();
+        }
+    }
+
+    // Drop means move UP in Reverse Tetris
+    function playerDrop() {
+        player.pos.y--;
+        if (collide(grid, player)) {
+            player.pos.y++; // revert
+            merge(grid, player);
+            playerReset();
+            gridSweep();
+        }
+        dropCounter = 0;
+    }
+
+    function playerMove(offset) {
+        player.pos.x += offset;
+        if (collide(grid, player)) {
+            player.pos.x -= offset;
+        }
+    }
+
+    function playerRotate() {
+        const pos = player.pos.x;
+        let offset = 1;
+        rotate(player.matrix);
+        while (collide(grid, player)) {
+            player.pos.x += offset;
+            offset = -(offset + (offset > 0 ? 1 : -1));
+            if (offset > player.matrix[0].length) {
+                rotate(player.matrix, -1);
+                player.pos.x = pos;
+                return;
+            }
+        }
+    }
+
+    function rotate(matrix, dir = 1) {
+        for (let y = 0; y < matrix.length; ++y) {
+            for (let x = 0; x < y; ++x) {
+                [
+                    matrix[x][y],
+                    matrix[y][x],
+                ] = [
+                    matrix[y][x],
+                    matrix[x][y],
+                ];
+            }
+        }
+        if (dir > 0) {
+            matrix.forEach(row => row.reverse());
+        } else {
+            matrix.reverse();
+        }
+    }
+
+    // Sweep logic for Reverse Tetris
+    function gridSweep() {
+        let linesFound = [];
+        outer: for (let y = 0; y < ROWS; ++y) {
+            for (let x = 0; x < COLS; ++x) {
+                if (grid[y][x] === 0) {
+                    continue outer; // line not full
+                }
+            }
+            // Line is full
+            linesFound.push(y);
+        }
+
+        if (linesFound.length > 0) {
+            pendingLinesToClear = linesFound;
+            triggerQuiz();
+        }
+    }
+
+    function executeLineClear(isCorrect) {
+        let rowCount = pendingLinesToClear.length;
+        
+        pendingLinesToClear.forEach(y => {
+            const row = grid.splice(y, 1)[0].fill(0);
+            // In reverse tetris, blocks gather at the top. 
+            // When a line clears, blocks below it must shift UP.
+            // That means we put the new empty row at the BOTTOM of the grid.
+            grid.push(row); 
+        });
+
+        if (isCorrect) {
+            score += rowCount * 100 * level;
+            // Level up logic
+            if (score > level * 500) {
+                level++;
+                dropInterval = Math.max(100, 1000 - (level * 100)); // faster
+            }
+        } else {
+            // Penalty: maybe score deduction or just no score.
+            score = Math.max(0, score - 50);
+        }
+
+        updateScoreboards();
+        pendingLinesToClear = [];
+        
+        isPaused = false;
+        lastTime = performance.now();
+        update();
+    }
+
+    function updateScoreboards() {
+        document.getElementById('score').innerText = score;
+        document.getElementById('level').innerText = level;
+    }
+
+    function gameOver() {
+        isGameOver = true;
+        cancelAnimationFrame(animationId);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('game-over-screen').style.display = 'flex';
+    }
+
+    function update(time = 0) {
+        if(isGameOver || isPaused) return;
+
+        const deltaTime = time - lastTime;
+        lastTime = time;
+
+        dropCounter += deltaTime;
+        if (dropCounter > dropInterval) {
+            playerDrop();
+        }
+
+        draw();
+        animationId = requestAnimationFrame(update);
+    }
+
+    // --- Quiz Logic ---
+    function triggerQuiz() {
+        isPaused = true;
+        const qData = questionBank[Math.floor(Math.random() * questionBank.length)];
+        
+        document.getElementById('quiz-question').innerText = qData.q;
+        const optionsContainer = document.getElementById('quiz-options');
+        optionsContainer.innerHTML = '';
+        
+        qData.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-option';
+            btn.innerText = opt;
+            btn.onclick = () => handleAnswer(index, qData.answer);
+            optionsContainer.appendChild(btn);
+        });
+
+        document.getElementById('quiz-feedback').style.display = 'none';
+        document.getElementById('continue-btn').style.display = 'none';
+        document.getElementById('quiz-options').style.display = 'block';
+        document.getElementById('quiz-screen').style.display = 'flex';
+    }
+
+    let answerResult = false;
+    function handleAnswer(selectedIndex, correctIndex) {
+        const feedback = document.getElementById('quiz-feedback');
+        feedback.style.display = 'block';
+        
+        if (selectedIndex === correctIndex) {
+            feedback.innerText = "BENAR! +POIN";
+            feedback.style.color = "#0DFF72";
+            answerResult = true;
+        } else {
+            feedback.innerText = "SALAH! -50 POIN\n\nJawaban benar: " + questionBank.find(q=>q.q === document.getElementById('quiz-question').innerText).options[correctIndex];
+            feedback.style.color = "#FF0d72";
+            answerResult = false;
+        }
+
+        document.getElementById('quiz-options').style.display = 'none';
+        document.getElementById('continue-btn').style.display = 'block';
+    }
+
+    document.getElementById('continue-btn').addEventListener('click', () => {
+        document.getElementById('quiz-screen').style.display = 'none';
+        executeLineClear(answerResult);
+    });
+
+    // --- Controls Setup ---
+    function setupControls() {
+        document.addEventListener('keydown', event => {
+            if (isGameOver || isPaused) return;
+            switch(event.keyCode) {
+                case 37: playerMove(-1); break; // Left
+                case 39: playerMove(1); break; // Right
+                case 38: playerDrop(); break; // Drop (Up arrow since reverse)
+                case 32: playerRotate(); break; // Space
+            }
+        });
+
+        // Touch buttons mapping
+        document.getElementById('btn-left').addEventListener('touchstart', (e) => { e.preventDefault(); if(!isPaused) playerMove(-1); });
+        document.getElementById('btn-right').addEventListener('touchstart', (e) => { e.preventDefault(); if(!isPaused) playerMove(1); });
+        document.getElementById('btn-rotate').addEventListener('touchstart', (e) => { e.preventDefault(); if(!isPaused) playerRotate(); });
+        document.getElementById('btn-drop').addEventListener('touchstart', (e) => { e.preventDefault(); if(!isPaused) playerDrop(); });
+
+        // Mouse fallbacks for testing on PC
+        document.getElementById('btn-left').addEventListener('mousedown', () => { if(!isPaused) playerMove(-1); });
+        document.getElementById('btn-right').addEventListener('mousedown', () => { if(!isPaused) playerMove(1); });
+        document.getElementById('btn-rotate').addEventListener('mousedown', () => { if(!isPaused) playerRotate(); });
+        document.getElementById('btn-drop').addEventListener('mousedown', () => { if(!isPaused) playerDrop(); });
+    }
+
+    // --- Game Lifecycle ---
+    function initGame() {
+        grid = createMatrix(COLS, ROWS);
+        score = 0;
+        level = 1;
+        dropInterval = 1000;
+        isGameOver = false;
+        isPaused = false;
+        updateScoreboards();
+        playerReset();
+        lastTime = performance.now();
+        update();
+    }
+
+    document.getElementById('start-btn').addEventListener('click', () => {
+        document.getElementById('start-screen').style.display = 'none';
+        setupControls();
+        initGame();
+    });
+
+    document.getElementById('restart-btn').addEventListener('click', () => {
+        document.getElementById('game-over-screen').style.display = 'none';
+        initGame();
+    });
+
+</script>
+</body>
+</html>
