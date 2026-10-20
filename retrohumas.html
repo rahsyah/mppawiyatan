@@ -1,644 +1,440 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Up-Tris: Kehumasan Retro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #1a1a1a;
-            --text-color: #33ff33;
-            --border-color: #33ff33;
-            --grid-bg: #000000;
-            --btn-bg: #222;
-            --btn-active: #444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Press Start 2P', monospace;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-        }
-
-        #game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 500px;
-            height: 100%;
-            padding: 10px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 300px;
-            margin-bottom: 10px;
-            font-size: 10px;
-            text-shadow: 2px 2px 0px #000;
-        }
-
-        #canvas-wrapper {
-            position: relative;
-            border: 4px solid var(--border-color);
-            background-color: var(--grid-bg);
-            box-shadow: 0 0 15px var(--text-color);
-        }
-
-        canvas {
-            display: block;
-            image-rendering: pixelated;
-        }
-
-        /* Touch Controls */
-        #controls {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            width: 100%;
-            max-width: 300px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            background-color: var(--btn-bg);
-            color: var(--text-color);
-            border: 2px solid var(--border-color);
-            padding: 15px 0;
-            text-align: center;
-            font-size: 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #111;
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-
-        .btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #111;
-            background-color: var(--btn-active);
-        }
-
-        #btn-left { grid-column: 1; grid-row: 1; }
-        #btn-rotate { grid-column: 2; grid-row: 1; }
-        #btn-right { grid-column: 3; grid-row: 1; }
-        #btn-drop { grid-column: 1 / span 3; grid-row: 2; padding: 20px 0; }
-
-        /* Modals */
-        .modal {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 100;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .modal-content {
-            border: 3px solid var(--border-color);
-            background: var(--bg-color);
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 0 20px var(--text-color);
-            line-height: 1.5;
-        }
-
-        #quiz-question {
-            font-size: 10px;
-            margin-bottom: 20px;
-            line-height: 1.8;
-            color: #fff;
-        }
-
-        .quiz-option {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 10px;
-            background: var(--btn-bg);
-            color: #fff;
-            border: 2px solid var(--text-color);
-            font-size: 8px;
-            cursor: pointer;
-        }
-
-        .quiz-option:active {
-            background: var(--text-color);
-            color: #000;
-        }
-
-        .title-text {
-            color: #ff3333;
-            font-size: 16px;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 0px #fff;
-        }
-
-        #start-btn, #restart-btn, #continue-btn {
-            margin-top: 20px;
-            background: var(--text-color);
-            color: #000;
-            padding: 10px 20px;
-            border: none;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .scanlines {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.2) 50%,
-                rgba(0,0,0,0.2)
-            );
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 50;
-            opacity: 0.6;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Up-Tris — Kehumasan</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Raleway:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<style>
+:root{--b:#0E2AC5;--e:cubic-bezier(.16,1,.3,1);--orb:radial-gradient(circle at 50% 30%,#5175ff 0%,#0e2ac5 55%,#020b40 100%)}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%}
+body{overflow-x:hidden;-webkit-font-smoothing:antialiased;color:#1a1a1a;background:#f7fafc;font-family:Raleway,sans-serif}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(14,42,197,.18);border-radius:99px}::-webkit-scrollbar-thumb:hover{background:rgba(14,42,197,.32)}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+#bg{position:fixed;inset:0;z-index:-10;transition:background 1.2s cubic-bezier(.65,0,.35,1)}
+#cv{position:fixed;inset:0;z-index:0;pointer-events:none}#c{display:block;width:100%;height:100%}
+.mono{font-family:'JetBrains Mono',monospace}
+/* loader */
+#ld{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:radial-gradient(circle at 50% 42%,#fff 0%,#eef2ff 45%,#dbe4ff 100%);transition:opacity .55s cubic-bezier(.65,0,.35,1)}
+#ld.x{opacity:0;pointer-events:none}
+#ld>*{animation:up .9s var(--e) both}#ld>:nth-child(2){animation-delay:.26s}#ld>:nth-child(3){animation-delay:.42s}
+@keyframes up{from{opacity:0;transform:translateY(18px);filter:blur(6px)}}
+#lt{font:10px 'JetBrains Mono';letter-spacing:.28em;text-transform:uppercase;color:#6b7bb5}
+#lb{width:clamp(180px,32vw,280px);height:2px;background:rgba(14,42,197,.14);border-radius:99px}
+#lf{height:100%;width:0;background:linear-gradient(90deg,#5175ff,#0e2ac5);box-shadow:0 0 14px rgba(47,105,255,.55);transition:width .45s var(--e)}
+#ln{font:700 11px 'JetBrains Mono';letter-spacing:.1em;color:#0e2ac5;font-variant-numeric:tabular-nums}
+/* glass */
+.gl{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.2);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:inset 0 1.5px 2px rgba(255,255,255,.7),0 8px 30px rgba(0,0,0,.04)}
+.gl:hover{background:rgba(255,255,255,.3)}
+.orb{display:inline-grid;place-items:center;border-radius:50%;background:var(--orb);color:#fff;transition:transform .3s}
+/* header */
+#hd{position:fixed;top:0;left:0;right:0;z-index:30;height:80px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;pointer-events:none;opacity:0;transform:translateY(-16px);transition:all .8s var(--e)}
+body.go #hd{opacity:1;transform:none}
+#hd>*{pointer-events:auto}
+.wm{font:900 18px 'Space Grotesk';letter-spacing:.25em;color:#0a0a0a}
+nav{display:none;gap:48px;font-size:14px;font-weight:500}nav a{color:inherit;text-decoration:none;cursor:pointer}nav a:hover{opacity:.6}
+.rt{display:flex;gap:10px;align-items:center}
+.ib{width:40px;height:40px;border-radius:50%;display:grid;place-items:center}
+.pill{display:flex;align-items:center;gap:14px;padding:6px 6px 6px 22px;border-radius:99px;font-size:13px;font-weight:500}
+.pill .orb{width:32px;height:32px}.pill:hover .orb{transform:scale(1.05)}
+svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* sections */
+main{position:relative;z-index:10}
+section{min-height:100svh;pointer-events:none}section .pa{pointer-events:auto}
+.rv{opacity:0;transform:translateY(42px);filter:blur(8px);transition:opacity 1.5s var(--e),transform 1.5s var(--e),filter 1.5s var(--e);transition-delay:var(--d,0s)}
+.rv.in{opacity:1;transform:none;filter:none}
+.lab{font:11px 'JetBrains Mono';letter-spacing:.25em;text-transform:uppercase;color:rgba(14,42,197,.8)}
+h2{font-weight:500;font-size:2.6rem;line-height:1;letter-spacing:-.02em;margin:24px 0 0;color:#0a0a0a}
+.tx{font-size:16px;line-height:1.55;color:#404040;max-width:32rem}
+#s1{display:flex;align-items:flex-end;padding:0 24px 48px}
+#s1 .in1{width:100%;display:flex;flex-direction:column;gap:32px;opacity:0;transition:opacity .6s}
+body.go #s1 .in1{opacity:1}
+body.go #s1 .in1 .h{animation:up 1s var(--e) both}
+.eb{font-weight:500;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--b);margin-bottom:16px}
+h1{font-weight:500;font-size:2.6rem;line-height:.95;letter-spacing:-.05em;margin:0;color:#0a0a0a}
+.cr{font:10px 'JetBrains Mono';letter-spacing:.18em;text-transform:uppercase;color:#737373;margin-top:20px}
+.cta{display:inline-flex;align-items:center;gap:14px;margin-top:22px;padding:6px 6px 6px 24px;border-radius:99px;font-weight:600;font-size:14px;border:1px solid rgba(255,255,255,.7);background:rgba(255,255,255,.4);backdrop-filter:blur(16px)}
+.cta .orb{width:34px;height:34px}.cta:hover .orb{transform:scale(1.08)}
+#s2{display:flex;align-items:center;padding:128px 24px 160px}
+.g12{display:grid;gap:40px;width:100%}
+.cards{display:flex;flex-direction:column;gap:14px}
+.card{border-radius:1.4rem;padding:1px;background:linear-gradient(to bottom,rgba(255,255,255,.8),rgba(255,255,255,.3),rgba(255,255,255,.1));box-shadow:0 14px 40px -12px rgba(14,42,197,.18);transition:transform .3s}
+.card:hover{transform:translateY(-2px)}
+.card>div{border-radius:1.35rem;background:rgba(255,255,255,.25);backdrop-filter:blur(24px);padding:20px 24px}
+.ch{display:flex;gap:10px;align-items:center;font:10px 'JetBrains Mono';text-transform:uppercase;color:#a3a3a3}
+.ch i{margin-left:auto;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#5175ff,#0e2ac5);box-shadow:0 0 8px rgba(47,105,255,.6)}
+.card b{display:block;font-weight:600;font-size:18px;margin-top:10px}.card small{font-size:13px;color:#737373}
+#s3{display:flex;flex-direction:column;justify-content:space-between;padding:144px 24px}
+#s3 .bt{align-self:flex-end;max-width:24rem}
+.chip{display:inline-flex;align-items:center;gap:8px;margin-top:28px;padding:10px 16px;border-radius:99px;border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.35);backdrop-filter:blur(12px);font:10px 'JetBrains Mono';letter-spacing:.2em;text-transform:uppercase;color:#404040}
+#s4{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:144px 24px}
+#s4 h2{font-size:2.8rem}
+footer{position:relative;z-index:10;background:#0a0a0a;color:#fff;border-radius:2.5rem 2.5rem 0 0;overflow:hidden}
+footer:before{content:"";position:absolute;top:-8rem;right:-8rem;width:28rem;height:28rem;background:radial-gradient(circle,#2f69ff66,transparent 65%);filter:blur(24px)}
+.mq{border-bottom:1px solid rgba(255,255,255,.1);padding:20px 0;overflow:hidden;position:relative}
+.mt{display:inline-flex;white-space:nowrap;animation:mq 26s linear infinite;font-weight:500;font-size:clamp(28px,6vw,64px);color:rgba(255,255,255,.9)}
+.mt span{padding:0 32px;display:inline-flex;align-items:center;gap:32px}.mt span:after{content:"";width:10px;height:10px;border-radius:50%;background:#2f69ff}
+@keyframes mq{to{transform:translateX(-50%)}}
+.fb{position:relative;padding:64px 24px 40px}
+.fb h3{font-weight:500;font-size:2.25rem;line-height:.95;margin:20px 0 32px}
+.fe{display:inline-flex;align-items:center;gap:20px;padding:8px 8px 8px 28px;border-radius:99px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);font-weight:500}
+.fe:hover{background:rgba(255,255,255,.1)}.fe .orb{width:40px;height:40px}
+.fo{margin-top:64px;padding-top:28px;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+/* drawer */
+#sc{position:fixed;inset:0;z-index:40;background:rgba(10,10,10,.2);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .4s}
+#dr{position:fixed;top:0;right:0;bottom:0;width:100%;max-width:420px;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(24px);border-left:1px solid #f5f5f5;padding:32px;overflow:auto;transform:translateX(100%);transition:transform .6s cubic-bezier(.34,1.3,.64,1)}
+body.dro #dr{transform:none}body.dro #sc{opacity:1;pointer-events:auto}
+.dh{display:flex;align-items:center;gap:10px;font:900 14px 'Space Grotesk';letter-spacing:.2em;text-transform:uppercase}
+.th{display:block;width:100%;text-align:left;border:1px solid #e5e5e5;border-radius:12px;padding:16px;margin-top:10px;background:#fff;transition:.3s}
+.th.on{background:#0a0a0a;color:#fff;transform:scale(1.02)}
+.th b{display:flex;justify-content:space-between;align-items:center;font-size:12px}.th b i{width:12px;height:12px;border-radius:4px}.th small{font-size:10px;opacity:.7}
+/* game */
+#game{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(236,239,255,.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+#game.on{display:flex}
+.gp{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;max-height:100svh}
+.gt{display:flex;justify-content:space-between;align-items:center;width:100%;font:700 11px 'JetBrains Mono';letter-spacing:.15em;text-transform:uppercase;color:var(--b)}
+.gt button{width:34px;height:34px;border-radius:50%;display:grid;place-items:center}
+#gc{height:min(54svh,480px);aspect-ratio:1/2;border-radius:1.2rem;border:1px solid rgba(255,255,255,.8);background:rgba(255,255,255,.35);box-shadow:0 14px 40px -12px rgba(14,42,197,.25)}
+.ct{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(300px,86vw)}
+.ct button{padding:14px 0;border-radius:14px;font-weight:700}.ct .w{grid-column:1/4}
+.md{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(236,239,255,.7);backdrop-filter:blur(10px);overflow:auto}
+.md.on{display:flex}
+.mc{width:100%;max-width:520px;max-height:100%;overflow:auto;border-radius:1.6rem;background:rgba(255,255,255,.85);padding:24px;box-shadow:0 20px 60px -20px rgba(14,42,197,.35)}
+.mc h4{margin:6px 0 14px;font-weight:600;font-size:16px;line-height:1.45}
+.op{display:block;width:100%;text-align:left;margin-top:8px;padding:12px 14px;border-radius:12px;border:1px solid #dfe5ff;background:#fff;font-size:14px;line-height:1.4}
+.op:hover{border-color:#5175ff}.op.s{background:#0E2AC5;color:#fff;border-color:#0E2AC5}
+.op.ok{background:#e8ffd0;border-color:#8fd13a;color:#1a3a00}.op.no{background:#ffe3e6;border-color:#ff4d6d}
+.bs{display:flex;gap:6px;margin-top:12px;align-items:center;font-size:14px}.bs span{flex:1}.bs button{padding:8px 12px;border-radius:10px;border:1px solid #dfe5ff;background:#fff;font-weight:700;font-size:12px}.bs button.s{background:#0E2AC5;color:#fff}
+.bn{margin-top:16px;padding:12px 22px;border:0;border-radius:99px;background:var(--b);color:#fff;font-weight:600;font-size:14px}.bn:disabled{opacity:.35}
+#fb{margin-top:14px;font-size:13px;line-height:1.5;color:#404040}#fb b{font-size:15px}
+@media(min-width:768px){#hd{height:96px;padding:0 48px}nav{display:flex}.wm{font-size:20px}.ib{width:44px;height:44px}.pill{font-size:14px;padding-left:24px}
+#s1{padding:0 48px 56px}#s1 .in1{flex-direction:row;align-items:flex-end;justify-content:space-between}h1{font-size:90px;line-height:1;white-space:nowrap}.eb{font-size:14px;margin-bottom:24px}
+h2{font-size:80px;line-height:.92}#s4 h2{font-size:88px}#s2{padding:160px 48px 160px}#s3{padding:176px 48px}#s3 .bt{text-align:right}#s4{padding:176px 48px}
+.fb{padding:96px 48px 40px}.fb h3{font-size:3.75rem}footer{border-radius:4rem 4rem 0 0}}
+@media(min-width:1024px){.g12{grid-template-columns:7fr 5fr;gap:64px;align-items:start}}
+</style>
 </head>
 <body>
+<div id="bg"></div>
+<div id="cv"><canvas id="c"></canvas></div>
 
-<div id="game-container">
-    <header>
-        <div>SCORE: <span id="score">0</span></div>
-        <div>LVL: <span id="level">1</span></div>
-    </header>
+<div id="ld"><div id="lt">Calibrating gravity field</div><div id="lb"><div id="lf"></div></div><div id="ln">000%</div></div>
 
-    <div id="canvas-wrapper">
-        <canvas id="gameCanvas" width="200" height="400"></canvas>
-        <div class="scanlines"></div>
-    </div>
+<header id="hd">
+  <div class="wm">UP-TRIS</div>
+  <nav><a data-go="s2">Cara main</a><a data-go="s3">Kasus</a><a data-go="s4">Mulai</a></nav>
+  <div class="rt">
+    <button class="ib gl" id="op" aria-label="Pengaturan tema"><svg viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></svg></button>
+    <button class="pill gl" data-play style="background:rgba(255,255,255,.12)">Main sekarang<span class="orb"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+  </div>
+</header>
 
-    <div id="controls">
-        <div class="btn" id="btn-left">◀</div>
-        <div class="btn" id="btn-rotate">↻</div>
-        <div class="btn" id="btn-right">▶</div>
-        <div class="btn" id="btn-drop">UP / DROP</div>
-    </div>
+<main>
+<section id="s1"><div class="in1">
+  <div><div class="eb h" style="animation-delay:.15s">[ Kehumasan — Kelas XII ]</div><h1 class="h" style="animation-delay:.28s">Susun balok. Jawab kasus.</h1></div>
+  <div class="h pa" style="animation-delay:.45s;max-width:260px">
+    <p style="font-size:15px;font-weight:500;line-height:1.35;margin:0">Tetris terbalik dengan soal asesmen kontekstual Otomatisasi Tata Kelola Kehumasan.</p>
+    <button class="cta" data-play>Mulai bermain<span class="orb"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+    <div class="cr">© 2026 — Manajemen Perkantoran</div>
+  </div>
+</div></section>
+
+<section id="s2"><div class="g12">
+  <div class="pa"><div class="lab rv">[ 02 — Cara main ]</div><h2 class="rv" style="--d:.1s">Balok naik,<br>bukan jatuh.</h2>
+  <p class="tx rv" style="--d:.2s;margin-top:32px">Balok bergerak ke atas dari dasar. Susun hingga satu baris penuh — lalu satu kasus kehumasan muncul. Jawab dengan tepat untuk membersihkan baris dan mengumpulkan poin.</p></div>
+  <div class="cards pa rv" style="--d:.25s">
+    <div class="card"><div><div class="ch"><span>01</span><span>Format</span><i></i></div><b>3 jenis soal</b><small>Pilihan ganda, pilihan ganda kompleks, benar/salah.</small></div></div>
+    <div class="card"><div><div class="ch"><span>02</span><span>Skor</span><i></i></div><b>Benar +100 × level</b><small>Salah −50. Benar/salah dinilai per pernyataan.</small></div></div>
+    <div class="card"><div><div class="ch"><span>03</span><span>Acak</span><i></i></div><b>Urutan selalu berbeda</b><small>Soal dan opsi diacak setiap permainan.</small></div></div>
+  </div>
+</div></section>
+
+<section id="s3">
+  <div class="pa"><div class="lab rv">[ 03 — Kasus ]</div><h2 class="rv" style="--d:.1s;max-width:42rem">Kasus nyata, tindakan tepat.</h2></div>
+  <div class="bt pa"><p class="tx rv" style="--d:.15s">Verifikasi informasi, krisis, hubungan media, data pribadi. Baca situasinya, gunakan bukti, lalu pilih langkah yang paling bertanggung jawab.</p>
+  <div class="chip rv" style="--d:.28s"><svg viewBox="0 0 24 24" style="width:14px;height:14px"><path d="m4 4 7 17 2.5-7.5L21 11z"/></svg>Gerakkan kursor di antara bola</div></div>
+</section>
+
+<section id="s4">
+  <div class="lab rv">[ 04 — Mulai ]</div><h2 class="rv" style="--d:.12s;margin-top:28px">Siap,<br>mengudara?</h2>
+  <p class="tx rv" style="--d:.24s;margin:32px auto 0;max-width:28rem">Kurangi kebisingan. Susun balok, tentukan langkah humas yang tepat.</p>
+  <button class="cta rv pa" style="--d:.34s;margin-top:36px" data-play>Mulai bermain<span class="orb"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+</section>
+</main>
+
+<footer>
+  <div class="mq"><div class="mt" id="mt"></div></div>
+  <div class="fb">
+    <div class="mono" style="font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4)">[ Latihan humas ]</div>
+    <h3>Siap jadi humas<br>yang tepercaya?</h3>
+    <button class="fe" data-play style="color:#fff">Mulai bermain<span class="orb"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span></button>
+    <div class="fo"><span class="wm" style="color:#fff;font-size:16px;letter-spacing:.22em">UP-TRIS</span><i style="width:6px;height:6px;border-radius:50%;background:#2f69ff"></i><span class="mono" style="font-size:11px;color:rgba(255,255,255,.4)">© 2026 Kehumasan — draf asesmen, cocokkan dengan ATP sebelum dipakai ujian.</span></div>
+  </div>
+</footer>
+
+<div id="sc"></div>
+<aside id="dr">
+  <div class="dh"><svg viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></svg>Tema Bola<button class="ib gl" id="cl" style="margin-left:auto;width:34px;height:34px"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  <p class="mono" style="font-size:12px;font-style:italic;color:#a3a3a3;margin:18px 0">Pilih palet bola di hero. Saat scroll, warna berubah ke volt-lime lalu rose-pink.</p>
+  <div id="ths"></div>
+  <button class="th" id="rs" style="text-align:center;font-size:12px;font-weight:700">Reset Default</button>
+  <div class="mono" style="font-size:9px;color:#a3a3a3;margin-top:24px;line-height:2">RENDER ENGINE / THREE.JS WEBGL<br>DYNAMICS SOLVER / 3D COLLISION VERLET</div>
+</aside>
+
+<!-- GAME -->
+<div id="game">
+  <div class="gp">
+    <div class="gt"><span>Skor <b id="sco">0</b></span><span>Lvl <b id="lvl">1</b></span><button class="gl" id="gx" aria-label="Tutup"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <canvas id="gc" width="240" height="480"></canvas>
+    <div class="ct"><button class="gl" id="bl">◀</button><button class="gl" id="br2">↻</button><button class="gl" id="brt">▶</button><button class="gl w" id="bu">NAIK ▲</button></div>
+    <div class="mono" style="font-size:9px;letter-spacing:.15em;color:#6b7bb5">← → GESER · SPASI PUTAR · ↑ NAIK</div>
+  </div>
+  <div class="md" id="qz"><div class="mc"><div class="lab" id="qm"></div><h4 id="qq"></h4><div id="qo"></div><button class="bn" id="qc" style="display:none">Periksa</button><div id="fb"></div><button class="bn" id="qn" style="display:none">Lanjut</button></div></div>
+  <div class="md" id="ov"><div class="mc" style="text-align:center"><div class="lab">Game over</div><h4 style="font-size:28px;margin:14px 0">Skor <span id="fs">0</span></h4><button class="bn" id="rg">Main lagi</button></div></div>
 </div>
 
-<!-- Start Screen -->
-<div id="start-screen" class="modal" style="display: flex;">
-    <div class="modal-content">
-        <div class="title-text">UP-TRIS</div>
-        <div style="font-size: 8px; margin-bottom: 20px; color:#aaa;">Kehumasan SMK - Retro Edition</div>
-        <p style="font-size: 8px; margin-bottom: 15px;">Balok akan bergerak ke ATAS. Susun balok hingga penuh secara horizontal.</p>
-        <p style="font-size: 8px; margin-bottom: 20px;">Jawab soal saat baris penuh untuk mendapat poin ekstra!</p>
-        <button id="start-btn">MAIN</button>
-    </div>
-</div>
+<script type="module">
+import * as THREE from 'three';
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const ctrl={progress:0,started:false},mouse={x:99,y:99,isDown:false};
+let lock=false,ready=false;
 
-<!-- Game Over Screen -->
-<div id="game-over-screen" class="modal">
-    <div class="modal-content">
-        <div class="title-text">GAME OVER</div>
-        <p style="font-size: 12px; margin-bottom: 20px;">Score: <span id="final-score">0</span></p>
-        <button id="restart-btn">MAIN LAGI</button>
-    </div>
-</div>
+/* ---------- smooth scroll (lerp .09) ---------- */
+let target=0,setY=0;
+const maxS=()=>document.documentElement.scrollHeight-innerHeight;
+addEventListener('wheel',e=>{if(lock||!document.body.classList.contains('go')||document.body.classList.contains('dro'))return;e.preventDefault();target=Math.max(0,Math.min(target+e.deltaY,maxS()))},{passive:false});
+addEventListener('scroll',()=>{if(Math.abs(scrollY-setY)>3)target=scrollY});
+$$('[data-go]').forEach(a=>a.onclick=()=>{target=$('#'+a.dataset.go).offsetTop});
+let bgStage=-1;
+const BG=['radial-gradient(circle at center,#ffffff 0%,#ecefff 35%,#c2d1ff 100%)','radial-gradient(circle at center,#ffffff 0%,#fbffe5 38%,#e8ff9c 100%)','radial-gradient(circle at center,#ffffff 0%,#fff0f1 38%,#ffd1d5 100%)'];
+function tick(){
+  if(!lock){const y=scrollY;if(Math.abs(target-y)>.1){setY=y+(target-y)*.09;scrollTo(0,setY)}}
+  const p=scrollY/(innerHeight||1);ctrl.progress=p;
+  const st=p>1.55?2:p>.7?1:0;if(st!==bgStage){bgStage=st;$('#bg').style.background=BG[st]}
+  requestAnimationFrame(tick)
+}
+tick();
+addEventListener('pointermove',e=>{mouse.x=e.clientX/innerWidth*2-1;mouse.y=-(e.clientY/innerHeight)*2+1});
+addEventListener('mousedown',()=>mouse.isDown=true);addEventListener('mouseup',()=>mouse.isDown=false);
 
-<!-- Quiz Modal -->
-<div id="quiz-screen" class="modal">
-    <div class="modal-content">
-        <div style="font-size: 12px; margin-bottom:10px; color: #ffeb3b;">PERTANYAAN!</div>
-        <div id="quiz-question">Question text here...</div>
-        <div id="quiz-options">
-            <!-- Options injected here -->
-        </div>
-        <div id="quiz-feedback" style="display:none; font-size: 10px; margin-top:15px; margin-bottom:15px;"></div>
-        <button id="continue-btn" style="display:none;">LANJUT</button>
-    </div>
-</div>
+/* ---------- reveal ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.45});
+$$('.rv').forEach(el=>io.observe(el));
+$('#mt').innerHTML=('<span>Less noise</span><span>Verifikasi dulu</span><span>Koreksi cepat</span><span>Lindungi data</span>').repeat(2);
 
-<script>
-    // --- 25 Kehumasan Questions (Mixed types) ---
-    const questionBank = [
-        // Pilihan Ganda (Multiple Choice)
-        { type: 'mc', q: "Fungsi utama humas (Public Relations) dalam sebuah organisasi adalah...", options: ["Mencari keuntungan finansial", "Membangun citra positif", "Merekrut pegawai baru", "Mengelola keuangan perusahaan"], answer: 1 },
-        { type: 'mc', q: "Kegiatan menyampaikan informasi dari perusahaan kepada masyarakat luas disebut...", options: ["Publisitas", "Advertising", "Marketing", "Sales promotion"], answer: 0 },
-        { type: 'mc', q: "Salah satu media humas internal yang paling sering digunakan adalah...", options: ["Siaran pers", "Brosur promosi", "Majalah perusahaan (in-house magazine)", "Iklan televisi"], answer: 2 },
-        { type: 'mc', q: "Kemampuan yang paling wajib dimiliki oleh seorang praktisi humas adalah...", options: ["Pemrograman komputer", "Akuntansi dasar", "Komunikasi yang baik", "Desain grafis"], answer: 2 },
-        { type: 'mc', q: "Syarat utama dalam penulisan press release (siaran pers) harus mengandung unsur...", options: ["5W + 1H", "SPOA", "Gaya bahasa sastra", "Opini pribadi"], answer: 0 },
-        { type: 'mc', q: "Media komunikasi visual yang sering dipasang di jalan untuk menyampaikan pesan humas disebut...", options: ["Pamflet", "Baliho", "Koran", "Press kit"], answer: 1 },
-        { type: 'mc', q: "Bentuk komunikasi dua arah (two-way traffic communication) bertujuan untuk...", options: ["Memaksa kehendak", "Mendapat feedback/umpan balik", "Menghindari kritik", "Menyebarkan gosip"], answer: 1 },
-        { type: 'mc', q: "Tindakan humas dalam menangani isu negatif yang beredar di masyarakat disebut...", options: ["Crisis management", "Event organizing", "Marketing communication", "Customer relation"], answer: 0 },
-        
-        // Pengecualian (Kecuali)
-        { type: 'mc', q: "Berikut ini adalah tugas pokok Public Relations, KECUALI...", options: ["Menyelenggarakan konferensi pers", "Menyusun laporan keuangan", "Menjalin hubungan dengan media", "Menangani keluhan masyarakat"], answer: 1 },
-        { type: 'mc', q: "Berikut ini merupakan karakteristik humas, KECUALI...", options: ["Adanya upaya komunikasi dua arah", "Terencana dan berkesinambungan", "Berorientasi pada penjualan produk secara langsung", "Mempengaruhi opini publik"], answer: 2 },
-        { type: 'mc', q: "Media eksternal humas meliputi hal-hal berikut, KECUALI...", options: ["Konferensi pers", "Papan pengumuman karyawan", "Siaran radio", "Media sosial perusahaan"], answer: 1 },
-        { type: 'mc', q: "Pihak yang menjadi sasaran (stakeholder) internal humas adalah sebagai berikut, KECUALI...", options: ["Pegawai", "Pemegang saham", "Masyarakat sekitar (Community)", "Manajer"], answer: 2 },
-        { type: 'mc', q: "Berikut adalah kode etik humas yang harus dipatuhi, KECUALI...", options: ["Menyebarkan informasi yang jujur", "Menjaga rahasia perusahaan", "Memberikan informasi palsu demi citra", "Tidak merusak reputasi profesi"], answer: 2 },
-        { type: 'mc', q: "Kegiatan protokoler sering terkait dengan humas. Unsur-unsur keprotokolan meliputi berikut, KECUALI...", options: ["Tata tempat", "Tata upacara", "Tata rias", "Tata penghormatan"], answer: 2 },
-        
-        // Benar atau Salah (True/False)
-        { type: 'tf', q: "BENAR atau SALAH: Humas (PR) dan Marketing adalah departemen dengan fungsi yang sama persis.", options: ["BENAR", "SALAH"], answer: 1 },
-        { type: 'tf', q: "BENAR atau SALAH: Opini publik sangat mempengaruhi keberlangsungan suatu organisasi/perusahaan.", options: ["BENAR", "SALAH"], answer: 0 },
-        { type: 'tf', q: "BENAR atau SALAH: Press release selalu berisi iklan berbayar untuk mempromosikan produk.", options: ["BENAR", "SALAH"], answer: 1 },
-        { type: 'tf', q: "BENAR atau SALAH: Corporate Social Responsibility (CSR) merupakan salah satu program kerja humas.", options: ["BENAR", "SALAH"], answer: 0 },
-        { type: 'tf', q: "BENAR atau SALAH: Seorang humas boleh menyembunyikan fakta jika fakta tersebut merugikan perusahaan, meskipun menyangkut keselamatan publik.", options: ["BENAR", "SALAH"], answer: 1 },
-        { type: 'tf', q: "BENAR atau SALAH: Media relations bertujuan untuk menjalin hubungan baik dengan wartawan dan media massa.", options: ["BENAR", "SALAH"], answer: 0 },
-        { type: 'tf', q: "BENAR atau SALAH: Etiket menelepon di kantor merupakan salah satu bagian dari menjaga citra instansi.", options: ["BENAR", "SALAH"], answer: 0 },
-        { type: 'tf', q: "BENAR atau SALAH: Internal relations hanya berfokus pada hubungan antara perusahaan dengan konsumen.", options: ["BENAR", "SALAH"], answer: 1 },
-        { type: 'tf', q: "BENAR atau SALAH: Dokumentasi kegiatan adalah hal yang tidak penting bagi seorang Public Relations.", options: ["BENAR", "SALAH"], answer: 1 },
-        { type: 'tf', q: "BENAR atau SALAH: Lobbying adalah salah satu teknik humas untuk mempengaruhi pengambil keputusan.", options: ["BENAR", "SALAH"], answer: 0 },
-        { type: 'tf', q: "BENAR atau SALAH: Cutlip & Center adalah tokoh yang terkenal dengan teori 4 langkah proses PR (Fact Finding, Planning, Communicating, Evaluating).", options: ["BENAR", "SALAH"], answer: 0 }
-    ];
+/* ---------- loader ---------- */
+{let val=0,last=performance.now(),done=false;const lf=$('#lf'),ln=$('#ln'),lt=$('#lt');
+(function L(){const n=performance.now(),dt=Math.min(.05,(n-last)/1000);last=n;
+ if(!ready)val+=(92-val)*1.7*dt;else{val+=(100-val)*6*dt;if(val>=99.4)val=100}
+ lf.style.width=val+'%';ln.textContent=String(Math.round(val)).padStart(3,'0')+'%';lt.textContent=val<100?'Calibrating gravity field':'Entering orbit';
+ if(val>=99.9&&ready&&!done){done=true;setTimeout(()=>$('#ld').classList.add('x'),140);setTimeout(()=>{ctrl.started=true;document.body.classList.add('go')},660);return}
+ requestAnimationFrame(L)})()}
 
-    // --- Tetris Constants & Variables ---
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Scale for visual size
-    const COLS = 10;
-    const ROWS = 20;
-    const BLOCK_SIZE = canvas.width / COLS; // 20px
-
-    const COLORS = [
-        null,
-        '#FF0d72', '#0DC2FF', '#0DFF72',
-        '#F538FF', '#FF8E0D', '#FFE138', '#3877FF'
-    ];
-
-    const PIECES = [
-        [],
-        // T
-        [ [0,0,0], [1,1,1], [0,1,0] ],
-        // I
-        [ [0,2,0,0], [0,2,0,0], [0,2,0,0], [0,2,0,0] ],
-        // S
-        [ [0,3,3], [3,3,0], [0,0,0] ],
-        // Z
-        [ [4,4,0], [0,4,4], [0,0,0] ],
-        // L
-        [ [0,5,0], [0,5,0], [0,5,5] ],
-        // J
-        [ [0,6,0], [0,6,0], [6,6,0] ],
-        // O
-        [ [7,7], [7,7] ]
-    ];
-
-    let grid = [];
-    let score = 0;
-    let level = 1;
-    let dropCounter = 0;
-    let dropInterval = 1000;
-    let lastTime = 0;
-    let animationId;
-    let isGameOver = false;
-    let isPaused = false;
-    
-    let pendingLinesToClear = []; // Store lines waiting to clear after quiz
-
-    const player = {
-        pos: {x: 0, y: 0},
-        matrix: null,
-    };
-
-    // --- Utility functions ---
-    function createMatrix(w, h) {
-        const matrix = [];
-        while (h--) {
-            matrix.push(new Array(w).fill(0));
-        }
-        return matrix;
+/* ---------- THREE scene ---------- */
+const cont=$('#cv');
+const renderer=new THREE.WebGLRenderer({canvas:$('#c'),antialias:true,alpha:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(cont.clientWidth,cont.clientHeight);
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const camera=new THREE.PerspectiveCamera(38,cont.clientWidth/cont.clientHeight,.1,100);camera.position.set(0,0,11);
+let VW=10,VH=6;
+const fb=()=>{VH=2*Math.tan(THREE.MathUtils.degToRad(camera.fov)/2)*camera.position.z;VW=VH*(cont.clientWidth/cont.clientHeight)};fb();
+const C=h=>new THREE.Color(h);
+const PALS={'#e1fc03':['#FBFFE2','#EFFE69','#E1FC03','#B1E200','#DCFF32'],'#ffc5c2':['#FFF5F4','#FFECEB','#FFA6B3','#FF4D6D','#FFA6B3'],'#96e5ff':['#F0F9FF','#C9F1FF','#96E5FF','#2BA5FF','#98E4FF'],'#2f69ff':['#ECEFFF','#A8C1FF','#2F69FF','#0A33BF','#4D80FF']};
+const ROLES=['pastel','light','medium','deep','glass'];
+const getPal=b=>{const a=PALS[b.toLowerCase()]||PALS[b.toLowerCase()==='#ffa19e'?'#ffc5c2':'#2f69ff'];const o={};ROLES.forEach((r,i)=>o[r]=C(a[i]));return o};
+const clamp01=v=>v<0?0:v>1?1:v,sm=(a,b,x)=>{const t=clamp01((x-a)/(b-a));return t*t*(3-2*t)},lerp=(a,b,t)=>a+(b-a)*t,eo=t=>1-Math.pow(1-t,3);
+let cur=null;
+function build(ballColor){
+  if(cur)cur();
+  const scene=new THREE.Scene(),palette=getPal(ballColor),palHero=palette,palLime=getPal('#E1FC03'),palPink=getPal('#FFC5C2');
+  const hemi=new THREE.HemisphereLight(0xffffff,C(ballColor),1.6);scene.add(hemi);
+  const key=new THREE.DirectionalLight(0xffffff,1.4);key.position.set(-6,10,8);key.castShadow=true;
+  Object.assign(key.shadow.mapSize,{width:2048,height:2048});Object.assign(key.shadow.camera,{near:.5,far:30,left:-8,right:8,top:8,bottom:-8});key.shadow.bias=-.0003;key.shadow.radius=12;scene.add(key);
+  [[1.25,8,7,-8],[.4,0,0,11],[.3,-9,-2,4]].forEach(([i,x,y,z])=>{const l=new THREE.DirectionalLight(0xffffff,i);l.position.set(x,y,z);scene.add(l)});
+  const count=innerWidth<768?54:96,geo=new THREE.SphereGeometry(1,48,48),balls=[];
+  const curPal={};ROLES.forEach(r=>curPal[r]=new THREE.Color());
+  for(let i=0;i<count;i++){
+    let radius,rd=Math.random();
+    if(rd<.3)radius=.27+Math.random()*.12;else if(rd<.8)radius=.42+Math.random()*.18;else radius=.66+Math.random()*.21;
+    const isGlass=Math.random()<.22;let role='medium',mat;
+    if(isGlass){role='glass';mat=new THREE.MeshPhysicalMaterial({color:palette.glass,roughness:.08,metalness:0,clearcoat:1,clearcoatRoughness:.03,transmission:.95,ior:1.485,thickness:2.2,specularColor:C('#ffffff'),specularIntensity:1,attenuationColor:palette.pastel,attenuationDistance:1,emissive:palette.glass,emissiveIntensity:.12,transparent:true})}
+    else{const cr=Math.random();role=cr<.25?'pastel':cr<.55?'light':cr<.85?'medium':'deep';
+      mat=new THREE.MeshPhysicalMaterial({color:palette[role],roughness:.44,metalness:0,clearcoat:.24,clearcoatRoughness:.35,emissive:palette[role],emissiveIntensity:.08,transparent:true})}
+    const g=new THREE.Group(),m=new THREE.Mesh(geo,mat);m.scale.setScalar(radius);m.castShadow=m.receiveShadow=true;g.add(m);scene.add(g);
+    balls.push({id:i,radius,mass:Math.pow(radius,3),position:new THREE.Vector3(),velocity:new THREE.Vector3(),meshGroup:g,sphere:m,material:mat,role,isGlass,visualScale:radius,shapeTarget:new THREE.Vector3()});
+  }
+  const meanR=balls.reduce((s,b)=>s+b.radius,0)/balls.length;let shapeScale=1;
+  const inHeart=(x,y)=>{const a=x*x+y*y-1;return a*a*a-x*x*y*y*y<=0};
+  const heart=()=>{const S=Math.min(VW*.3,VH*.27),cy=-VH*.03;shapeScale=Math.max(.3,Math.min(1,(S*.45/2.3)/meanR));
+    for(const b of balls){let x=0,y=0,t=0;do{x=(Math.random()*2-1)*1.25;y=Math.random()*2.55-1.4;t++}while(!inHeart(x,y)&&t<60);b.shapeTarget.set(x*S,(y+.12)*S+cy,(Math.random()-.5)*.35)}};
+  heart();
+  const scatter=inward=>{const R=Math.max(VW,VH)*1.5;for(const b of balls){const a=Math.random()*Math.PI*2,px=Math.cos(a)*R*1.25,py=Math.sin(a)*R*.85,pz=(Math.random()-.5)*4;
+    b.position.set(px,py,pz);b.meshGroup.position.copy(b.position);
+    if(inward)b.velocity.set(-px,-py,-pz).normalize().multiplyScalar(.08+Math.random()*.05);else b.velocity.set(0,0,0)}};
+  scatter(false);
+  const P={rebound:-.3,mRF:.05,mRR:4.4,cAF:.0035,bounce:.02};
+  const mp=new THREE.Vector3(),mw=new THREE.Vector3(),prevM=new THREE.Vector3();let mSpeed=0;
+  const upM=()=>{mp.set(mouse.x,mouse.y,.5).unproject(camera);const d=mp.sub(camera.position).normalize();mw.copy(camera.position).add(d.multiplyScalar(-camera.position.z/d.z))};
+  const t0=performance.now();let raf=0,localStarted=false,eStart=0,reported=false;
+  const dV=new THREE.Vector3(),cD=new THREE.Vector3(),rV=new THREE.Vector3(),dP=new THREE.Vector3(),rA=new THREE.Vector3();
+  const loop=()=>{
+    raf=requestAnimationFrame(loop);
+    const time=(performance.now()-t0)/1000;upM();
+    if(ctrl.started&&!localStarted){localStarted=true;eStart=time;scatter(true)}
+    if(!localStarted){renderer.render(scene,camera);if(!reported){reported=true;ready=true}return}
+    const p=ctrl.progress;
+    const heroF=1-sm(.3,.8,p),dropRaw=sm(.4,.95,p),flyF=sm(2.7,3.45,p),shapeF=sm(1.4,2.05,p)*(1-sm(2.55,3,p)),dropF=dropRaw*(1-sm(1.25,1.75,p));
+    const bL=sm(.55,1.05,p),bP=sm(1.4,1.95,p);
+    for(const r of ROLES)curPal[r].copy(palHero[r]).lerp(palLime[r],bL).lerp(palPink[r],bP);
+    hemi.groundColor.copy(curPal.medium);
+    const eT=eo(clamp01((time-eStart)/2.2)),boost=lerp(7.5,1,eT);
+    const inter=Math.abs(mouse.x)<.99||Math.abs(mouse.y)<.99;
+    mSpeed=inter?mw.distanceTo(prevM):0;if(mSpeed>3)mSpeed=3;prevM.copy(mw);
+    let damping=.91;damping=lerp(damping,.992,dropF);damping=lerp(damping,.9,shapeF);damping=lerp(damping,.985,flyF);
+    const camZ=camera.position.z,clusterActive=Math.max(heroF,eT<1?1:0);
+    for(const b of balls){
+      if(heroF>.01){b.velocity.x+=Math.sin(time*.4+b.id*1.5)*.0004*b.radius*heroF;b.velocity.y+=Math.cos(time*.5+b.id*1.2)*.0004*b.radius*heroF;b.velocity.z+=Math.sin(time*.35+b.id)*.0001*heroF}
+      const cs=P.cAF*boost*clusterActive;
+      if(cs>.00001){b.velocity.x+=(0-b.position.x)*cs*.38;b.velocity.y+=(0-b.position.y)*cs*1.85;b.velocity.z+=(0-b.position.z)*cs*1.8}
+      if(dropF>.001)b.velocity.y-=.011*dropF;
+      if(shapeF>.001){const k=.06*shapeF;b.velocity.x+=(b.shapeTarget.x-b.position.x)*k;b.velocity.y+=(b.shapeTarget.y-b.position.y)*k;b.velocity.z+=(b.shapeTarget.z-b.position.z)*k}
+      if(flyF>.001){const st=(b.id*.6180339887)%1,l=sm(st*.55,st*.55+.45,flyF);b.velocity.z+=.05*l;b.velocity.x+=b.position.x*.006*l;b.velocity.y+=b.position.y*.006*l}
+      if(inter){dV.subVectors(b.position,mw);const rd=dV.length(),dn=mouse.isDown,R=dn?P.mRR*1.4:P.mRR,F=dn?P.mRF*1.7:P.mRF;
+        if(rd<R&&rd>.0001){const ra=rd/R,sf=1-(ra*ra*(3-2*ra));dV.normalize();dV.z*=.12;dV.normalize();b.velocity.addScaledVector(dV,sf*F*(1+mSpeed*3.2))}}
+      b.velocity.multiplyScalar(damping);b.position.addScaledVector(b.velocity,1);
+      const c=b.isGlass?curPal.glass:curPal[b.role];b.material.color.copy(c);b.material.emissive.copy(c);
+      b.material.opacity=flyF>.001?1-sm(camZ-2.6,camZ-.3,b.position.z):1;
+      const tv=b.radius*(1-(1-shapeScale)*shapeF);b.visualScale+=(tv-b.visualScale)*.12;b.sphere.scale.setScalar(b.visualScale);
     }
+    const cScale=.28*(1-.93*shapeF)*(1-flyF);
+    for(let s=0;s<4;s++)for(let i=0;i<balls.length;i++)for(let j=i+1;j<balls.length;j++){
+      const b1=balls[i],b2=balls[j];cD.subVectors(b2.position,b1.position);const d=cD.length(),md=b1.visualScale+b2.visualScale;
+      if(d<md&&d>.001){const ov=md-d;cD.multiplyScalar(1/d);const tm=b1.mass+b2.mass;
+        b1.position.addScaledVector(cD,-ov*(b2.mass/tm)*cScale);b2.position.addScaledVector(cD,ov*(b1.mass/tm)*cScale);
+        rV.subVectors(b2.velocity,b1.velocity);const vn=rV.dot(cD);
+        if(vn<-.0001){const im=-(1+P.bounce)*vn/(1/b1.mass+1/b2.mass);b1.velocity.addScaledVector(cD,-im/b1.mass);b2.velocity.addScaledVector(cD,im/b2.mass)}}}
+    const xB=VW/2-.2,topY=VH/2-.05,floorY=-VH/2+.05,rest=.3+.35*dropF,contain=flyF<.5,zC=flyF<.02;
+    for(const b of balls){const r=b.visualScale;
+      if(contain){
+        if(b.position.x<-xB-r){b.position.x=-xB-r;b.velocity.x*=P.rebound}else if(b.position.x>xB+r){b.position.x=xB+r;b.velocity.x*=P.rebound}
+        if(b.position.y-r<floorY){b.position.y=floorY+r;if(b.velocity.y<0)b.velocity.y=-b.velocity.y*rest;if(dropF>.3){b.velocity.x*=.86;b.velocity.z*=.86}}
+        if(b.position.y+r>topY){b.position.y=topY-r;if(b.velocity.y>0)b.velocity.y*=P.rebound}}
+      if(zC){if(b.position.z<-2){b.position.z=-2;b.velocity.z*=P.rebound}else if(b.position.z>2){b.position.z=2;b.velocity.z*=P.rebound}}
+      dP.copy(b.position).sub(b.meshGroup.position);
+      if(dP.lengthSq()>1e-6){rA.set(dP.y,-dP.x,0).normalize();b.meshGroup.rotateOnWorldAxis(rA,dP.length()/b.radius*.95)}
+      b.meshGroup.position.copy(b.position)}
+    renderer.render(scene,camera);
+  };
+  loop();
+  const dispose=()=>{cancelAnimationFrame(raf);scene.traverse(o=>{if(o.material)o.material.dispose()});geo.dispose();cur=null;cur_heart=null};
+  cur_heart=heart;cur=dispose;
+}
+let cur_heart=null;
+new ResizeObserver(()=>{renderer.setSize(cont.clientWidth,cont.clientHeight);camera.aspect=cont.clientWidth/cont.clientHeight;camera.updateProjectionMatrix();fb();cur_heart&&cur_heart()}).observe(cont);
 
-    function createPiece(type) {
-        return PIECES[type];
-    }
+/* ---------- theme drawer ---------- */
+const THEMES=[['Royal Blue & Pearl','Kobalt hyper-distinct di gradien putih-slate.','#2F69FF','#2F69FF'],['Rose Blush & Crème','Pink permen dan aksen stroberi.','#FFA6B3','#FFC5C2'],['Volt Lime & Slate','Neon volt-lime di horizon putih.','#E1FC03','#E1FC03'],['Arctic Sky & Crystal','Biru kristal arktik transparan.','#96E5FF','#96E5FF']];
+let theme=0;
+const renderThemes=()=>{$('#ths').innerHTML='';THEMES.forEach((t,i)=>{const b=document.createElement('button');b.className='th'+(i===theme?' on':'');b.innerHTML=`<b>${t[0]}<i style="background:${t[2]}"></i></b><small>${t[1]}</small>`;b.onclick=()=>{theme=i;renderThemes();build(t[3])};$('#ths').appendChild(b)})};
+renderThemes();
+$('#op').onclick=()=>document.body.classList.add('dro');$('#cl').onclick=$('#sc').onclick=()=>document.body.classList.remove('dro');
+$('#rs').onclick=()=>{theme=0;renderThemes();build('#2F69FF')};
+build('#2F69FF');
 
-    function drawMatrix(matrix, offset) {
-        matrix.forEach((row, y) => {
-            row.forEach((value, x) => {
-                if (value !== 0) {
-                    ctx.fillStyle = COLORS[value];
-                    ctx.fillRect((x + offset.x) * BLOCK_SIZE, (y + offset.y) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-                    ctx.strokeStyle = '#000';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect((x + offset.x) * BLOCK_SIZE, (y + offset.y) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-                    
-                    // Simple retro highlight
-                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                    ctx.fillRect((x + offset.x) * BLOCK_SIZE + 2, (y + offset.y) * BLOCK_SIZE + 2, BLOCK_SIZE - 4, 4);
-                }
-            });
-        });
-    }
+/* ---------- SOAL (dari Paket Asesmen Kontekstual OTK Kehumasan XII) ---------- */
+// t: pg | pgk (a = indeks opsi benar) | bs (a = benar/salah tiap pernyataan)
+const Q=[
+{t:'pg',m:'No. 1 · Fungsi humas · C2',q:'Orang tua bingung karena informasi perubahan jadwal praktik industri di grup percakapan berbeda-beda. Fungsi humas yang paling relevan adalah …',o:['Menghentikan seluruh komunikasi dengan orang tua.','Menyampaikan informasi resmi secara konsisten dan memfasilitasi komunikasi sekolah-orang tua.','Meminta setiap wali kelas membuat pengumuman sendiri.','Menghapus seluruh pertanyaan orang tua dari grup.'],a:[1],e:'Informasi konsisten mengurangi salah paham; komunikasi dua arah membantu sekolah memahami kebutuhan orang tua.'},
+{t:'pg',m:'No. 5 · Koreksi informasi · C4',q:'Akun resmi sekolah mengumumkan pameran pukul 09.00, padahal SK panitia menetapkan pukul 10.00. Beberapa orang tua sudah membagikan pengumuman awal. Tindakan paling tepat …',o:['Menghapus unggahan tanpa penjelasan.','Membiarkan informasi lama.','Menerbitkan koreksi jelas lewat saluran resmi dan menginformasikan perubahan kepada pihak terdampak.','Menyalahkan orang tua yang menyebarkan informasi.'],a:[2],e:'Koreksi harus mudah ditemukan. Menghapus tanpa penjelasan membiarkan informasi salah terus beredar.'},
+{t:'pg',m:'No. 6 · Pertanyaan media · C3',q:'Jurnalis meminta jumlah peserta kegiatan, tetapi daftar hadir masih diverifikasi. Respons paling tepat …',o:['Memberikan perkiraan seolah-olah angka resmi.','Menjelaskan data sedang diverifikasi dan kapan atau lewat saluran apa informasi final diberikan.','Menolak semua pertanyaan tanpa alasan.','Meminta jurnalis memakai angka dari unggahan tidak resmi.'],a:[1],e:'Jangan menyampaikan angka yang belum terverifikasi. Status data dan tindak lanjut yang jelas lebih bertanggung jawab.'},
+{t:'pg',m:'No. 8 · Komunikasi krisis · C4',q:'Beredar laporan bahwa produk perusahaan diduga menyebabkan gangguan kesehatan. Informasi belum lengkap, tetapi laporan menyebar di media sosial. Langkah prioritas …',o:['Menyatakan laporan pasti palsu.','Menghapus semua komentar negatif.','Mengunggah promosi untuk mengalihkan perhatian.','Memverifikasi fakta, mengaktifkan koordinasi internal, dan menyampaikan informasi awal akurat serta langkah penanganan.'],a:[3],e:'Krisis menuntut verifikasi, perhatian pada keselamatan publik, koordinasi, dan komunikasi yang tidak menyesatkan.'},
+{t:'pg',m:'No. 11 · Evaluasi publikasi · C4',q:'Unggahan pendaftaran kegiatan mendapat 8.000 tayangan, tetapi hanya 12 pendaftar dari target 100. Kesimpulan paling tepat …',o:['Publikasi pasti berhasil karena tayangan tinggi.','Publikasi tidak perlu dievaluasi.','Tayangan membuktikan semua audiens memahami informasi.','Jangkauan besar, tetapi konversi rendah; periksa kesesuaian audiens, kejelasan ajakan, dan kemudahan formulir.'],a:[3],e:'Tayangan menunjukkan paparan, bukan keberhasilan tujuan.'},
+{t:'pg',m:'No. 12 · Tingkat respons · C3',q:'Publikasi dikirim kepada 400 penerima. Sebanyak 80 memberi respons tercatat. Tingkat responsnya adalah …',o:['5%','10%','20%','80%'],a:[2],e:'80 / 400 × 100% = 20%. Angka ini tidak menunjukkan respons positif atau negatif.'},
+{t:'pg',m:'No. 13 · Interpretasi metrik · C4',q:'Unggahan A: jangkauan 2.000, interaksi 100. Unggahan B: jangkauan 1.000, interaksi 90. Jika tingkat interaksi = interaksi/jangkauan, mana yang lebih tinggi?',o:['A, karena interaksi absolutnya paling banyak.','B, karena tingkatnya 9%, sedangkan A 5%.','Sama karena keduanya memperoleh interaksi.','Tidak dapat dihitung.'],a:[1],e:'A = 100/2.000 = 5%; B = 90/1.000 = 9%.'},
+{t:'pg',m:'No. 16 · Verifikasi informasi · C4',q:'Akun anonim menyatakan kantor cabang akan tutup minggu depan. Belum ada pengumuman resmi, tetapi pegawai mulai meneruskan pesan. Tindakan tepat …',o:['Membagikan karena banyak orang meneruskan.','Membuat poster agar mudah dibaca.','Mengumumkan penutupan dengan kata “diduga” tanpa verifikasi.','Memeriksa kepada pihak berwenang dan sumber resmi, lalu menahan publikasi sampai fakta terkonfirmasi.'],a:[3],e:'Banyaknya penerusan bukan bukti kebenaran. Informasi berdampak pada pekerjaan harus diverifikasi.'},
+{t:'pgk',m:'No. 21 · Verifikasi · C4 · pilih semua yang benar',q:'Staf humas menerima bahan publikasi tentang keberhasilan pelatihan. Angka peserta dan klaim keberhasilan belum diperiksa. Tindakan tepat:',o:['Memeriksa angka peserta dengan daftar hadir yang sah.','Menggunakan semua klaim karena berasal dari pegawai internal.','Meminta konfirmasi pihak yang bertanggung jawab atas hasil program.','Memisahkan fakta terverifikasi dari klaim yang masih perlu diperiksa.'],a:[0,2,3],e:'Sumber internal pun dapat keliru; fakta dan klaim belum terkonfirmasi harus dibedakan.'},
+{t:'pgk',m:'No. 24 · Komunikasi krisis · C4 · pilih semua yang benar',q:'Perusahaan mengalami gangguan layanan; penyebab akhir belum diketahui. Tindakan tepat:',o:['Menyatakan penyebab secara pasti meskipun belum diketahui.','Menyampaikan dampak yang telah terkonfirmasi.','Mengarahkan pelanggan ke saluran resmi untuk pembaruan.','Berkoordinasi dengan tim teknis sebelum mengumumkan penyebab.'],a:[1,2,3],e:'Informasi awal boleh disampaikan sambil menjelaskan batas pengetahuan. Penyebab belum pasti tidak boleh dinyatakan sebagai fakta.'},
+{t:'pgk',m:'No. 25 · Etika komunikasi · C4 · pilih semua yang benar',q:'Pegawai humas menyusun respons terhadap kritik publik. Tindakan etis:',o:['Menggunakan bahasa sopan dan tidak menyerang pribadi.','Memublikasikan nomor telepon pengkritik.','Memeriksa fakta sebelum menjelaskan.','Mengakui kekurangan layanan jika terkonfirmasi.'],a:[0,2,3],e:'Etika mencakup penghormatan, akurasi, dan akuntabilitas. Data pribadi tidak boleh disebarluaskan.'},
+{t:'pgk',m:'No. 28 · Keamanan arsip · C3 · pilih semua yang benar',q:'Daftar tamu memuat nama, nomor kontak, dan instansi untuk tindak lanjut. Tindakan tepat:',o:['Mengirim daftar lengkap ke grup publik.','Membatasi akses berdasarkan kebutuhan kerja.','Menggunakan penyimpanan resmi dengan pengaturan akses sesuai.','Menghapus dokumen tanpa memeriksa kebutuhan arsip dan ketentuan retensi.'],a:[1,2],e:'Data tamu hanya diakses sesuai kebutuhan dan kewenangan; penghapusan mengikuti ketentuan retensi.'},
+{t:'pgk',m:'No. 33 · Foto & data pribadi · C4 · pilih semua yang benar',q:'Foto kegiatan menampilkan peserta, kartu identitas, dan layar berisi data pelanggan. Foto akan dipublikasikan. Tindakan tepat:',o:['Memeriksa izin dan dasar penggunaan foto sesuai konteks serta aturan.','Memastikan data sensitif tidak ikut terpublikasi.','Mengunggah semua foto karena kegiatan resmi.','Memilih atau menyunting foto agar informasi yang harus dilindungi tidak terungkap.'],a:[0,1,3],e:'Kegiatan resmi tidak otomatis membuat semua data layak dipublikasikan.'},
+{t:'bs',m:'No. 37 · Verifikasi informasi · C3 · Benar/Salah',q:'Informasi perubahan jadwal beredar di grup percakapan.',s:['Pesan yang diteruskan banyak orang otomatis benar.','Jadwal perlu diperiksa melalui sumber resmi.','Jika ditemukan kesalahan, koreksi perlu disampaikan kepada pihak terdampak.'],a:[false,true,true],e:'Banyaknya penerusan bukan bukti kebenaran. Verifikasi dan koreksi adalah bagian pengendalian informasi.'},
+{t:'bs',m:'No. 38 · Media sosial · C3 · Benar/Salah',q:'Unggahan promosi mendapat banyak tayangan, tetapi pendaftaran sedikit.',s:['Banyak tayangan selalu berarti tujuan tercapai.','Tingkat konversi mengukur proporsi audiens yang melakukan tindakan sasaran.','Evaluasi perlu mempertimbangkan tujuan kampanye, bukan hanya tayangan.'],a:[false,true,true],e:'Indikator harus selaras dengan tujuan. Kampanye pendaftaran dinilai dari tindakan pendaftaran.'},
+{t:'bs',m:'No. 44 · Komunikasi krisis · C4 · Benar/Salah',q:'Perusahaan menerima laporan gangguan layanan yang penyebabnya belum diketahui.',s:['Organisasi boleh menyampaikan fakta terkonfirmasi sambil menjelaskan investigasi masih berjalan.','Penyebab belum diketahui boleh diumumkan sebagai fakta agar publik cepat mendapat jawaban.','Pembaruan berkala membantu publik mengetahui perkembangan penanganan.'],a:[true,false,true],e:'Kecepatan harus diimbangi akurasi. Pembaruan mengelola ketidakpastian tanpa klaim tak terbukti.'},
+{t:'bs',m:'No. 45 · Data pribadi · C3 · Benar/Salah',q:'Tim humas hendak menggunakan foto acara dan daftar kontak peserta.',s:['Semua informasi yang diperoleh saat acara otomatis boleh disebarkan.','Penggunaan data perlu memiliki dasar sesuai dan mengikuti tujuan yang ditentukan.','Data yang tidak diperlukan sebaiknya tidak dimasukkan dalam materi publikasi.'],a:[false,true,true],e:'Perhatikan tujuan, dasar pemrosesan, akses, dan minimisasi data.'}
+];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let deck=[];
 
-    function draw() {
-        ctx.fillStyle = 'var(--grid-bg)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+/* ---------- GAME (Up-Tris) ---------- */
+const gc=$('#gc'),x=gc.getContext('2d'),COLS=10,ROWS=20,BS=24;
+const COL=[0,'#2F69FF','#96E5FF','#C8E600','#FFA6B3','#0A33BF','#A8C1FF','#FF4D6D'];
+const PC=[0,[[0,0,0],[1,1,1],[0,1,0]],[[0,2,0,0],[0,2,0,0],[0,2,0,0],[0,2,0,0]],[[0,3,3],[3,3,0],[0,0,0]],[[4,4,0],[0,4,4],[0,0,0]],[[0,5,0],[0,5,0],[0,5,5]],[[0,6,0],[0,6,0],[6,6,0]],[[7,7],[7,7]]];
+let grid,score,level,dc,di,lastT,graf,over=true,paused=true,pend=[];
+const pl={pos:{x:0,y:0},m:null};
+const mkGrid=()=>Array.from({length:ROWS},()=>new Array(COLS).fill(0));
+function drawM(m,o){m.forEach((r,y)=>r.forEach((v,xx)=>{if(!v)return;const px=(xx+o.x)*BS,py=(y+o.y)*BS;
+  x.fillStyle=COL[v];x.beginPath();x.roundRect(px+1.5,py+1.5,BS-3,BS-3,7);x.fill();
+  x.strokeStyle='rgba(10,20,80,.25)';x.lineWidth=1;x.stroke();
+  x.fillStyle='rgba(255,255,255,.45)';x.beginPath();x.roundRect(px+5,py+4,BS-12,5,3);x.fill()}))}
+function draw(){x.clearRect(0,0,gc.width,gc.height);x.strokeStyle='rgba(14,42,197,.08)';x.lineWidth=1;
+  for(let i=0;i<=COLS;i++){x.beginPath();x.moveTo(i*BS,0);x.lineTo(i*BS,gc.height);x.stroke()}
+  for(let i=0;i<=ROWS;i++){x.beginPath();x.moveTo(0,i*BS);x.lineTo(gc.width,i*BS);x.stroke()}
+  drawM(grid,{x:0,y:0});drawM(pl.m,pl.pos)}
+const collide=()=>{const m=pl.m,o=pl.pos;for(let y=0;y<m.length;y++)for(let xx=0;xx<m[y].length;xx++)if(m[y][xx]&&(grid[y+o.y]&&grid[y+o.y][xx+o.x])!==0)return true;return false};
+function reset(){const t=1+Math.floor(Math.random()*7);pl.m=PC[t].map(r=>r.slice());pl.pos.y=ROWS-pl.m.length;pl.pos.x=Math.floor(COLS/2)-Math.floor(pl.m[0].length/2);if(collide())gameOver()}
+function up(){pl.pos.y--;if(collide()){pl.pos.y++;pl.m.forEach((r,y)=>r.forEach((v,xx)=>{if(v)grid[y+pl.pos.y][xx+pl.pos.x]=v}));reset();sweep()}dc=0}
+const mv=d=>{pl.pos.x+=d;if(collide())pl.pos.x-=d};
+function rot(m,d=1){for(let y=0;y<m.length;y++)for(let xx=0;xx<y;xx++)[m[xx][y],m[y][xx]]=[m[y][xx],m[xx][y]];d>0?m.forEach(r=>r.reverse()):m.reverse()}
+function rotate(){const px=pl.pos.x;let o=1;rot(pl.m);while(collide()){pl.pos.x+=o;o=-(o+(o>0?1:-1));if(o>pl.m[0].length){rot(pl.m,-1);pl.pos.x=px;return}}}
+function sweep(){const f=[];for(let y=0;y<ROWS;y++)if(grid[y].every(v=>v))f.push(y);if(f.length){pend=f;ask()}}
+function clearLines(r){const n=pend.length;pend.sort((a,b)=>b-a).forEach(y=>{grid.splice(y,1);grid.push(new Array(COLS).fill(0))});
+  if(r===1)score+=n*100*level;else if(r>0)score+=Math.round(n*100*level*r);else score=Math.max(0,score-50);
+  while(score>level*500){level++;di=Math.max(100,1000-level*100)}
+  hud();pend=[];paused=false;lastT=performance.now();loop()}
+const hud=()=>{$('#sco').textContent=score;$('#lvl').textContent=level};
+function gameOver(){over=true;cancelAnimationFrame(graf);$('#fs').textContent=score;$('#ov').classList.add('on')}
+function loop(t=0){if(over||paused)return;const d=t-lastT;lastT=t;dc+=d;if(dc>di)up();draw();graf=requestAnimationFrame(loop)}
+function init(){grid=mkGrid();score=0;level=1;di=1000;over=false;paused=false;pend=[];hud();reset();lastT=performance.now();cancelAnimationFrame(graf);loop()}
+function openGame(){$('#game').classList.add('on');$('#ov').classList.remove('on');$('#qz').classList.remove('on');lock=true;document.body.style.overflow='hidden';init()}
+function closeGame(){paused=true;over=true;cancelAnimationFrame(graf);$('#game').classList.remove('on');lock=false;document.body.style.overflow='';target=scrollY}
+$$('[data-play]').forEach(b=>b.onclick=openGame);
+$('#gx').onclick=closeGame;$('#rg').onclick=()=>{$('#ov').classList.remove('on');init()};
+addEventListener('keydown',e=>{if(over||paused||!$('#game').classList.contains('on'))return;
+  if(e.key==='ArrowLeft')mv(-1);else if(e.key==='ArrowRight')mv(1);else if(e.key==='ArrowUp'){e.preventDefault();up()}else if(e.key===' '){e.preventDefault();rotate()}});
+const bind=(id,f)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!over)f()});
+bind('#bl',()=>mv(-1));bind('#brt',()=>mv(1));bind('#br2',rotate);bind('#bu',up);
 
-        // Draw grid lines
-        ctx.strokeStyle = '#111';
-        ctx.lineWidth = 1;
-        for(let i=0; i<=COLS; i++) {
-            ctx.beginPath(); ctx.moveTo(i*BLOCK_SIZE, 0); ctx.lineTo(i*BLOCK_SIZE, canvas.height); ctx.stroke();
-        }
-        for(let i=0; i<=ROWS; i++) {
-            ctx.beginPath(); ctx.moveTo(0, i*BLOCK_SIZE); ctx.lineTo(canvas.width, i*BLOCK_SIZE); ctx.stroke();
-        }
-
-        drawMatrix(grid, {x: 0, y: 0});
-        drawMatrix(player.matrix, player.pos);
-    }
-
-    function merge(grid, player) {
-        player.matrix.forEach((row, y) => {
-            row.forEach((value, x) => {
-                if (value !== 0) {
-                    grid[y + player.pos.y][x + player.pos.x] = value;
-                }
-            });
-        });
-    }
-
-    // Reverse Tetris Collision: Check UPWARDS.
-    // The ceiling is y=0, floor is y=19. Blocks fall UP.
-    function collide(grid, player) {
-        const m = player.matrix;
-        const o = player.pos;
-        for (let y = 0; y < m.length; ++y) {
-            for (let x = 0; x < m[y].length; ++x) {
-                if (m[y][x] !== 0 &&
-                    (grid[y + o.y] && grid[y + o.y][x + o.x]) !== 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    function playerReset() {
-        const pieces = '1234567';
-        player.matrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
-        // Start at BOTTOM
-        player.pos.y = ROWS - player.matrix.length; 
-        player.pos.x = Math.floor(COLS / 2) - Math.floor(player.matrix[0].length / 2);
-        
-        // If immediate collision at bottom, game over
-        if (collide(grid, player)) {
-            gameOver();
-        }
-    }
-
-    // Drop means move UP in Reverse Tetris
-    function playerDrop() {
-        player.pos.y--;
-        if (collide(grid, player)) {
-            player.pos.y++; // revert
-            merge(grid, player);
-            playerReset();
-            gridSweep();
-        }
-        dropCounter = 0;
-    }
-
-    function playerMove(offset) {
-        player.pos.x += offset;
-        if (collide(grid, player)) {
-            player.pos.x -= offset;
-        }
-    }
-
-    function playerRotate() {
-        const pos = player.pos.x;
-        let offset = 1;
-        rotate(player.matrix);
-        while (collide(grid, player)) {
-            player.pos.x += offset;
-            offset = -(offset + (offset > 0 ? 1 : -1));
-            if (offset > player.matrix[0].length) {
-                rotate(player.matrix, -1);
-                player.pos.x = pos;
-                return;
-            }
-        }
-    }
-
-    function rotate(matrix, dir = 1) {
-        for (let y = 0; y < matrix.length; ++y) {
-            for (let x = 0; x < y; ++x) {
-                [
-                    matrix[x][y],
-                    matrix[y][x],
-                ] = [
-                    matrix[y][x],
-                    matrix[x][y],
-                ];
-            }
-        }
-        if (dir > 0) {
-            matrix.forEach(row => row.reverse());
-        } else {
-            matrix.reverse();
-        }
-    }
-
-    // Sweep logic for Reverse Tetris
-    function gridSweep() {
-        let linesFound = [];
-        outer: for (let y = 0; y < ROWS; ++y) {
-            for (let x = 0; x < COLS; ++x) {
-                if (grid[y][x] === 0) {
-                    continue outer; // line not full
-                }
-            }
-            // Line is full
-            linesFound.push(y);
-        }
-
-        if (linesFound.length > 0) {
-            pendingLinesToClear = linesFound;
-            triggerQuiz();
-        }
-    }
-
-    function executeLineClear(isCorrect) {
-        let rowCount = pendingLinesToClear.length;
-        
-        pendingLinesToClear.forEach(y => {
-            const row = grid.splice(y, 1)[0].fill(0);
-            // In reverse tetris, blocks gather at the top. 
-            // When a line clears, blocks below it must shift UP.
-            // That means we put the new empty row at the BOTTOM of the grid.
-            grid.push(row); 
-        });
-
-        if (isCorrect) {
-            score += rowCount * 100 * level;
-            // Level up logic
-            if (score > level * 500) {
-                level++;
-                dropInterval = Math.max(100, 1000 - (level * 100)); // faster
-            }
-        } else {
-            // Penalty: maybe score deduction or just no score.
-            score = Math.max(0, score - 50);
-        }
-
-        updateScoreboards();
-        pendingLinesToClear = [];
-        
-        isPaused = false;
-        lastTime = performance.now();
-        update();
-    }
-
-    function updateScoreboards() {
-        document.getElementById('score').innerText = score;
-        document.getElementById('level').innerText = level;
-    }
-
-    function gameOver() {
-        isGameOver = true;
-        cancelAnimationFrame(animationId);
-        document.getElementById('final-score').innerText = score;
-        document.getElementById('game-over-screen').style.display = 'flex';
-    }
-
-    function update(time = 0) {
-        if(isGameOver || isPaused) return;
-
-        const deltaTime = time - lastTime;
-        lastTime = time;
-
-        dropCounter += deltaTime;
-        if (dropCounter > dropInterval) {
-            playerDrop();
-        }
-
-        draw();
-        animationId = requestAnimationFrame(update);
-    }
-
-    // --- Quiz Logic ---
-    function triggerQuiz() {
-        isPaused = true;
-        const qData = questionBank[Math.floor(Math.random() * questionBank.length)];
-        
-        document.getElementById('quiz-question').innerText = qData.q;
-        const optionsContainer = document.getElementById('quiz-options');
-        optionsContainer.innerHTML = '';
-        
-        qData.options.forEach((opt, index) => {
-            const btn = document.createElement('button');
-            btn.className = 'quiz-option';
-            btn.innerText = opt;
-            btn.onclick = () => handleAnswer(index, qData.answer);
-            optionsContainer.appendChild(btn);
-        });
-
-        document.getElementById('quiz-feedback').style.display = 'none';
-        document.getElementById('continue-btn').style.display = 'none';
-        document.getElementById('quiz-options').style.display = 'block';
-        document.getElementById('quiz-screen').style.display = 'flex';
-    }
-
-    let answerResult = false;
-    function handleAnswer(selectedIndex, correctIndex) {
-        const feedback = document.getElementById('quiz-feedback');
-        feedback.style.display = 'block';
-        
-        if (selectedIndex === correctIndex) {
-            feedback.innerText = "BENAR! +POIN";
-            feedback.style.color = "#0DFF72";
-            answerResult = true;
-        } else {
-            feedback.innerText = "SALAH! -50 POIN\n\nJawaban benar: " + questionBank.find(q=>q.q === document.getElementById('quiz-question').innerText).options[correctIndex];
-            feedback.style.color = "#FF0d72";
-            answerResult = false;
-        }
-
-        document.getElementById('quiz-options').style.display = 'none';
-        document.getElementById('continue-btn').style.display = 'block';
-    }
-
-    document.getElementById('continue-btn').addEventListener('click', () => {
-        document.getElementById('quiz-screen').style.display = 'none';
-        executeLineClear(answerResult);
-    });
-
-    // --- Controls Setup ---
-    function setupControls() {
-        document.addEventListener('keydown', event => {
-            if (isGameOver || isPaused) return;
-            switch(event.keyCode) {
-                case 37: playerMove(-1); break; // Left
-                case 39: playerMove(1); break; // Right
-                case 38: playerDrop(); break; // Drop (Up arrow since reverse)
-                case 32: playerRotate(); break; // Space
-            }
-        });
-
-        // Touch buttons mapping
-        document.getElementById('btn-left').addEventListener('touchstart', (e) => { e.preventDefault(); if(!isPaused) playerMove(-1); });
-        document.getElementById('btn-right').addEventListener('touchstart', (e) => { e.preventDefault(); if(!isPaused) playerMove(1); });
-        document.getElementById('btn-rotate').addEventListener('touchstart', (e) => { e.preventDefault(); if(!isPaused) playerRotate(); });
-        document.getElementById('btn-drop').addEventListener('touchstart', (e) => { e.preventDefault(); if(!isPaused) playerDrop(); });
-
-        // Mouse fallbacks for testing on PC
-        document.getElementById('btn-left').addEventListener('mousedown', () => { if(!isPaused) playerMove(-1); });
-        document.getElementById('btn-right').addEventListener('mousedown', () => { if(!isPaused) playerMove(1); });
-        document.getElementById('btn-rotate').addEventListener('mousedown', () => { if(!isPaused) playerRotate(); });
-        document.getElementById('btn-drop').addEventListener('mousedown', () => { if(!isPaused) playerDrop(); });
-    }
-
-    // --- Game Lifecycle ---
-    function initGame() {
-        grid = createMatrix(COLS, ROWS);
-        score = 0;
-        level = 1;
-        dropInterval = 1000;
-        isGameOver = false;
-        isPaused = false;
-        updateScoreboards();
-        playerReset();
-        lastTime = performance.now();
-        update();
-    }
-
-    document.getElementById('start-btn').addEventListener('click', () => {
-        document.getElementById('start-screen').style.display = 'none';
-        setupControls();
-        initGame();
-    });
-
-    document.getElementById('restart-btn').addEventListener('click', () => {
-        document.getElementById('game-over-screen').style.display = 'none';
-        initGame();
-    });
-
+/* ---------- Kuis ---------- */
+function ask(){
+  paused=true;
+  if(!deck.length)deck=shuffle(Q.map((_,i)=>i));
+  const q=Q[deck.pop()],qo=$('#qo'),qc=$('#qc'),qn=$('#qn'),fbk=$('#fb');
+  $('#qm').textContent=q.m;$('#qq').textContent=q.q;qo.innerHTML='';fbk.innerHTML='';qc.style.display=qn.style.display='none';qc.disabled=false;
+  let items,sel=new Set(),picks={};
+  const finish=r=>{
+    const key=q.t==='bs'?items.map(s=>s.t.slice(0,38)+'… → '+(s.a?'Benar':'Salah')).join('<br>'):'Kunci: '+items.map((o,i)=>o.ok?'ABCD'[i]:'').join('');
+    const h=r===1?'BENAR!':r>0?'SEBAGIAN BENAR':'SALAH! −50 poin';
+    fbk.innerHTML=`<b style="color:${r===1?'#2b8a00':r>0?'#b87400':'#e0194a'}">${h}</b><br>${key}<br><br>${q.e}`;
+    qc.style.display='none';qn.style.display='inline-block';qn.onclick=()=>{$('#qz').classList.remove('on');clearLines(r)}};
+  if(q.t==='bs'){
+    items=shuffle(q.s.map((t,i)=>({t,a:q.a[i]})));
+    items.forEach((s,i)=>{const d=document.createElement('div');d.className='bs';d.innerHTML=`<span></span><button>Benar</button><button>Salah</button>`;d.firstChild.textContent=s.t;
+      d.querySelectorAll('button').forEach((b,k)=>b.onclick=()=>{if(qc.disabled)return;picks[i]=k===0;d.querySelectorAll('button').forEach(z=>z.classList.remove('s'));b.classList.add('s');qc.style.display=Object.keys(picks).length===items.length?'inline-block':'none'});qo.appendChild(d)});
+    qc.onclick=()=>{qc.disabled=true;finish(items.reduce((n,s,i)=>n+(picks[i]===s.a?1:0),0)/items.length)};
+  }else{
+    items=shuffle(q.o.map((t,i)=>({t,ok:q.a.includes(i)})));
+    items.forEach((o,i)=>{const b=document.createElement('button');b.className='op';b.textContent='ABCD'[i]+'. '+o.t;qo.appendChild(b);
+      b.onclick=()=>{
+        if(qc.disabled)return;
+        if(q.t==='pg'){qc.disabled=true;qo.querySelectorAll('.op').forEach((z,k)=>z.classList.add(items[k].ok?'ok':(k===i?'no':'x')));finish(o.ok?1:0)}
+        else{sel.has(i)?sel.delete(i):sel.add(i);b.classList.toggle('s');qc.style.display=sel.size?'inline-block':'none'}}});
+    qc.onclick=()=>{qc.disabled=true;qo.querySelectorAll('.op').forEach((z,k)=>{z.classList.remove('s');z.classList.add(items[k].ok?'ok':(sel.has(k)?'no':'x'))});finish(items.every((o,k)=>sel.has(k)===o.ok)?1:0)};
+  }
+  $('#qz').classList.add('on');
+}
 </script>
 </body>
 </html>
