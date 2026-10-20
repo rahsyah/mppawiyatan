@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Simulasi Handling Complain SMK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background for out-of-bounds */
+            touch-action: manipulation; /* Prevent double-tap zoom on mobile */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Mobile Container to simulate app view on desktop */
+        .app-container {
+            max-width: 430px; /* iPhone 14 Pro Max width approx */
+            margin: 0 auto;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Custom Animations */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        .slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .bounce-in { animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Option Button Styles */
+        .option-btn {
+            transition: all 0.2s ease;
+            transform: scale(1);
+        }
+        .option-btn:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+        .correct {
+            background-color: #10b981 !important; /* Emerald 500 */
+            color: white !important;
+            border-color: #059669 !important;
+        }
+        .wrong {
+            background-color: #ef4444 !important; /* Red 500 */
+            color: white !important;
+            border-color: #dc2626 !important;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+<div class="app-container text-white">
+
+    <!-- 1. START SCREEN -->
+    <div id="start-screen" class="flex flex-col items-center justify-center h-screen p-6 text-center fade-in">
+        <div class="bg-white/10 p-6 rounded-3xl backdrop-blur-sm border border-white/20 mb-8 bounce-in">
+            <svg class="w-20 h-20 mx-auto text-orange-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
+            <h1 class="text-3xl font-bold leading-tight mb-2">Simulasi Handling Complain</h1>
+            <p class="text-blue-200 text-sm">Manajemen Perkantoran SMK</p>
+        </div>
+        
+        <p class="mb-8 text-blue-100 px-4">Uji kemampuanmu dalam menangani keluhan pelanggan dengan profesional dan empatik.</p>
+        
+        <div class="w-full max-w-xs space-y-4">
+            <button onclick="showMaterial()" class="w-full bg-white hover:bg-gray-100 text-blue-900 font-bold py-4 rounded-2xl shadow-lg text-lg transition-colors option-btn">
+                📚 Pelajari Materi
+            </button>
+            <button onclick="startGame()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold py-4 rounded-2xl shadow-lg shadow-yellow-500/30 text-lg transition-colors option-btn">
+                🎮 Mulai Ujian (30 Menit)
+            </button>
+        </div>
+    </div>
+
+    <!-- 1.5 MATERIAL SCREEN -->
+    <div id="material-screen" class="hidden flex-col h-screen p-4 flex fade-in relative bg-blue-900">
+        <div class="bg-white rounded-3xl p-6 shadow-xl text-gray-800 mb-4 flex-grow overflow-y-auto slide-up">
+            <h2 class="text-2xl font-bold text-blue-900 mb-4 border-b-2 border-yellow-400 pb-2">Konsep Handling Complain</h2>
+            
+            <p class="mb-3 text-sm"><strong>Complain (Keluhan)</strong> adalah ungkapan ketidakpuasan pelanggan. Dalam Manajemen Perkantoran, keluhan dianggap sebagai "hadiah" karena memberi peluang bagi perusahaan untuk mengevaluasi dan memperbaiki layanan.</p>
+            
+            <h3 class="text-lg font-bold text-blue-800 mt-4 mb-2">Metode L-E-A-R-N</h3>
+            <ul class="space-y-2 text-sm">
+                <li><strong class="text-yellow-600">L - Listen:</strong> Dengarkan keluhan secara aktif dan empatik tanpa memotong pembicaraan.</li>
+                <li><strong class="text-yellow-600">E - Empathize:</strong> Tunjukkan empati, pahami perasaan dan posisi pelanggan.</li>
+                <li><strong class="text-yellow-600">A - Apologize:</strong> Minta maaf dengan tulus atas ketidaknyamanan, meskipun itu bukan kesalahan Anda langsung.</li>
+                <li><strong class="text-yellow-600">R - React/Resolve:</strong> Berikan solusi terbaik atau eskalasi ke atasan jika di luar wewenang.</li>
+                <li><strong class="text-yellow-600">N - Now:</strong> Tindak lanjuti solusi tersebut sekarang juga (segera).</li>
+            </ul>
+            
+            <h3 class="text-lg font-bold text-blue-800 mt-4 mb-2">Sikap Profesional</h3>
+            <p class="text-sm">Jaga kontak mata, gunakan intonasi suara yang tenang, jangan berdebat, dan selalu catat keluhan sebagai bahan laporan (Service Recovery).</p>
+        </div>
+        
+        <button onclick="startGame()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold py-4 rounded-xl shadow-lg text-lg transition-colors option-btn shrink-0">
+            Mulai Ujian Sekarang
+        </button>
+    </div>
+
+    <!-- 2. GAMEPLAY SCREEN -->
+    <div id="game-screen" class="hidden flex-col h-screen p-4 flex fade-in relative">
+        <!-- Header: Progress, Timer & Score -->
+        <div class="flex justify-between items-center mb-6 pt-4 space-x-2">
+            <div class="bg-blue-900/50 px-3 py-2 rounded-full text-xs font-semibold border border-blue-700 flex-1 text-center">
+                Soal: <span id="progress-text" class="text-yellow-400">1/10</span>
+            </div>
+            <div class="bg-blue-900/50 px-3 py-2 rounded-full text-xs font-semibold border border-blue-700 flex-1 text-center">
+                ⏱️ <span id="timer-text" class="text-white font-mono text-sm">30:00</span>
+            </div>
+            <div class="bg-blue-900/50 px-3 py-2 rounded-full text-xs font-semibold border border-blue-700 flex-1 text-center">
+                Skor: <span id="score-text" class="text-green-400">0</span>
+            </div>
+        </div>
+
+        <!-- Question Area -->
+        <div class="bg-white rounded-3xl p-6 shadow-xl text-gray-800 mb-6 slide-up flex-grow flex flex-col justify-center max-h-[30vh]">
+            <p id="question-text" class="text-lg font-semibold text-center leading-relaxed">
+                Loading...
+            </p>
+        </div>
+
+        <!-- Options Area -->
+        <div id="options-container" class="flex flex-col gap-3 pb-6 flex-grow justify-end">
+            <!-- Buttons dynamically generated here -->
+        </div>
+    </div>
+
+    <!-- 3. RESULT SCREEN -->
+    <div id="result-screen" class="hidden flex-col items-center justify-center h-screen p-6 text-center fade-in">
+        <div class="bg-white rounded-3xl p-8 shadow-2xl text-gray-800 w-full max-w-sm bounce-in">
+            <div class="mb-6">
+                <div id="result-icon" class="w-24 h-24 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4 text-4xl">
+                    🏆
+                </div>
+                <h2 class="text-2xl font-bold text-blue-900 mb-2">Permainan Selesai!</h2>
+                <p class="text-gray-500 text-sm mb-4">Skor Akhir Kamu</p>
+                <div class="text-6xl font-extrabold text-orange-500 mb-4" id="final-score">
+                    100
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2" id="feedback-title">Luar Biasa!</h3>
+                <p class="text-gray-600 text-sm" id="feedback-text">Kamu sangat memahami cara menangani pelanggan.</p>
+            </div>
+            
+            <button onclick="resetGame()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/30 text-lg transition-colors option-btn mt-4">
+                Main Lagi
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Master Question Pool (At least 10 questions, 2 choices each)
+    const masterQuestions = [
+        {
+            question: "Seorang pelanggan datang dengan nada suara tinggi karena pesanannya salah. Tindakan apa yang pertama kali Anda lakukan?",
+            correctAnswer: "Mendengarkan dengan penuh empati dan membiarkan pelanggan selesai bicara tanpa menyela.",
+            wrongAnswer: "Langsung memotong pembicaraan dan memberikan solusi agar pelanggan cepat pergi."
+        },
+        {
+            question: "Pelanggan meminta pengembalian dana (refund) yang jelas-jelas di luar kebijakan perusahaan. Apa tindakan Anda?",
+            correctAnswer: "Meminta maaf atas ketidaknyamanan, lalu mengeskalasikan masalah ini ke atasan atau manajer.",
+            wrongAnswer: "Menolak mentah-mentah di depan pelanggan karena menyalahi aturan perusahaan."
+        },
+        {
+            question: "Saat Anda menerima keluhan melalui telepon, suara pelanggan terputus-putus dan kurang jelas. Apa yang sebaiknya dilakukan?",
+            correctAnswer: "Meminta maaf dan memohon pelanggan untuk mengulangi keluhannya dengan nada sopan.",
+            wrongAnswer: "Menutup telepon dengan alasan sinyal buruk agar pelanggan menelepon kembali nanti."
+        },
+        {
+            question: "Pelanggan mengeluhkan keterlambatan pengiriman dokumen penting. Anda tahu ini kesalahan pihak kurir (ekspedisi). Tindakan Anda?",
+            correctAnswer: "Meminta maaf atas keterlambatan tersebut sebagai perwakilan perusahaan dan segera melacak status dokumen.",
+            wrongAnswer: "Menyalahkan pihak kurir dan menyuruh pelanggan untuk komplain langsung ke ekspedisi."
+        },
+        {
+            question: "Mengapa penting bagi staf administrasi untuk mencatat setiap detail keluhan pelanggan?",
+            correctAnswer: "Sebagai bahan laporan dan evaluasi (Service Recovery) agar masalah serupa tidak terulang di masa depan.",
+            wrongAnswer: "Sekadar formalitas agar pelanggan merasa bahwa perusahaan sedang bekerja menangani masalahnya."
+        },
+        {
+            question: "Dalam metode L-E-A-R-N, tahap 'E' adalah Empathize. Bagaimana cara terbaik menunjukkannya?",
+            correctAnswer: "Mengucapkan, 'Saya mengerti kekecewaan Bapak/Ibu, mari kita selesaikan masalah ini bersama.'",
+            wrongAnswer: "Mengucapkan, 'Seharusnya Bapak/Ibu membaca buku panduan terlebih dahulu sebelum menggunakannya.'"
+        },
+        {
+            question: "Anda berhadapan langsung (face-to-face) dengan pelanggan yang sedang komplain. Gestur tubuh seperti apa yang tepat?",
+            correctAnswer: "Menjaga kontak mata, mengangguk perlahan tanda mengerti, dan fokus pada pelanggan.",
+            wrongAnswer: "Bersandar di kursi sambil sesekali melihat jam tangan atau notifikasi handphone."
+        },
+        {
+            question: "Keluhan pelanggan sering dianggap sebagai 'hadiah' bagi perusahaan (Complain is a gift). Apa maksud dari pernyataan ini?",
+            correctAnswer: "Keluhan memberikan peluang gratis dan nyata bagi perusahaan untuk mengevaluasi dan memperbaiki layanannya.",
+            wrongAnswer: "Keluhan adalah momen yang ditunggu-tunggu agar karyawan bisa mendapatkan bonus tambahan."
+        },
+        {
+            question: "Anda sudah memberikan solusi atas masalah pelanggan (Tahap 'Resolve'). Apa tindakan selanjutnya (Tahap 'Now')?",
+            correctAnswer: "Segera menindaklanjuti dan mengimplementasikan solusi tersebut saat itu juga tanpa menunda-nunda.",
+            wrongAnswer: "Menyuruh pelanggan pulang dan berjanji akan mengerjakannya minggu depan saat waktu luang."
+        },
+        {
+            question: "Pelanggan marah besar dan mulai menggunakan kata-kata kasar kepada Anda. Apa respons paling profesional?",
+            correctAnswer: "Tetap tenang, tidak terpancing emosi, dan menjaga nada suara tetap datar dan sopan.",
+            wrongAnswer: "Ikut marah dan berdebat untuk membuktikan bahwa Anda tidak bersalah dalam hal ini."
+        }
+    ];
+
+    // Game State Variables
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let isAnswering = false;
+    const questionsPerGame = 10; // Menggunakan semua 10 soal untuk tes berdurasi panjang
+    const scorePerQuestion = 10; // 10 * 10 = 100 max score
+
+    // Timer Variables
+    let timeLeft = 30 * 60; // 30 menit dalam detik
+    let timerInterval;
+
+    // Utility: Shuffle Array using Fisher-Yates algorithm
+    function shuffleArray(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    // Screens DOM Elements
+    const startScreen = document.getElementById('start-screen');
+    const materialScreen = document.getElementById('material-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const resultScreen = document.getElementById('result-screen');
+    
+    // Game DOM Elements
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const progressText = document.getElementById('progress-text');
+    const scoreText = document.getElementById('score-text');
+    const timerText = document.getElementById('timer-text');
+
+    // Show Material Screen
+    function showMaterial() {
+        startScreen.classList.add('hidden');
+        materialScreen.classList.remove('hidden');
+    }
+
+    // Start / Restart Game
+    function startGame() {
+        startScreen.classList.add('hidden');
+        materialScreen.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+
+        // Reset State
+        score = 0;
+        currentQuestionIndex = 0;
+        timeLeft = 30 * 60; // Reset ke 30 Menit
+        scoreText.innerText = score;
+        updateTimerDisplay();
+
+        // Mulai Timer
+        clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimer, 1000);
+
+        // Randomly select questions from the master pool
+        const shuffledMaster = shuffleArray([...masterQuestions]);
+        currentQuestions = shuffledMaster.slice(0, questionsPerGame);
+
+        loadQuestion();
+    }
+
+    // Timer Logic
+    function updateTimer() {
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showResult("Waktu Habis! ⏰");
+            return;
+        }
+        timeLeft--;
+        updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerText.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Efek peringatan visual jika waktu tersisa < 5 menit
+        if (timeLeft <= 300) {
+            timerText.classList.remove('text-white');
+            timerText.classList.add('text-red-400', 'animate-pulse');
+        } else {
+            timerText.classList.remove('text-red-400', 'animate-pulse');
+            timerText.classList.add('text-white');
+        }
+    }
+
+    // Load Question into UI
+    function loadQuestion() {
+        isAnswering = false;
+        
+        // Update Progress
+        progressText.innerText = `${currentQuestionIndex + 1}/${questionsPerGame}`;
+
+        const qData = currentQuestions[currentQuestionIndex];
+        
+        // Add animation class by resetting it
+        questionText.parentElement.classList.remove('slide-up');
+        void questionText.parentElement.offsetWidth; // trigger reflow
+        questionText.parentElement.classList.add('slide-up');
+        
+        questionText.innerText = qData.question;
+
+        // Prepare and shuffle exactly TWO options
+        let options = [
+            { text: qData.correctAnswer, isCorrect: true },
+            { text: qData.wrongAnswer, isCorrect: false }
+        ];
+        options = shuffleArray(options);
+
+        // Render Options Buttons
+        optionsContainer.innerHTML = '';
+        options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            // Dibuat lebih besar (p-5, text-lg) karena hanya ada 2 pilihan
+            btn.className = 'w-full bg-white text-blue-900 text-left p-5 rounded-2xl border-2 border-transparent shadow-md font-semibold option-btn slide-up text-base';
+            btn.style.animationDelay = `${index * 0.1}s`;
+            
+            // Tambahkan label "Tindakan" agar lebih imersif
+            const label = index === 0 ? "Tindakan A:" : "Tindakan B:";
+            btn.innerHTML = `<span class="text-orange-500 font-bold block mb-1">${label}</span> ${opt.text}`;
+            
+            btn.onclick = () => handleAnswer(opt.isCorrect, btn, options);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    // Handle User Answer Click
+    function handleAnswer(isCorrect, selectedBtn, optionsData) {
+        if (isAnswering) return; // Prevent double clicks
+        isAnswering = true;
+
+        const allButtons = optionsContainer.querySelectorAll('button');
+        
+        // Disable all buttons immediately
+        allButtons.forEach(btn => btn.disabled = true);
+
+        // Visual Feedback
+        if (isCorrect) {
+            selectedBtn.classList.add('correct');
+            score += scorePerQuestion;
+            scoreText.innerText = score;
+            // Pop animation for correct score
+            scoreText.parentElement.classList.remove('bounce-in');
+            void scoreText.parentElement.offsetWidth;
+            scoreText.parentElement.classList.add('bounce-in');
+        } else {
+            selectedBtn.classList.add('wrong');
+            // Highlight the correct answer for learning purposes
+            allButtons.forEach((btn, idx) => {
+                if(optionsData[idx].isCorrect) {
+                    btn.classList.add('correct');
+                    btn.classList.add('opacity-75'); // slightly dim to show it wasn't selected
+                }
+            });
+        }
+
+        // Wait 1.5 seconds, then next question or finish
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questionsPerGame) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }, 1500);
+    }
+
+    // Show Final Result Screen
+    function showResult(customTitle = null) {
+        clearInterval(timerInterval); // Hentikan timer saat ujian selesai
+        
+        gameScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+
+        document.getElementById('final-score').innerText = score;
+        
+        const titleEl = document.getElementById('feedback-title');
+        const textEl = document.getElementById('feedback-text');
+        const iconEl = document.getElementById('result-icon');
+
+        // Dynamic Feedback Logic
+        if (customTitle) {
+            titleEl.innerText = customTitle;
+            textEl.innerText = "Ujian berakhir karena waktu telah habis.";
+            titleEl.className = "text-xl font-bold text-red-500 mb-2";
+            iconEl.innerHTML = "⌛";
+            iconEl.className = "w-24 h-24 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4 text-5xl bounce-in";
+        } else if (score === 100) {
+            titleEl.innerText = "Sempurna! 🌟";
+            textEl.innerText = "Excellent Customer Service! Kamu adalah ahli sejati dalam menangani keluhan.";
+            titleEl.className = "text-xl font-bold text-green-500 mb-2";
+            iconEl.innerHTML = "👑";
+            iconEl.className = "w-24 h-24 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4 text-5xl bounce-in";
+        } else if (score >= 80) {
+            titleEl.innerText = "Luar Biasa! 👍";
+            textEl.innerText = "Kamu sudah sangat memahami dasar-dasar pelayanan prima.";
+            titleEl.className = "text-xl font-bold text-blue-600 mb-2";
+            iconEl.innerHTML = "🎖️";
+            iconEl.className = "w-24 h-24 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4 text-5xl bounce-in";
+        } else if (score >= 60) {
+            titleEl.innerText = "Cukup Baik 😊";
+            textEl.innerText = "Tingkatkan lagi empatimu dan pelajari prosedur handling complain dengan lebih teliti.";
+            titleEl.className = "text-xl font-bold text-orange-500 mb-2";
+            iconEl.innerHTML = "📚";
+            iconEl.className = "w-24 h-24 mx-auto bg-orange-100 rounded-full flex items-center justify-center mb-4 text-5xl bounce-in";
+        } else {
+            titleEl.innerText = "Perlu Latihan 🎯";
+            textEl.innerText = "Jangan menyerah! Ayo pelajari kembali materi handling complain dan coba lagi.";
+            titleEl.className = "text-xl font-bold text-red-500 mb-2";
+            iconEl.innerHTML = "💪";
+            iconEl.className = "w-24 h-24 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4 text-5xl bounce-in";
+        }
+    }
+
+    // Reset Game
+    function resetGame() {
+        startGame();
+    }
+</script>
+
+</body>
+</html>
